@@ -1,0 +1,63 @@
+{
+  "name": "ethereum-mars",
+  "description": "The amazing smart contract deployment tool",
+  "license": "MIT",
+  "version": "0.1.0",
+  "keywords": [
+    "deployment",
+    "ethereum",
+    "smart",
+    "contracts",
+    "javascript",
+    "typescript",
+    "library"
+  ],
+  "homepage": "https://github.com/EthWorks/Mars",
+  "bugs": {
+    "url": "https://github.com/EthWorks/Mars/issues"
+  },
+  "files": [
+    "build",
+    "src",
+    "bin.js"
+  ],
+  "engines": {
+    "node": ">=10",
+    "yarn": "^1.17.3"
+  },
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "bin": {
+    "mars": "bin.js"
+  },
+  "scripts": {
+    "lint": "yarn lint:prettier --check && yarn lint:eslint",
+    "lint:fix": "yarn lint:prettier --write && yarn lint:eslint --fix",
+    "lint:eslint": "eslint './{src,test}/**/*.ts'",
+    "lint:prettier": "prettier './{src,test}/**/*.ts'",
+    "build": "tsc",
+    "test": "mocha",
+    "prepublishOnly": "rm -rf build"
+  },
+  "dependencies": {
+    "@types/argparse": "^2.0.2",
+    "argparse": "^2.0.1",
+    "ethers": "^5.0.17",
+    "ganache-core": "^2.13.0"
+  },
+  "devDependencies": {
+    "@types/argparse": "^2.0.2",
+    "@types/chai": "^4.2.13",
+    "@types/mocha": "^8.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "chai": "^4.2.0",
+    "chalk": "^4.1.0",
+    "eslint": "^7.11.0",
+    "mocha": "^8.1.3",
+    "prettier": "^2.1.2",
+    "prettier-plugin-solidity": "^1.0.0-alpha.59",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  }
+}
