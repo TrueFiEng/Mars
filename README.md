@@ -34,7 +34,7 @@ mars generate <idk_what_are_the_params>
 Once you have done that you can start creating your first deployment script. Let's discuss the following example:
 
 `deploy.ts`
-```
+```ts
 import { deploy, contract } from 'ethereum-mars'
 import { Token, Market } from '../build/artifacts.ts'
 
