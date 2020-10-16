@@ -16,7 +16,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "ethereum-mars": "0.1.0"
+    "ethereum-mars": "0.1.1"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^3.2.0",

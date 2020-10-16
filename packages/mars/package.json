@@ -2,7 +2,7 @@
   "name": "ethereum-mars",
   "description": "The amazing smart contract deployment tool",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [
     "deployment",
     "ethereum",
@@ -37,7 +37,7 @@
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
     "build": "tsc",
     "test": "mocha",
-    "prepublishOnly": "rm -rf build"
+    "prepublishOnly": "rm -rf build && yarn build"
   },
   "dependencies": {
     "@types/argparse": "^2.0.2",
