@@ -13,6 +13,9 @@ export interface DeployOptions {
   gasPrice?: BigNumber
   yes?: boolean
   dryRun: boolean
+  sourcesPath: string
+  verify?: boolean
+  waffle: string
 }
 
 export const parseGenerateArgs = (): GenerateOptions => {
@@ -66,6 +69,20 @@ export const parseDeployArgs = (): DeployOptions => {
   })
   parser.add_argument('--yes', {
     help: 'No confiramtions',
+    action: 'store_true',
+  })
+  parser.add_argument('--sourcesPath', {
+    help: 'Paths to contracts that should be validated',
+    type: String,
+    default: './contracts',
+  })
+  parser.add_argument('--waffle', {
+    help: 'Waffle compiler config',
+    type: String,
+    default: './waffle.json',
+  })
+  parser.add_argument('-v', '--verify', {
+    help: 'Verify contracts on etherscan',
     action: 'store_true',
   })
 

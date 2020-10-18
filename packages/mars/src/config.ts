@@ -3,6 +3,7 @@ import { DeployOptions, parseDeployArgs } from './cli'
 import { ExecuteOptions } from './execute/execute'
 import { raise } from './util'
 import Ganache from 'ganache-core'
+import { createJsonInputs, JsonInputs } from './verification'
 
 const DEFAULT_OPTIONS: Partial<ExecuteOptions> = {
   gasPrice: utils.parseUnits('10', 'gwei'),
@@ -43,10 +44,30 @@ function getWallet(options: DeployOptions) {
   return privateKey ? new Wallet(privateKey, provider) : undefined
 }
 
-function getCliConfig(): Partial<ExecuteOptions> {
+async function getCliConfig(): Promise<Partial<ExecuteOptions>> {
   const args = parseDeployArgs()
 
   const wallet = getWallet(args)
+
+  let verification:
+    | {
+        etherscanApiKey: string
+        jsonInputs: JsonInputs
+        waffleConfig: string
+      }
+    | undefined = undefined
+
+  if (args.verify) {
+    const etherscanApiKey = process.env.ETHERSCAN_KEY
+    if (!etherscanApiKey) {
+      throw new Error('Set Etherscan api key in ETHERSCAN_KEY env variable to verify contracts')
+    }
+    verification = {
+      etherscanApiKey,
+      jsonInputs: await createJsonInputs(args.sourcesPath),
+      waffleConfig: args.waffle,
+    }
+  }
 
   const cliOptions: Partial<ExecuteOptions> = {
     wallet,
@@ -54,13 +75,14 @@ function getCliConfig(): Partial<ExecuteOptions> {
     gasPrice: args.gasPrice,
     noConfirm: args.yes,
     dryRun: args.dryRun,
+    verification,
   }
   removeUndefinedKeys(cliOptions)
   return cliOptions
 }
 
-export function getConfig(options: Partial<ExecuteOptions>): ExecuteOptions {
-  const cliOptions = getCliConfig()
+export async function getConfig(options: Partial<ExecuteOptions>): Promise<ExecuteOptions> {
+  const cliOptions = await getCliConfig()
   const mergedOptions: Partial<ExecuteOptions> = {
     ...DEFAULT_OPTIONS,
     ...options,
@@ -74,5 +96,6 @@ export function getConfig(options: Partial<ExecuteOptions>): ExecuteOptions {
     network: mergedOptions.network ?? 'default',
     dryRun: mergedOptions.dryRun ?? false,
     deploymentsFile: './deployments.json', // TODO: configurable
+    verification: mergedOptions.verification,
   }
 }

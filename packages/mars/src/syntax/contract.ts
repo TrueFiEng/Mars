@@ -1,7 +1,8 @@
 import { Artifact, ArtifactNoParams, Params } from './artifact'
-import { ArtifactSymbol, Methods, Name, Address, AbiSymbol } from '../symbols'
+import { AbiSymbol, Address, ArtifactSymbol, Methods, Name } from '../symbols'
 import { context } from '../context'
 import { Future, FutureBoolean, FutureBytes, FutureNumber, resolveBytesLike, resolveNumberLike } from '../values'
+import { AbiConstructorEntry } from '../abi'
 
 export type Contract<T extends Artifact> = {
   [ArtifactSymbol]: T
@@ -30,12 +31,14 @@ export function contract(...args: any[]): any {
   const name: string = withName ? args[0] : unCapitalize(artifact[Name])
   const params = (withName ? args[2] : args[1]) ?? []
   const options = (withName ? args[3] : args[2]) ?? {}
+  const constructor = artifact[AbiSymbol].find(({ type }) => type === 'constructor') as AbiConstructorEntry
 
   const [address, resolveAddress] = Future.create<string>()
 
   context.actions.push({
     type: 'DEPLOY',
     name,
+    constructor,
     artifact,
     params,
     options,

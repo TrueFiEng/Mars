@@ -2,7 +2,7 @@
   "name": "ethereum-mars",
   "description": "The amazing smart contract deployment tool",
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "keywords": [
     "deployment",
     "ethereum",
@@ -40,8 +40,10 @@
     "prepublishOnly": "rm -rf build && yarn build"
   },
   "dependencies": {
-    "@types/argparse": "^2.0.2",
+    "@resolver-engine/imports": "^0.3.3",
+    "@resolver-engine/imports-fs": "^0.3.3",
     "argparse": "^2.0.1",
+    "axios": "^0.19.0",
     "ethers": "^5.0.17",
     "ganache-core": "^2.13.0"
   },

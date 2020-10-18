@@ -1,16 +1,22 @@
 import { Action, DeployAction, EncodeAction, ReadAction, TransactionAction } from '../actions'
 import { Contract, providers, utils } from 'ethers'
-import { AbiSymbol, Address, Bytecode } from '../symbols'
+import { AbiSymbol, Address, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
 import { sendTransaction, TransactionOptions } from './sendTransaction'
 import { save, read } from './save'
 import { isBytecodeEqual } from './bytecode'
+import { JsonInputs, verify } from '../verification'
 
 export interface ExecuteOptions extends TransactionOptions {
   network: string
   deploymentsFile: string
   dryRun: boolean
+  verification?: {
+    etherscanApiKey: string
+    jsonInputs: JsonInputs
+    waffleConfig: string
+  }
 }
 
 export async function execute(actions: Action[], options: ExecuteOptions) {
@@ -66,6 +72,17 @@ async function executeDeploy(action: DeployAction, options: ExecuteOptions) {
   }
   const { txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx)
   save(options.deploymentsFile, options.network, action.name, { txHash, address })
+  if (options.verification) {
+    await verify(
+      options.verification.etherscanApiKey,
+      options.verification.jsonInputs,
+      options.verification.waffleConfig,
+      action.artifact[Name],
+      address,
+      new utils.Interface([action.constructor]).encodeDeploy(params),
+      options.network
+    )
+  }
   action.resolve(address)
 }
 
