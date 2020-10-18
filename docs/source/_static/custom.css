@@ -64,6 +64,10 @@ a:hover {
   text-decoration: underline;
 }
 
+a.btn:hover {
+  text-decoration: none;
+}
+
 a:visited {
   color: #ce4141;
 }
