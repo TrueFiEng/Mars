@@ -26,12 +26,18 @@
   padding-bottom: 42px !important;
 }
 
+@media screen and (max-width: 768px) {
+  .wy-nav-side {
+    left: -300px;
+  }
+}
+
 .rst-versions {
   height: 42px;
   left: inherit;
 }
 
-@media only screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .wy-nav-side {
     box-shadow: none;
   }
