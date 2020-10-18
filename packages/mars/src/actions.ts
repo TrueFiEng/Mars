@@ -1,4 +1,4 @@
-import { AbiFunctionEntry } from './abi'
+import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
 import { Artifact } from './syntax/artifact'
 import { Future } from './values'
 export type Action = DeployAction | ReadAction | TransactionAction | EncodeAction
@@ -6,6 +6,7 @@ export type Action = DeployAction | ReadAction | TransactionAction | EncodeActio
 export interface DeployAction {
   type: 'DEPLOY'
   artifact: Artifact
+  constructor: AbiConstructorEntry
   name: string
   params: any[]
   options: any
