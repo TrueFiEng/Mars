@@ -1,0 +1,90 @@
+.wy-side-nav-search {
+  background-color: white;
+}
+
+.wy-side-nav-search > a img.logo,
+.wy-side-nav-search .wy-dropdown > a img.logo {
+  width: 85%;
+  max-width: 200px;
+}
+
+.wy-body-for-nav {
+  height: 100%;
+  background-color: rgb(239, 239, 239);
+}
+
+.wy-grid-for-nav {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  background-color: white;
+}
+
+.wy-nav-side {
+  position: absolute;
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.3);
+}
+
+@media only screen and (max-width: 768px) {
+  .wy-nav-side {
+    box-shadow: none;
+  }
+
+  .wy-nav-side.shift {
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+.wy-nav-content-wrap {
+  background-color: #fcfcfc;
+}
+
+.wy-nav-top {
+  background-color: #ce4141;
+}
+
+a {
+  color: #ce4141;
+}
+
+a:hover {
+  color: #ce4141;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #ce4141;
+}
+
+.wy-nav-top a {
+  color: white;
+  text-decoration: none;
+}
+
+.wy-menu-vertical a {
+  color: #d9d9d9;
+}
+
+.wy-side-nav-search input[type="text"] {
+  border-color: #ce4141;
+}
+
+
+.wy-menu-vertical header,
+.wy-menu-vertical a:active {
+  background-color: #ce4141;
+}
+
+.wy-menu-vertical p.caption {
+  color: #ce4141;
+}
+
+.wy-nav-content {
+  height: unset;
+}
+
+.wy-nav-content-wrap {
+  height: 100%;
+  max-height: unset;
+  overflow: auto;
+}
