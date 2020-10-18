@@ -1,0 +1,16 @@
+{
+  "kovan": {
+    "dai": {
+      "txHash": "0xa5395bb2ad241d3a7a1813e9191d208a0b974e8eb4585c8eb346f85da27e3c2e",
+      "address": "0x2f9ac14463db2B3283aE99FA9158a01968585DDd"
+    },
+    "btc": {
+      "txHash": "0x6e3305488edc15414943574008b5dda95c00057432adeb1e4e0cb9f962de169e",
+      "address": "0xC05e6f465aaB3d42aC98C9e860275056872311C1"
+    },
+    "market": {
+      "txHash": "0x042584491c4c4323c4ff80807b2d0ebc2259772a51c4df0122a4e8c08a99d098",
+      "address": "0x945989f49B4Ea0756e97ef1B8fBFE81DD5c9142E"
+    }
+  }
+}
