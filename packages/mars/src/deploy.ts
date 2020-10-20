@@ -1,5 +1,5 @@
 import { context } from './context'
-import { getConfig } from './config'
+import { getConfig } from './options/config'
 import { execute, ExecuteOptions } from './execute/execute'
 
 export async function deploy(options: Partial<ExecuteOptions>, callback: () => void) {

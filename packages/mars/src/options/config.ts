@@ -1,9 +1,12 @@
 import { providers, utils, Wallet } from 'ethers'
 import { DeployOptions, parseDeployArgs } from './cli'
-import { ExecuteOptions } from './execute/execute'
-import { raise } from './util'
+import { ExecuteOptions } from '../execute/execute'
 import Ganache from 'ganache-core'
-import { createJsonInputs, JsonInputs } from './verification'
+import { createJsonInputs, JsonInputs } from '../verification'
+
+function raise(error: Error): never {
+  throw error
+}
 
 const DEFAULT_OPTIONS: Partial<ExecuteOptions> = {
   gasPrice: utils.parseUnits('10', 'gwei'),
