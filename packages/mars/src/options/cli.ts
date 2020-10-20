@@ -1,5 +1,8 @@
 import { ArgumentParser } from 'argparse'
 import { BigNumber } from 'ethers'
+import minimist from 'minimist'
+import { ensureApiKey, ensureNetwork, ensurePrivateKey, exit } from './checks'
+import { Options } from './Options'
 
 export interface DeployOptions {
   rpc?: string
@@ -63,4 +66,50 @@ export const parseDeployArgs = (): DeployOptions => {
   })
 
   return parser.parse_args()
+}
+
+export function getCommandLineOptions (): Options {
+  const parsed = minimist(process.argv.slice(2))
+  const result: Options = {}
+
+  const privateKey = get(parsed, 'p', 'private-key')
+  if (privateKey) {
+    ensurePrivateKey(privateKey, 'Invalid private key provided as argument')
+    result.privateKey = privateKey
+  }
+
+  const network = get(parsed, 'n', 'network')
+  if (network) {
+    ensureNetwork(network, 'Invalid network provided as argument')
+    result.network = network
+  }
+
+  const infuraApiKey = get(parsed, 'i', 'infura-key')
+  if (infuraApiKey) {
+    ensureApiKey(infuraApiKey, 'Invalid infura api key provided as argument')
+    result.infuraApiKey = infuraApiKey
+  }
+
+  const alchemyApiKey = get(parsed, 'a', 'alchemy-key')
+  if (alchemyApiKey) {
+    ensureApiKey(alchemyApiKey, 'Invalid alchemy api key provided as argument')
+    result.alchemyApiKey = alchemyApiKey
+  }
+
+  // const outFile = get(parsed, 'o', 'out-file')
+  // const gasPrice = get(parsed, 'g', 'gas-price')
+  // const dryRun = get(parsed, 'd', 'dry-run')
+  // const yes = get(parsed, 'y', 'yes')
+  // const verify = get(parsed, 'v', 'verify')
+  // const etherscanApiKey = get(parsed, 'e', 'etherscan-key')
+  // const waffleConfig = get(parsed, 'w', 'waffle-config')
+
+  return result
+}
+
+function get(parsed: minimist.ParsedArgs, short: string, full: string): unknown {
+  if (parsed[short] && parsed[full]) {
+    exit(`Both -${short} and --${full} specified`)
+  }
+  return parsed[short] ?? parsed[full]
 }
