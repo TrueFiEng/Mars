@@ -4,6 +4,7 @@ M.A.R.S. - Magically Augmented Release Scripts
 Usage: [options]
 
 Options:
+  -h, --help                  Display this message.
   -p, --private-key [key]     The private key used during deployment. You can
                               also use the env variable PRIVATE_KEY.
   -n, --network [string]      The network to run the deployment against. Can be
@@ -28,3 +29,31 @@ Options:
   -w, --waffle-config [path]  The waffle config file to use for verification.
                               Default: waffle.json.
 `
+export const ALLOWED_OPTIONS = [
+  'h',
+  'help',
+  'p',
+  'private-key',
+  'n',
+  'network',
+  'i',
+  'infura-key',
+  'a',
+  'alchemy-key',
+  'o',
+  'out-file',
+  'g',
+  'gas-price',
+  'd',
+  'dry-run',
+  'y',
+  'yes',
+  'v',
+  'verify',
+  'e',
+  'etherscan-key',
+  's',
+  'sources',
+  'w',
+  'waffle-config',
+]

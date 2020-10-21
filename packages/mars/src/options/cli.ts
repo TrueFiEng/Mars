@@ -10,10 +10,19 @@ import {
   exit,
 } from './checks'
 import { Options } from './Options'
+import { usage, ALLOWED_OPTIONS } from './usage'
 
 export function getCommandLineOptions(): Options {
   const parsed = minimist(process.argv.slice(2))
   const result: Options = {}
+
+  const showHelp = get(parsed, 'h', 'help')
+  if (showHelp) {
+    console.log(usage)
+    process.exit(0)
+  }
+
+  checkAllowed(parsed)
 
   const privateKey = get(parsed, 'p', 'private-key')
   if (privateKey) {
@@ -88,6 +97,18 @@ export function getCommandLineOptions(): Options {
   }
 
   return result
+}
+
+function checkAllowed(parsed: minimist.ParsedArgs) {
+  const options = Object.keys(parsed).filter((x) => x !== '_')
+  for (const option of options) {
+    if (!ALLOWED_OPTIONS.includes(option)) {
+      exit(`Invalid option specified: ${option}`)
+    }
+  }
+  if (parsed._.length !== 0) {
+    exit(`Invalid option specified: ${parsed._[0]}`)
+  }
 }
 
 function get(parsed: minimist.ParsedArgs, short: string, full: string): unknown {

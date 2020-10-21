@@ -42,7 +42,8 @@ function ensure<T>(check: (value: T) => boolean, value: T, message: string) {
 }
 
 export function exit(message: string): never {
-  console.error(message)
+  console.error(`Error: ${message}`)
   console.log(usage)
+  console.error(`Error: ${message}`)
   process.exit(1)
 }
