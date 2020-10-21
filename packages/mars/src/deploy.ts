@@ -1,8 +1,8 @@
 import { context } from './context'
-import { getConfig } from './options/config'
-import { execute, ExecuteOptions } from './execute/execute'
+import { getConfig, Options } from './options'
+import { execute } from './execute/execute'
 
-export async function deploy(options: Partial<ExecuteOptions>, callback: () => void) {
+export async function deploy(options: Partial<Options>, callback: () => void) {
   const config = await getConfig(options)
 
   context.enabled = true

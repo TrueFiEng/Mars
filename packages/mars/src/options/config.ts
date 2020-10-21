@@ -1,104 +1,83 @@
-import { providers, utils, Wallet } from 'ethers'
-import { DeployOptions, parseDeployArgs } from './cli'
-import { ExecuteOptions } from '../execute/execute'
+import { providers, Wallet } from 'ethers'
 import Ganache from 'ganache-core'
-import { createJsonInputs, JsonInputs } from '../verification'
+import { ExecuteOptions } from '../execute/execute'
+import { createJsonInputs } from '../verification'
+import { exit } from './checks'
+import { getCommandLineOptions } from './cli'
+import { getDefaultOptions } from './defaults'
+import { getEnvironmentOptions } from './environment'
+import { Options } from './Options'
 
-function raise(error: Error): never {
-  throw error
-}
-
-const DEFAULT_OPTIONS: Partial<ExecuteOptions> = {
-  gasPrice: utils.parseUnits('10', 'gwei'),
-  noConfirm: false,
-}
-
-function removeUndefinedKeys<T>(obj: T) {
-  for (const key of Object.keys(obj) as (keyof T)[]) {
-    if (obj[key] === undefined) {
-      delete obj[key]
-    }
-  }
-}
-
-function getWallet(options: DeployOptions) {
-  const privateKey = process.env.PRIVATE_KEY
-
-  if (options.dryRun) {
-    if (!options.rpc) {
-      throw new Error('RPC is required to create a fork during a cold run')
-    }
-    const randomWallet = Wallet.createRandom()
-    const forkedProvider = new providers.Web3Provider(
-      Ganache.provider({
-        fork: options.rpc,
-        accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
-      }) as any
-    )
-
-    if (privateKey) {
-      return new Wallet(privateKey, forkedProvider as any)
-    }
-    return new Wallet(randomWallet.privateKey, forkedProvider as any)
-  }
-  const provider = options.rpc
-    ? new providers.JsonRpcProvider(options.rpc)
-    : providers.getDefaultProvider(options.network)
-  return privateKey ? new Wallet(privateKey, provider) : undefined
-}
-
-async function getCliConfig(): Promise<Partial<ExecuteOptions>> {
-  const args = parseDeployArgs()
-
-  const wallet = getWallet(args)
-
-  let verification:
-    | {
-        etherscanApiKey: string
-        jsonInputs: JsonInputs
-        waffleConfig: string
-      }
-    | undefined = undefined
-
-  if (args.verify) {
-    const etherscanApiKey = process.env.ETHERSCAN_KEY
-    if (!etherscanApiKey) {
-      throw new Error('Set Etherscan api key in ETHERSCAN_KEY env variable to verify contracts')
-    }
-    verification = {
-      etherscanApiKey,
-      jsonInputs: await createJsonInputs(args.sourcesPath),
-      waffleConfig: args.waffle,
-    }
-  }
-
-  const cliOptions: Partial<ExecuteOptions> = {
-    wallet,
-    network: args.network,
-    gasPrice: args.gasPrice,
-    noConfirm: args.yes,
-    dryRun: args.dryRun,
-    verification,
-  }
-  removeUndefinedKeys(cliOptions)
-  return cliOptions
-}
-
-export async function getConfig(options: Partial<ExecuteOptions>): Promise<ExecuteOptions> {
-  const cliOptions = await getCliConfig()
-  const mergedOptions: Partial<ExecuteOptions> = {
-    ...DEFAULT_OPTIONS,
+export async function getConfig(options: Options): Promise<ExecuteOptions> {
+  const merged = {
+    ...getDefaultOptions(),
+    ...getEnvironmentOptions(),
+    ...getCommandLineOptions(),
     ...options,
-    ...cliOptions,
   }
+
+  if (merged.dryRun && merged.noConfirm === undefined) {
+    merged.noConfirm = true
+  }
+
+  let verification: ExecuteOptions['verification'] = undefined
+  if (merged.verify) {
+    verification = {
+      etherscanApiKey: merged.etherscanApiKey,
+      jsonInputs: await createJsonInputs(merged.sources),
+      waffleConfig: merged.waffleConfig,
+    }
+  }
+
+  const privateKey = merged.privateKey
+  if (privateKey === undefined) {
+    exit('No private key specified.')
+  }
+  const { provider, networkName } = await getProvider(options)
+  const wallet = new Wallet(privateKey, provider)
+
+  const gasPrice = merged.gasPrice ?? (await provider.getGasPrice())
 
   return {
-    gasPrice: mergedOptions.gasPrice ?? raise(new Error('No gasPrice sepecified')),
-    noConfirm: mergedOptions.dryRun || mergedOptions.noConfirm || false,
-    wallet: mergedOptions.wallet ?? raise(new Error('No wallet specified')),
-    network: mergedOptions.network ?? 'default',
-    dryRun: mergedOptions.dryRun ?? false,
-    deploymentsFile: './deployments.json', // TODO: configurable
-    verification: mergedOptions.verification,
+    gasPrice,
+    noConfirm: !!merged.noConfirm,
+    wallet,
+    network: networkName,
+    dryRun: !!merged.dryRun,
+    deploymentsFile: merged.outputFile,
+    verification,
   }
+}
+
+async function getProvider(options: Options) {
+  const { network, infuraApiKey, alchemyApiKey, dryRun } = options
+  if (network === undefined) {
+    throw new Error('No network specified. This should never happen.')
+  }
+  let rpcUrl
+  if (network.startsWith('http')) {
+    rpcUrl = network
+  } else if (alchemyApiKey) {
+    rpcUrl = `https://eth-${network}.alchemyapi.io/v2/${alchemyApiKey}`
+  } else if (infuraApiKey) {
+    rpcUrl = `https://${network}.infura.io/v3/${infuraApiKey}`
+  } else {
+    throw new Error('Cannot construct rpc url. This should never happen.')
+  }
+
+  let provider
+  if (dryRun) {
+    const randomWallet = Wallet.createRandom()
+    const ganache = Ganache.provider({
+      fork: rpcUrl,
+      accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
+    })
+    provider = new providers.Web3Provider(ganache as any)
+  } else {
+    provider = new providers.JsonRpcProvider(rpcUrl)
+  }
+
+  const networkName = network.startsWith('http') ? (await provider.getNetwork()).name : network
+
+  return { provider, networkName }
 }
