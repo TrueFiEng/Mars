@@ -12,8 +12,10 @@ import {
 import { Options } from './Options'
 import { usage, ALLOWED_OPTIONS } from './usage'
 
+const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key']
+
 export function getCommandLineOptions(): Options {
-  const parsed = minimist(process.argv.slice(2))
+  const parsed = minimist(process.argv.slice(2), { string: STRING_ARGUMENTS })
   const result: Options = {}
 
   const showHelp = get(parsed, 'h', 'help')
