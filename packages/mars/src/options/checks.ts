@@ -42,6 +42,9 @@ function ensure<T>(check: (value: T) => boolean, value: T, message: string) {
 }
 
 export function exit(message: string): never {
+  if (process.env.NODE_ENV === 'test') {
+    throw new Error(message)
+  }
   console.error(`Error: ${message}`)
   console.log(usage)
   console.error(`Error: ${message}`)
