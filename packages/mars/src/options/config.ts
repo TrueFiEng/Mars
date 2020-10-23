@@ -11,9 +11,9 @@ import { Options } from './Options'
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
     ...getDefaultOptions(),
+    ...options,
     ...getEnvironmentOptions(),
     ...getCommandLineOptions(),
-    ...options,
   }
 
   if (merged.dryRun && merged.noConfirm === undefined) {
