@@ -1,4 +1,4 @@
-export { runGenerator, Result, Transaction } from './generator'
+export { runGenerator, Result, Transaction } from './generate/generator'
 export { deploy } from './deploy'
 export { ExecuteOptions } from './execute/execute'
 export { contract } from './syntax/contract'

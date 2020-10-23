@@ -1,7 +1,6 @@
-import { join, resolve, relative, dirname, basename } from 'path'
-import { writeFileSync, readFileSync, readdirSync } from 'fs'
-import { Abi, AbiEntry, AbiParam } from './abi'
-import path from 'path'
+import { readdirSync, readFileSync, writeFileSync } from 'fs'
+import { basename, dirname, join, relative, resolve } from 'path'
+import { Abi, AbiEntry, AbiParam } from '../abi'
 
 export const Result = null as any
 export type Transaction = any
@@ -19,7 +18,7 @@ export function runGenerator(inDir: string, outFile: string) {
     const json = JSON.parse(readFileSync(join(resolve(inDir), file), { encoding: 'utf-8' }))
     const { abi } = json
 
-    defs.push(makeDefinition(path.basename(file, '.json'), abi))
+    defs.push(makeDefinition(basename(file, '.json'), abi))
   }
 
   const source = makeSource(imports, defs)
