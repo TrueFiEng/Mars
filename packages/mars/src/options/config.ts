@@ -29,7 +29,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     }
   }
 
-  const { wallet, networkName } = await getWallet(options)
+  const { wallet, networkName } = await getWallet(merged)
   const gasPrice = merged.gasPrice ?? (await wallet.provider.getGasPrice())
 
   return {
