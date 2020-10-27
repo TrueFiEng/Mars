@@ -71,7 +71,9 @@ async function executeDeploy(action: DeployAction, options: ExecuteOptions) {
     return
   }
   const { txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx)
-  save(options.deploymentsFile, options.network, action.name, { txHash, address })
+  if (!options.dryRun) {
+    save(options.deploymentsFile, options.network, action.name, { txHash, address })
+  }
   if (options.verification) {
     await verify(
       options.verification.etherscanApiKey,
