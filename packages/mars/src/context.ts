@@ -8,4 +8,5 @@ export const context = {
     }
   },
   actions: [] as Action[],
+  conditionalCounter: 0,
 }

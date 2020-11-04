@@ -1,4 +1,4 @@
-import { Action, DeployAction, EncodeAction, ReadAction, TransactionAction } from '../actions'
+import { Action, DeployAction, EncodeAction, ReadAction, StartConditionalAction, TransactionAction } from '../actions'
 import { Contract, providers, utils } from 'ethers'
 import { AbiSymbol, Address, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
@@ -7,6 +7,7 @@ import { sendTransaction, TransactionOptions } from './sendTransaction'
 import { save, read } from './save'
 import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify } from '../verification'
+import { context } from '../context'
 
 export interface ExecuteOptions extends TransactionOptions {
   network: string
@@ -26,6 +27,15 @@ export async function execute(actions: Action[], options: ExecuteOptions) {
 }
 
 async function executeAction(action: Action, options: ExecuteOptions) {
+  if (context.conditionalCounter > 0) {
+    if (action.type === 'CONDITIONAL_START') {
+      context.conditionalCounter++
+    }
+    if (action.type === 'CONDITIONAL_END') {
+      context.conditionalCounter--
+    }
+    return
+  }
   switch (action.type) {
     case 'DEPLOY':
       return executeDeploy(action, options)
@@ -35,6 +45,14 @@ async function executeAction(action: Action, options: ExecuteOptions) {
       return executeTransaction(action, options)
     case 'ENCODE':
       return executeEncode(action)
+    case 'CONDITIONAL_START':
+      return executeConditionalStart(action)
+  }
+}
+
+function executeConditionalStart({ condition }: StartConditionalAction) {
+  if (!Future.resolve(condition())) {
+    context.conditionalCounter++
   }
 }
 
