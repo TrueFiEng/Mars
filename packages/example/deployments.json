@@ -12,37 +12,5 @@
       "txHash": "0x042584491c4c4323c4ff80807b2d0ebc2259772a51c4df0122a4e8c08a99d098",
       "address": "0x945989f49B4Ea0756e97ef1B8fBFE81DD5c9142E"
     }
-  },
-  "ropsten": {
-    "dai": {
-      "txHash": "0x3d07f0235a2c4c25e71500e72ca7346350ce3cba5ea0f01a1168dd1aac5c7705",
-      "address": "0x5fa41a62BC52E9C7c0845e7DEd420cEd9de6661e"
-    },
-    "dai_proxy": {
-      "txHash": "0x8e4dd610064edaabc91230378ce0f91eb56c75f651ea41c0c5af4a7cdb2509cd",
-      "address": "0x1d078397af1a2986C19ED84d9e61E8a2233fc6A5"
-    }
-  },
-  "unknown": {
-    "dai": {
-      "txHash": "0xed0fb0f1fba729e186fb92d75dc4e38a77424956516795c8b155d216f7c4fbf5",
-      "address": "0x6EDfbE4145B3660af85590De4cE34AE3FabD84Ab"
-    },
-    "dai_proxy": {
-      "txHash": "0xf7a318daa9b53130d50f614c4d13265afcb68a1f8cfb1c771da61d1a20d64564",
-      "address": "0x0E8BA4Bbf60091861b5ec92dBcD863Bd4317Fc49"
-    },
-    "btc": {
-      "txHash": "0xcc1c54772e10f69fd6270b41807f0e19063e05da94993f5f381be0c23ae1edfc",
-      "address": "0xaB36d6a0a97dBE1f8D29C8e0A9c0A2336bAA6279"
-    },
-    "btc_proxy": {
-      "txHash": "0x6ea404e3d283731b118df215a7c48bc8ba43b06931392c78a5f8719788ae2371",
-      "address": "0xa6b7D5046Fbf5E08E1708B083A26624f3BD13683"
-    },
-    "market": {
-      "txHash": "0xb0f880b30bc1601561a04cb356c2283e9a79fc4d1072dc32fd796cbef23820e8",
-      "address": "0x3f69830e75d1a1EA5a003eE5022283C5db5dC5D0"
-    }
   }
 }
