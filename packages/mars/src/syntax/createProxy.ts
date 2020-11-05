@@ -6,16 +6,36 @@ import { context } from '../context'
 import { constants } from 'ethers'
 
 export interface Proxy {
-  <T extends Artifact, U extends keyof T[typeof Methods]>(name: string, contract: Contract<T>, onInitialize: U, params: Parameters<T[typeof Methods][U]>): Contract<T>;
-  <T extends Artifact, U extends keyof T[typeof Methods]>(contract: Contract<T>, onInitialize: U, params: Parameters<T[typeof Methods][U]>): Contract<T>;
-  <T extends Artifact>(name: string, contract: Contract<T>, onInitialize: (contract: Contract<T>) => unknown): Contract<T>;
-  <T extends Artifact>(contract: Contract<T>, onInitialize: (contract: Contract<T>) => unknown): Contract<T>;
+  <T extends Artifact, U extends keyof T[typeof Methods]>(
+    name: string,
+    contract: Contract<T>,
+    onInitialize: U,
+    params: Parameters<T[typeof Methods][U]>
+  ): Contract<T>
+  <T extends Artifact, U extends keyof T[typeof Methods]>(
+    contract: Contract<T>,
+    onInitialize: U,
+    params: Parameters<T[typeof Methods][U]>
+  ): Contract<T>
+  <T extends Artifact>(name: string, contract: Contract<T>, onInitialize: (contract: Contract<T>) => unknown): Contract<
+    T
+  >
+  <T extends Artifact>(contract: Contract<T>, onInitialize: (contract: Contract<T>) => unknown): Contract<T>
 }
 
 type MethodCall<T extends Artifact> = keyof T[typeof Methods] | ((contract: Contract<T>) => unknown)
 
-export function createProxy<T extends ArtifactNoParams>(artifact: T, onUpgrade?: MethodCall<T>, options?: Options): Proxy
-export function createProxy<T extends Artifact>(artifact: T, params: Params<T>, onUpgrade?: MethodCall<T>, options?: Options): Proxy
+export function createProxy<T extends ArtifactNoParams>(
+  artifact: T,
+  onUpgrade?: MethodCall<T>,
+  options?: Options
+): Proxy
+export function createProxy<T extends Artifact>(
+  artifact: T,
+  params: Params<T>,
+  onUpgrade?: MethodCall<T>,
+  options?: Options
+): Proxy
 export function createProxy(...args: any[]): any {
   const artifact: Artifact = args[0]
   const params: any[] = artifact[Constructor].length > 0 ? args[1] : []
@@ -30,20 +50,14 @@ export function createProxy(...args: any[]): any {
     const currentImplementation = proxy.implementation()
 
     const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
-    runIf(
-      currentImplementation.equals(implementation[Address]).not(),
-      () => normalizedOnUpgrade(proxy)
-    )
+    runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
 
     const contractBehindProxy = makeContractInstance(
       implementation[Name],
       implementation[ArtifactSymbol],
       proxy[Address]
     )
-    runIf(
-      currentImplementation.equals(constants.AddressZero),
-      () => onInitialize(contractBehindProxy)
-    )
+    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize(contractBehindProxy))
 
     return contractBehindProxy
   }
