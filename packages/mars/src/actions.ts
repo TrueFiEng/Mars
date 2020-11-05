@@ -21,7 +21,7 @@ export interface DeployAction {
 
 export interface StartConditionalAction {
   type: 'CONDITIONAL_START'
-  condition: () => BooleanLike
+  condition: BooleanLike
 }
 
 export interface EndConditionalAction {

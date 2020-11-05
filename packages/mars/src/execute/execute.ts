@@ -27,12 +27,12 @@ export async function execute(actions: Action[], options: ExecuteOptions) {
 }
 
 async function executeAction(action: Action, options: ExecuteOptions) {
-  if (context.conditionalCounter > 0) {
+  if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
-      context.conditionalCounter++
+      context.conditionalDepth++
     }
     if (action.type === 'CONDITIONAL_END') {
-      context.conditionalCounter--
+      context.conditionalDepth--
     }
     return
   }
@@ -51,8 +51,8 @@ async function executeAction(action: Action, options: ExecuteOptions) {
 }
 
 function executeConditionalStart({ condition }: StartConditionalAction) {
-  if (!Future.resolve(condition())) {
-    context.conditionalCounter++
+  if (!Future.resolve(condition)) {
+    context.conditionalDepth++
   }
 }
 
