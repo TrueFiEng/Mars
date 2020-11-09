@@ -23,10 +23,16 @@ export type AbiEntry = AbiConstructorEntry | AbiFunctionEntry | AbiEventEntry
 
 export type Abi = AbiEntry[]
 
+export interface AbiComponent {
+  name: string
+  type: string
+  components?: AbiComponent[]
+}
+
 export interface AbiParam {
   name: string
   type: string
   internalType?: string
   indexed?: boolean
-  components?: any
+  components?: AbiComponent[]
 }
