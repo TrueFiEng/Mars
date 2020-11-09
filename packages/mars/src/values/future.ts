@@ -32,9 +32,7 @@ export class Future<T> {
   }
 
   get<U extends keyof T>(key: U): Future<UnpackFuture<T[U]>> {
-    return this.map((value) => {
-      return value[key] instanceof Future ? Future.resolve(value[key]) : value[key]
-    }) as any
+    return this.map((value) => value[key]) as any
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

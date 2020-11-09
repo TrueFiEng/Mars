@@ -1,13 +1,17 @@
 import { context } from './context'
 import { getConfig, Options } from './options'
-import { execute } from './execute/execute'
+import { execute, ExecuteOptions } from './execute/execute'
 
-export async function deploy(options: Options, callback: () => void) {
+export async function deploy<T>(
+  options: Options,
+  callback: () => T
+): Promise<{ result: T } & { config: ExecuteOptions }> {
   const config = await getConfig(options)
 
   context.enabled = true
   context.actions = []
-  callback()
+  const result = callback()
   context.enabled = false
-  return execute(context.actions, config)
+  await execute(context.actions, config)
+  return { result, config }
 }

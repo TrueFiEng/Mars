@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import { solidity } from 'ethereum-waffle'
 import { contract, Future } from '../../src'
 import { testDeploy } from '../utils/testDeploy'
-import { ComplexContract } from '../fixtures/expectedArtifacts'
+import { ComplexContract } from '../fixtures/complexContractArtifacts'
 import { BigNumber, constants, Contract } from 'ethers'
 import { AbiSymbol, Address } from '../../src/symbols'
 
@@ -12,21 +12,24 @@ describe('Artifacts', () => {
   const expectFuture = (future: Future<any>, expected: any) => expect(future.resolve()).to.deep.equal(expected)
 
   const testRun = async () =>
-    testDeploy(() => {
-      const testContract = contract(ComplexContract, [1, 'test'])
-      testContract.setter('hello world', [1, 2, 3])
-      const number = testContract.number()
-      const str = testContract.str()
-      const mapping = testContract.simpleMapping(2)
-      const complexMapping = testContract.complexMapping(12, constants.AddressZero)
-      const array = testContract.simpleArray(2)
-      const twoDArray = testContract.twoDArray(1, 1)
-      const noArgs = testContract.viewNoArgs()
-      const tuple = testContract.viewReturnsTuple()
-      const struct = testContract.viewReturnsStruct()
-      const sum = testContract.add(struct.get('c').get(0).get('x'))
-      return { testContract, number, str, mapping, complexMapping, array, twoDArray, noArgs, tuple, struct, sum }
-    })
+    testDeploy(
+      () => {
+        const testContract = contract(ComplexContract, [1, 'test'])
+        testContract.setter('hello world', [1, 2, 3])
+        const number = testContract.number()
+        const str = testContract.str()
+        const mapping = testContract.simpleMapping(2)
+        const complexMapping = testContract.complexMapping(12, constants.AddressZero)
+        const array = testContract.simpleArray(2)
+        const twoDArray = testContract.twoDArray(1, 1)
+        const noArgs = testContract.viewNoArgs()
+        const tuple = testContract.viewReturnsTuple()
+        const struct = testContract.viewReturnsStruct()
+        const sum = testContract.add(struct.get('c').get(0).get('x'))
+        return { testContract, number, str, mapping, complexMapping, array, twoDArray, noArgs, tuple, struct, sum }
+      },
+      { saveDeploy: false }
+    )
 
   it('check inputs', async () => {
     const {
