@@ -1,12 +1,11 @@
+import fs from 'fs'
 import { expect } from 'chai'
 import { testDeploy } from '../utils/testDeploy'
 import { contract } from '../../src'
-import { SimpleContract } from '../fixtures/simpleContractArtifacts'
 import SimpleContractJSON from '../build/SimpleContract.json'
 import ComplexContractJSON from '../build/ComplexContract.json'
 import { Address } from '../../src/symbols'
-import fs from 'fs'
-import { ComplexContract } from '../fixtures/complexContractArtifacts'
+import { ComplexContract, SimpleContract } from '../fixtures/exampleArtifacts'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
@@ -24,7 +23,6 @@ describe('Contract', () => {
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${SimpleContractJSON.evm.deployedBytecode.object}`
     )
-    console.log(getDeployResult())
     expect(getDeployResult().test.someName.address).to.equal(result[Address].resolve())
   })
 

@@ -35,8 +35,9 @@
     "lint:fix": "yarn lint:prettier --write && yarn lint:eslint --fix",
     "lint:eslint": "eslint './{src,test}/**/*.ts'",
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
-    "build": "tsc",
-    "test": "waffle ./test/waffle.json && mocha",
+    "build": "yarn build:test:contracts && tsc",
+    "build:test:contracts": "waffle ./test/waffle.json",
+    "test": "mocha",
     "prepublishOnly": "rm -rf build && yarn build"
   },
   "dependencies": {
@@ -53,6 +54,7 @@
     "@types/argparse": "^2.0.2",
     "@types/chai": "^4.2.13",
     "@types/mocha": "^8.0.3",
+    "@types/sinon-chai": "^3.2.5",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/parser": "^4.4.1",
     "chai": "^4.2.0",

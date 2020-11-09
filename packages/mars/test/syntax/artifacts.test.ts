@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import { solidity } from 'ethereum-waffle'
 import { contract, Future } from '../../src'
 import { testDeploy } from '../utils/testDeploy'
-import { ComplexContract } from '../fixtures/complexContractArtifacts'
+import { ComplexContract } from '../fixtures/exampleArtifacts'
 import { BigNumber, constants, Contract } from 'ethers'
 import { AbiSymbol, Address } from '../../src/symbols'
 

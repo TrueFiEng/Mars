@@ -8,7 +8,7 @@ describe('Generator', () => {
     const contractAbi = fs.readFileSync('./test/fixtures/artifacts.ts').toString().trim()
     // Skip eslint comment & import
     const expectedAbi = fs
-      .readFileSync('./test/fixtures/complexContractArtifacts.ts')
+      .readFileSync('./test/fixtures/exampleArtifacts.ts')
       .toString()
       .split('\n')
       .slice(2)
