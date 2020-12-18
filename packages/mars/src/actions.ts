@@ -1,5 +1,5 @@
 import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
-import { Artifact } from './syntax/artifact'
+import { ArtifactFrom } from './syntax/artifact'
 import { BooleanLike, Future } from './values'
 export type Action =
   | DeployAction
@@ -11,7 +11,7 @@ export type Action =
 
 export interface DeployAction {
   type: 'DEPLOY'
-  artifact: Artifact
+  artifact: ArtifactFrom<any>
   constructor: AbiConstructorEntry
   name: string
   params: any[]
