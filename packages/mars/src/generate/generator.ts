@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, dirname, join, relative, resolve } from 'path'
-import { Abi, AbiEntry, AbiParam } from '../abi'
+import { Abi, AbiComponent, AbiEntry, AbiParam } from '../abi'
 
 export const Result = null as any
 export type Transaction = any
@@ -71,16 +71,23 @@ function makeArguments(abi: AbiEntry | undefined) {
     }
     return '_'.repeat(++unnamedParamsCount)
   }
-  const args = abi.inputs.map((input: AbiParam) => `${getInputName(input)}: ${makeInputType(input.type)}`)
+  const args = abi.inputs.map(
+    (input: AbiParam) => `${getInputName(input)}: ${makeInputType(input.type, input.components)}`
+  )
   return `(${args.join(', ')})`
 }
 
-function makeInputType(type: string): string {
+function makeInputType(type: string, components?: AbiComponent[]): string {
   if (type.endsWith('[]')) {
-    return `Mars.MaybeFuture<${makeInputType(type.slice(0, -2))}[]>`
+    return `Mars.MaybeFuture<${makeInputType(type.slice(0, -2), components)}[]>`
   }
   if (type.startsWith('uint') || type.startsWith('int')) {
     return 'Mars.NumberLike'
+  }
+  if (type === 'tuple' && components) {
+    return `Mars.MaybeFuture<{${components
+      .map(({ name, type, components }) => `${name}: ${makeInputType(type, components)}`)
+      .join(', ')}}>`
   }
   if (type === 'address') {
     return 'Mars.AddressLike'
@@ -97,12 +104,25 @@ function makeInputType(type: string): string {
   throw new Error(`Unknown type ${type}`)
 }
 
-function makeOutputType(type: string): string {
+function makeOutputsType(outputs: AbiParam[]) {
+  if (outputs.length === 1) {
+    return makeOutputType(outputs[0].type, outputs[0].components)
+  } else {
+    return `Mars.Future<[${outputs.map(({ type, components }) => makeOutputType(type, components)).join(', ')}]>`
+  }
+}
+
+function makeOutputType(type: string, components?: AbiComponent[]): string {
   if (type.endsWith('[]')) {
-    return `Mars.Future<${makeOutputType(type.slice(0, -2))}[]>`
+    return `Mars.Future<${makeOutputType(type.slice(0, -2), components)}[]>`
   }
   if (type.startsWith('uint') || type.startsWith('int')) {
     return 'Mars.FutureNumber'
+  }
+  if (type === 'tuple' && components) {
+    return `Mars.Future<{${components
+      .map(({ name, type, components }) => `${name}: ${makeOutputType(type, components)}`)
+      .join(', ')}}>`
   }
   if (type === 'address' || type === 'string') {
     return 'Mars.Future<string>'
@@ -117,7 +137,7 @@ function makeOutputType(type: string): string {
 }
 
 function makeReturn(abi: any) {
-  if (abi.stateMutability !== 'view') return 'Mars.Transaction'
+  if (abi.stateMutability !== 'view' && abi.stateMutability !== 'pure') return 'Mars.Transaction'
   if (!abi.outputs || abi.outputs.length === 0) return 'void'
-  return makeOutputType(abi.outputs[0].type)
+  return makeOutputsType(abi.outputs)
 }

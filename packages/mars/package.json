@@ -35,7 +35,8 @@
     "lint:fix": "yarn lint:prettier --write && yarn lint:eslint --fix",
     "lint:eslint": "eslint './{src,test}/**/*.ts'",
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
-    "build": "tsc",
+    "build": "yarn build:test:contracts && tsc",
+    "build:test:contracts": "waffle ./test/waffle.json",
     "test": "mocha",
     "prepublishOnly": "rm -rf build && yarn build"
   },
@@ -53,6 +54,7 @@
     "@types/argparse": "^2.0.2",
     "@types/chai": "^4.2.13",
     "@types/mocha": "^8.0.3",
+    "@types/sinon-chai": "^3.2.5",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/parser": "^4.4.1",
     "chai": "^4.2.0",
@@ -62,6 +64,7 @@
     "prettier": "^2.1.2",
     "prettier-plugin-solidity": "^1.0.0-alpha.59",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "waffle": "^0.0.4"
   }
 }

@@ -71,7 +71,7 @@ function makeContractInstance<T extends Artifact>(name: string, artifact: T, add
           params: args,
           resolve: resolveResult,
         })
-        const type = entry.outputs?.[0].type
+        const type = entry.outputs?.[0]?.type
         return type && isView ? castFuture(type, result) : result
       }
     }
