@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, dirname, join, relative, resolve } from 'path'
 import { Abi, AbiComponent, AbiEntry, AbiParam } from '../abi'
+import { contract } from '../syntax/contract'
 
 export const Result = null as any
 export type Transaction = any
@@ -13,11 +14,12 @@ export function runGenerator(inDir: string, outFile: string) {
   for (const file of files) {
     if (!file.endsWith('.json')) continue
 
-    imports.push(makeJsonImport(resolve(inDir), file, resolve(outFile)))
-
     const json = JSON.parse(readFileSync(join(resolve(inDir), file), { encoding: 'utf-8' }))
-    const { abi } = json
+    const { abi, bytecode } = json
 
+    if (!bytecode || bytecode === '0x') continue
+
+    imports.push(makeJsonImport(resolve(inDir), file, resolve(outFile)))
     defs.push(makeDefinition(basename(file, '.json'), abi))
   }
 
@@ -27,37 +29,32 @@ export function runGenerator(inDir: string, outFile: string) {
 }
 
 function makeSource(imports: string[], defs: string[]) {
-  return `
-import * as Mars from 'ethereum-mars';
-
-${imports.join('\n')}
-
-${defs.join('\n\n')}
-  `
+  return (
+    'import * as Mars from "ethereum-mars";\n\n' +
+    imports.join('\n') +
+    '\n\n' +
+    defs.join('\n\n') +
+    '\n'
+  )
 }
 
 function makeJsonImport(sourcePath: string, sourceFile: string, outPath: string) {
   const name = basename(sourceFile, '.json')
   const relativePath = relative(dirname(outPath), join(sourcePath, sourceFile))
-  return `const ${name}JSON = require('./${relativePath}')`
+  return `const ${name}__JSON = require('./${relativePath}');`
 }
 
 function makeDefinition(name: string, abi: Abi) {
   const constructor = abi.find((fun: any) => fun.type === 'constructor')
   const functions = abi.filter((fun: any) => fun.type === 'function')
 
-  const methods = functions.map((fun: any) => `${fun.name}: ${makeArguments(fun)}: ${makeReturn(fun)} => Mars.Result`)
-  return `
-export const ${name} = Mars.createArtifact({
-  name: "${name}",
-  constructor: ${makeArguments(constructor)}: void => Mars.Result,
-  methods: {
-    ${methods.join(',\n    ')}
-  },
-  abi: ${name}JSON.abi,
-  bytecode: ${name}JSON.bytecode,
-});
-`
+  const methods = functions.map((fun: any) => `${fun.name}${makeArguments(fun)}: ${makeReturn(fun)};`)
+  methods.unshift(`new${makeArguments(constructor)}: void;`)
+
+  const generic = `{\n  ${methods.join('\n  ')}\n}`
+  const artifact = `Mars.createArtifact<${generic}>("${name}", ${name}__JSON)`
+
+  return `export const ${name} = ${artifact};`
 }
 
 function makeArguments(abi: AbiEntry | undefined) {
