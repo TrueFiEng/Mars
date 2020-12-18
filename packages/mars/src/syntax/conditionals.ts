@@ -13,13 +13,13 @@ export function runIf<T>(condition: BooleanLike, action: () => T) {
 
   context.actions.push({
     type: 'CONDITIONAL_START',
-    condition
+    condition,
   })
 
   action()
 
   context.actions.push({
-    type: 'CONDITIONAL_END'
+    type: 'CONDITIONAL_END',
   })
 
   let wasNotExecuted = negate(condition)
@@ -32,7 +32,7 @@ export function runIf<T>(condition: BooleanLike, action: () => T) {
       runIf<U>(wasNotExecuted.and(otherCondition), alternate)
       wasNotExecuted = wasNotExecuted.and(negate(otherCondition))
       return result
-    }
+    },
   }
 
   return result

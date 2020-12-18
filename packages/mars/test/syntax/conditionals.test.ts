@@ -22,13 +22,17 @@ describe('RunIf', () => {
     })
 
     it('else clause is not called when condition is true', async () => {
-      await testDeploy(() => runIf(futureBool(true), () => contract(SimpleContract)).else(() => contract('alternative', SimpleContract)))
+      await testDeploy(() =>
+        runIf(futureBool(true), () => contract(SimpleContract)).else(() => contract('alternative', SimpleContract))
+      )
       expect(getDeployResult().test.simpleContract.address).to.be.not.undefined
       expect(getDeployResult().test.alternative).to.be.undefined
     })
 
     it('else clause is called when condition is false', async () => {
-      await testDeploy(() => runIf(futureBool(false), () => contract(SimpleContract)).else(() => contract('alternative', SimpleContract)))
+      await testDeploy(() =>
+        runIf(futureBool(false), () => contract(SimpleContract)).else(() => contract('alternative', SimpleContract))
+      )
       expect(getDeployResult().test.simpleContract).to.be.undefined
       expect(getDeployResult().test.alternative.address).to.be.not.undefined
     })
@@ -55,12 +59,8 @@ describe('RunIf', () => {
       const deploy = (name: string) => () => contract(name, SimpleContract)
 
       await testDeploy(() =>
-        runIf(futureNumber.equals(0), () =>
-          runIf(futureNumber.equals(2), deploy('02'))
-            .else(deploy('0')))
-          .elseIf(futureNumber.equals(1), () =>
-            runIf(futureNumber.equals(3), deploy('13'))
-              .else(deploy('1')))
+        runIf(futureNumber.equals(0), () => runIf(futureNumber.equals(2), deploy('02')).else(deploy('0')))
+          .elseIf(futureNumber.equals(1), () => runIf(futureNumber.equals(3), deploy('13')).else(deploy('1')))
           .elseIf(futureNumber.equals(2), () => contract('2', SimpleContract))
           .elseIf(futureNumber.equals(3), () => contract('3', SimpleContract))
           .else(() => contract('other', SimpleContract))
