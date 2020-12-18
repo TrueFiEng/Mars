@@ -7,6 +7,7 @@ import { AbiConstructorEntry } from '../abi'
 export type Contract<T extends Artifact> = {
   [ArtifactSymbol]: T
   [Address]: Future<string>
+  [Name]: string
 } & {
   [K in keyof T[typeof Methods]]: T[typeof Methods][K]
 }
@@ -52,10 +53,15 @@ function unCapitalize(value: string) {
   return value !== '' ? `${value[0].toLowerCase()}${value.substring(1)}` : ''
 }
 
-function makeContractInstance<T extends Artifact>(name: string, artifact: T, address: Future<string>): Contract<T> {
+export function makeContractInstance<T extends Artifact>(
+  name: string,
+  artifact: T,
+  address: Future<string>
+): Contract<T> {
   const contract: any = {
     [ArtifactSymbol]: artifact,
     [Address]: address,
+    [Name]: name,
   }
   for (const entry of artifact[AbiSymbol]) {
     if (entry.type === 'function') {

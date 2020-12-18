@@ -1,7 +1,13 @@
 import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
 import { Artifact } from './syntax/artifact'
-import { Future } from './values'
-export type Action = DeployAction | ReadAction | TransactionAction | EncodeAction
+import { BooleanLike, Future } from './values'
+export type Action =
+  | DeployAction
+  | ReadAction
+  | TransactionAction
+  | EncodeAction
+  | StartConditionalAction
+  | EndConditionalAction
 
 export interface DeployAction {
   type: 'DEPLOY'
@@ -11,6 +17,15 @@ export interface DeployAction {
   params: any[]
   options: any
   resolve: (address: string) => void
+}
+
+export interface StartConditionalAction {
+  type: 'CONDITIONAL_START'
+  condition: BooleanLike
+}
+
+export interface EndConditionalAction {
+  type: 'CONDITIONAL_END'
 }
 
 export interface ReadAction {

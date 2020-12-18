@@ -8,4 +8,6 @@ export const context = {
     }
   },
   actions: [] as Action[],
+  // Counts depth of conditional transactions after the failed one
+  conditionalDepth: 0,
 }
