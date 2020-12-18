@@ -1,34 +1,40 @@
-import { Artifact, ArtifactNoParams, Params } from './artifact'
-import { AbiSymbol, Address, ArtifactSymbol, Methods, Name } from '../symbols'
+import { ArtifactFrom } from './artifact'
+import { AbiSymbol, Address, ArtifactSymbol, Name } from '../symbols'
 import { context } from '../context'
 import { Future, FutureBoolean, FutureBytes, FutureNumber, resolveBytesLike, resolveNumberLike } from '../values'
 import { AbiConstructorEntry } from '../abi'
 
-export type Contract<T extends Artifact> = {
-  [ArtifactSymbol]: T
-  [Address]: Future<string>
+export type Contract<T> = {
+  [ArtifactSymbol]: ArtifactFrom<T>
   [Name]: string
+  [Address]: Future<string>
 } & {
-  [K in keyof T[typeof Methods]]: T[typeof Methods][K]
+  [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (...args: A) => R : never
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Options {}
+export type ConstructorParams<T> = T extends { new (...args: infer A): any } ? A : any
 
-export function contract<T extends ArtifactNoParams>(artifact: T): Contract<T>
-export function contract<T extends ArtifactNoParams>(name: string, artifact: T): Contract<T>
-export function contract<T extends Artifact>(artifact: T, params: Params<T>, options?: Options): Contract<T>
-export function contract<T extends Artifact>(
+export interface NoParams {
+  new (): any
+}
+
+export interface WithParams {
+  new (first: any, ...args: any): any
+}
+
+export function contract<T extends NoParams>(artifact: ArtifactFrom<T>): Contract<T>
+export function contract<T extends NoParams>(name: string, artifact: ArtifactFrom<T>): Contract<T>
+export function contract<T extends WithParams>(artifact: ArtifactFrom<T>, params: ConstructorParams<T>): Contract<T>
+export function contract<T extends WithParams>(
   name: string,
-  artifact: T,
-  params: Params<T>,
-  options?: Options
+  artifact: ArtifactFrom<T>,
+  params: ConstructorParams<T>
 ): Contract<T>
 export function contract(...args: any[]): any {
   context.ensureEnabled()
 
   const withName = typeof args[0] === 'string'
-  const artifact: Artifact = withName ? args[1] : args[0]
+  const artifact: ArtifactFrom<any> = withName ? args[1] : args[0]
   const name: string = withName ? args[0] : unCapitalize(artifact[Name])
   const params = (withName ? args[2] : args[1]) ?? []
   const options = (withName ? args[3] : args[2]) ?? {}
@@ -53,11 +59,7 @@ function unCapitalize(value: string) {
   return value !== '' ? `${value[0].toLowerCase()}${value.substring(1)}` : ''
 }
 
-export function makeContractInstance<T extends Artifact>(
-  name: string,
-  artifact: T,
-  address: Future<string>
-): Contract<T> {
+export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>, address: Future<string>): Contract<T> {
   const contract: any = {
     [ArtifactSymbol]: artifact,
     [Address]: address,

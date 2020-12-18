@@ -1,7 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, dirname, join, relative, resolve } from 'path'
 import { Abi, AbiComponent, AbiEntry, AbiParam } from '../abi'
-import { contract } from '../syntax/contract'
 
 export const Result = null as any
 export type Transaction = any
@@ -29,19 +28,13 @@ export function runGenerator(inDir: string, outFile: string) {
 }
 
 function makeSource(imports: string[], defs: string[]) {
-  return (
-    'import * as Mars from "ethereum-mars";\n\n' +
-    imports.join('\n') +
-    '\n\n' +
-    defs.join('\n\n') +
-    '\n'
-  )
+  return 'import * as Mars from "ethereum-mars";\n\n' + imports.join('\n') + '\n\n' + defs.join('\n\n') + '\n'
 }
 
 function makeJsonImport(sourcePath: string, sourceFile: string, outPath: string) {
   const name = basename(sourceFile, '.json')
   const relativePath = relative(dirname(outPath), join(sourcePath, sourceFile))
-  return `const ${name}__JSON = require('./${relativePath}');`
+  return `const ${name}__JSON = require("./${relativePath}");`
 }
 
 function makeDefinition(name: string, abi: Abi) {

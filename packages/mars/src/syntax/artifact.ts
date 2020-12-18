@@ -1,49 +1,29 @@
 import { Abi } from '../abi'
 import { context } from '../context'
-import { AbiSymbol, Bytecode, Constructor, Methods, Name } from '../symbols'
-import { Future, FutureBytes } from '../values'
+import { AbiSymbol, Bytecode, Name, Type } from '../symbols'
+import { Future } from '../values'
 
-export interface Artifact {
-  [Name]: string
-  [Constructor]: (...args: any) => any
-  [Methods]: Record<string, (...args: any) => any>
-  [AbiSymbol]: Abi
-  [Bytecode]: string
-}
-
-export interface ArtifactNoParams extends Artifact {
-  [Constructor]: () => any
-}
-
-export type Params<T extends Artifact> = Parameters<T[typeof Constructor]>
-
-interface Schema {
-  name: string
-  constructor: (...args: any) => any
-  methods: Record<string, (...args: any) => any>
+export interface ArtifactJSON {
   abi: Abi
   bytecode: string
 }
 
-export type ArtifactFrom<T extends Schema> = {
-  [Name]: T['name']
-  [Constructor]: T['constructor']
-  [Methods]: T['methods']
-  [AbiSymbol]: T['abi']
-  [Bytecode]: T['bytecode']
+export type ArtifactFrom<T> = {
+  [Name]: string
+  [AbiSymbol]: Abi
+  [Bytecode]: string
+  [Type]: T
 } & {
-  [K in keyof T['methods']]: (...args: Parameters<T['methods'][K]>) => FutureBytes
+  [K in keyof T]: T[K] extends (...args: infer A) => any ? (...args: A) => string : never
 }
 
-export function createArtifact<T extends Schema>(value: T): ArtifactFrom<T> {
+export function createArtifact<T>(name: string, json: ArtifactJSON): ArtifactFrom<T> {
   const artifact: any = {
-    [Name]: value.name,
-    [Constructor]: value.constructor,
-    [Methods]: value.methods,
-    [AbiSymbol]: value.abi,
-    [Bytecode]: value.bytecode,
+    [Name]: name,
+    [AbiSymbol]: json.abi,
+    [Bytecode]: json.bytecode,
   }
-  for (const entry of value.abi) {
+  for (const entry of json.abi) {
     if (entry.type === 'function') {
       artifact[entry.name] = (...args: any[]) => {
         context.ensureEnabled()

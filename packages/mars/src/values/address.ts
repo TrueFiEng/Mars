@@ -1,4 +1,4 @@
-import { Contract } from '../syntax/contract'
+import { Address } from '../symbols'
 import { StringLike } from './string'
 
-export type AddressLike = StringLike | Contract<any>
+export type AddressLike = StringLike | { [Address]: StringLike }
