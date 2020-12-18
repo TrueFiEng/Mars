@@ -1,9 +1,9 @@
-import { Contract, contract, makeContractInstance, NoParams, WithParams, ConstructorParams } from './contract'
+import { ConstructorParams, contract, Contract, makeContractInstance, NoParams, WithParams } from './contract'
 import { Address, ArtifactSymbol, Name } from '../symbols'
-import { BooleanLike, Future } from '../values'
-import { context } from '../context'
+import { Future } from '../values'
 import { constants } from 'ethers'
 import { ArtifactFrom } from './artifact'
+import { runIf } from './conditionals'
 
 type Params<T> = T extends (...args: infer A) => any ? A : never
 
@@ -49,21 +49,6 @@ export function createProxy(...args: any[]): any {
 
     return contractBehindProxy
   }
-}
-
-function runIf(condition: BooleanLike, action: () => any) {
-  context.ensureEnabled()
-
-  context.actions.push({
-    type: 'CONDITIONAL_START',
-    condition,
-  })
-
-  action()
-
-  context.actions.push({
-    type: 'CONDITIONAL_END',
-  })
 }
 
 function parseProxyArgs(...args: any[]): [string, Contract<any>, (contract: Contract<any>) => unknown] {

@@ -3,7 +3,7 @@ import { basename, dirname, join, relative, resolve } from 'path'
 import { Abi, AbiComponent, AbiEntry, AbiParam } from '../abi'
 
 export const Result = null as any
-export type Transaction = any
+export type Transaction = unknown
 
 export function runGenerator(inDir: string, outFile: string) {
   const files = readdirSync(resolve(inDir))
