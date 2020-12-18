@@ -1,67 +1,71 @@
-# Ethereum Mars 👨‍🚀
-### A military grade smart contract multi tool.
-- **M**agical
-- **A**wesome
-- **R**obust
-- **S**imple
+# Ethereum Mars
+![CI](https://github.com/ethworks/mars/workflows/CI/badge.svg)
 
-## 👽 About
-What Ethereum Mars offers you?
-- first
-- second
-- third
+Devops tool for Ethereum Smart Contracts to take your project to the moon and beyond.
 
-It provides you with simple, powerful interface and cutting edge functionality.
+## Features
 
-## ⛏️ Installation
-In order to add Ethereum Mars to your project install it with your favourite package manager.
-#### 🧶 Yarn
-```
-yarn add ethereum-mars
-```
-#### 📦 NPM
-```
-npm install --save ethereum-mars
-```
+### Fearless deployments and updates
 
-## 🛰️ Usage
-### 🪐 Generate artifacts
-The first step you need to take is to generate deployment artifacts from your solidity compilation products. To do that you need to run following command:
-```
-mars generate <idk_what_are_the_params>
-```
-### ✨ Prepare script
-Once you have done that you can start creating your first deployment script. Let's discuss the following example:
+Forget about deployment pain! Write once, dry-run and deploy to multiple networks. With support for Proxy pattern, contract updates are first-class citizen.
 
-`deploy.ts`
+### Focus on what’s important
+
+Don’t roll your own hacky script. Let Mars handle the details: gas fees, resuming broken deployments, waiting for confirmations and storing the results.
+
+### Infrastructure-as-code
+
+Solidity source does not paint the full picture. Store deployment configuration, environments and infrastructure in your git repository.
+
+### Learn in 5 minutes
+
+No need to learn a new language. Write your configuration in JS/TS with familiar tooling like ethers.js and Waffle.
+
+## Example
+
+Configuration
+
 ```ts
-import { deploy, contract } from 'ethereum-mars'
-import { Token, Market } from '../build/artifacts.ts'
+import { deploy, connect, contract } from 'ethereum-mars'
+import { ERC20, WETH9, AwesomeExchange } from './build/artifacts'
 
 deploy(() => {
-  const cosmoCoin = contract('cosmoCoin', Token)
-  const astroAsset = contract('astroAsset', Token)
-
-  const market = contract('market', Market, [cosmoCoin, astroAsset])
-
-  cosmoCoin.approve(market, 100)
-  astroAsset.approve(market, 100)
+  const myToken = contract('myToken', ERC20, [20_000])
+  const weth = connect('weth', WETH9, '0xC02a...6Cc2')
+  contract(AwesomeExchange, [myToken, weth])
 })
 ```
-### 🚀 Deploy
-Now you just need to run your sciprt, passing the rest of the essential configuration
+
+Output
+
 ```
-mars deploy.ts <idk_what_are_the_params>
+> mars deploy
+
+Transaction: Deploy myToken
+  Fee: $5.72, Ξ0.00875217
+  Balance: $753.86, Ξ1.15322565145876257
+  Hash: 0x98dd...bdd8
+  Block: 22650076
+  Address: 0x4b0a4...F2f8b
+
+Transaction: Deploy market
+  Fee: $2.74, Ξ0.00419342
+  Balance: $738.00, Ξ1.13018515145876257
+  Sending ...
+  Hash: 0x60c0...a2bd
+  Block: 22650101
+  Address: 0x0522...991F
+
+Done in 20s.
 ```
 
-### 🔭 Preview deloyment
-Mars will automatically generate you a file wrapping whole deployment. You will find there all essenctial data, like addresses etc.
+## Installation
 
-## 🧰 Configuration
-There are three ways of feeding deployment with options. Lorem ipsum.
-### 🌎 Environment
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-### 📟 CLI arguments
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-### 💻 Code
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+To install mars use Yarn:
+```
+yarn add --dev ethereum-mars
+```
+or if you prefer you can use npm:
+```
+npm install --save-dev ethereum-mars
+```
