@@ -1,0 +1,5 @@
+{
+  "compilerVersion": "v0.6.10+commit.00c0fcaf",
+  "sourceDirectory": "./test/fixtures",
+  "outputDirectory": "./test/build"
+}
