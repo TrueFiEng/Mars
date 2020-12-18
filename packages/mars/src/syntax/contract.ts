@@ -80,7 +80,8 @@ export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>,
           resolve: resolveResult,
         })
         const type = entry.outputs?.[0]?.type
-        return type && isView ? castFuture(type, result) : result
+        const length = entry.outputs?.length
+        return type && length === 1 && isView ? castFuture(type, result) : result
       }
     }
   }

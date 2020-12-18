@@ -52,7 +52,7 @@ async function waitForKeyPress() {
     output: process.stdout,
   })
   rl.write('ENTER to submit, Ctrl+C to exit...')
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     rl.on('line', () => {
       process.stdout.moveCursor(0, -1)
       process.stdout.clearLine(1)
