@@ -88,7 +88,8 @@ async function executeDeploy(action: DeployAction, options: ExecuteOptions) {
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
     address = existingAddress
   } else {
-    ({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
+    // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
+    ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
     if (!options.dryRun) {
       save(options.deploymentsFile, options.network, action.name, { txHash, address })
     }
