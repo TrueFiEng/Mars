@@ -108,13 +108,27 @@ async function getCompilerOptions(waffleConfigPath: string) {
   }
 }
 
+async function isContractVerified(etherscanApiKey: string, address: string, network?: string) {
+  const response = (
+    await axios.get(
+      `${etherscanUrl(network)}?${querystring.stringify({
+        module: 'contract',
+        action: 'getabi',
+        apikey: etherscanApiKey,
+        address,
+      })}`
+    )
+  ).data
+  return response?.status === '1'
+}
+
 async function getVerificationRequestBody(
   etherscanApiKey: string,
   waffleConfigPath: string,
   jsonInput: any,
   address: string,
   contractName: string,
-  constructorArgs: string
+  constructorArgs?: string
 ) {
   const waffleConfig = await getCompilerOptions(waffleConfigPath)
   const inputWithOptions = {
@@ -135,7 +149,7 @@ async function getVerificationRequestBody(
     codeformat: 'solidity-standard-json-input',
     contractname: `${contractName}.sol:${contractName}`,
     compilerversion: waffleConfig.compilerVersion,
-    constructorArguements: constructorArgs.slice(2),
+    constructorArguements: constructorArgs?.slice(2) ?? '',
     licenseType: '1',
   })
   return body
@@ -205,12 +219,17 @@ export async function verify(
   waffleConfigPath: string,
   contractName: string,
   address: string,
-  constructorArgs: string,
+  constructorArgs?: string,
   network?: string
 ) {
   const jsonInput = jsonInputs[contractName]
   if (!jsonInput) {
     console.log(chalk.bold(chalk.yellow(`No sources found for ${contractName}. Skipping\n`)))
+    return
+  }
+  if (await isContractVerified(etherscanApiKey, address, network)) {
+    console.log(chalk.bold(chalk.green(`Contract ${contractName} is already verified under ${address}. Skipping\n`)))
+    return
   }
   console.log(chalk.green(`Verifying ${contractName} on Etherscan`))
   try {

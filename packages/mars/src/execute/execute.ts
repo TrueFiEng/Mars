@@ -83,14 +83,15 @@ async function executeDeploy(action: DeployAction, options: ExecuteOptions) {
   const params = action.params.map((param) => resolveValue(param))
   const tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
   const existingAddress = await getExistingDeployment(tx, action.name, options)
+  let address: string, txHash: string
   if (existingAddress) {
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
-    action.resolve(existingAddress)
-    return
-  }
-  const { txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx)
-  if (!options.dryRun) {
-    save(options.deploymentsFile, options.network, action.name, { txHash, address })
+    address = existingAddress
+  } else {
+    ({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
+    if (!options.dryRun) {
+      save(options.deploymentsFile, options.network, action.name, { txHash, address })
+    }
   }
   if (options.verification) {
     await verify(
@@ -99,7 +100,7 @@ async function executeDeploy(action: DeployAction, options: ExecuteOptions) {
       options.verification.waffleConfig,
       action.artifact[Name],
       address,
-      new utils.Interface([action.constructor]).encodeDeploy(params),
+      action.constructor ? new utils.Interface([action.constructor]).encodeDeploy(params) : undefined,
       options.network
     )
   }
