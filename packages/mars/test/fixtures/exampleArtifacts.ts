@@ -9,7 +9,7 @@ export const ComplexContract = Mars.createArtifact<{
   add(a: Mars.NumberLike): Mars.FutureNumber;
   complexMapping(_: Mars.NumberLike, __: Mars.AddressLike): Mars.Future<[Mars.FutureNumber, Mars.FutureNumber]>;
   number(): Mars.FutureNumber;
-  setter(arg1: Mars.StringLike, arg2: Mars.MaybeFuture<Mars.NumberLike[]>): Mars.Transaction;
+  setter(arg1: Mars.StringLike, arg2: Mars.MaybeFuture<Mars.NumberLike[]>, options?: Mars.TransactionOverrides): Mars.Transaction;
   simpleArray(_: Mars.NumberLike): Mars.FutureNumber;
   simpleMapping(_: Mars.NumberLike): Mars.Future<string>;
   str(): Mars.Future<string>;

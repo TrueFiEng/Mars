@@ -18,12 +18,30 @@ describe('Contract', () => {
     expect(getDeployResult().test.simpleContract.address).to.equal(result[Address].resolve())
   })
 
+  it('deploys contract (no name, no params, gas override)', async () => {
+    const { result, provider } = await testDeploy(() => contract(SimpleContract, { gasLimit: 2000000 }))
+    expect(await provider.getCode(result[Address].resolve())).to.equal(
+      `0x${SimpleContractJSON.evm.deployedBytecode.object}`
+    )
+    expect(getDeployResult().test.simpleContract.address).to.equal(result[Address].resolve())
+    expect((await provider.getTransaction(getDeployResult().test.simpleContract.txHash)).gasLimit).to.equal(2000000)
+  })
+
   it('deploys contract (with name, no params)', async () => {
     const { result, provider } = await testDeploy(() => contract('someName', SimpleContract))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${SimpleContractJSON.evm.deployedBytecode.object}`
     )
     expect(getDeployResult().test.someName.address).to.equal(result[Address].resolve())
+  })
+
+  it('deploys contract (with name, no params, gas override)', async () => {
+    const { result, provider } = await testDeploy(() => contract('someName', SimpleContract, { gasLimit: 2000000 }))
+    expect(await provider.getCode(result[Address].resolve())).to.equal(
+      `0x${SimpleContractJSON.evm.deployedBytecode.object}`
+    )
+    expect(getDeployResult().test.someName.address).to.equal(result[Address].resolve())
+    expect((await provider.getTransaction(getDeployResult().test.someName.txHash)).gasLimit).to.equal(2000000)
   })
 
   it('deploys contract (no name, with params)', async () => {
@@ -34,12 +52,32 @@ describe('Contract', () => {
     expect(getDeployResult().test.complexContract.address).to.equal(result[Address].resolve())
   })
 
+  it('deploys contract (no name, with params, gas override)', async () => {
+    const { result, provider } = await testDeploy(() => contract(ComplexContract, [10, 'test'], { gasLimit: 2000000 }))
+    expect(await provider.getCode(result[Address].resolve())).to.equal(
+      `0x${ComplexContractJSON.evm.deployedBytecode.object}`
+    )
+    expect(getDeployResult().test.complexContract.address).to.equal(result[Address].resolve())
+    expect((await provider.getTransaction(getDeployResult().test.complexContract.txHash)).gasLimit).to.equal(2000000)
+  })
+
   it('deploys contract (with name, with params)', async () => {
     const { result, provider } = await testDeploy(() => contract('contractName', ComplexContract, [10, 'test']))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${ComplexContractJSON.evm.deployedBytecode.object}`
     )
     expect(getDeployResult().test.contractName.address).to.equal(result[Address].resolve())
+  })
+
+  it('deploys contract (with name, with params and gas override)', async () => {
+    const { result, provider } = await testDeploy(() =>
+      contract('contractName', ComplexContract, [10, 'test'], { gasLimit: 2000000 })
+    )
+    expect(await provider.getCode(result[Address].resolve())).to.equal(
+      `0x${ComplexContractJSON.evm.deployedBytecode.object}`
+    )
+    expect(getDeployResult().test.contractName.address).to.equal(result[Address].resolve())
+    expect((await provider.getTransaction(getDeployResult().test.contractName.txHash)).gasLimit).to.equal(2000000)
   })
 
   it('does not deploy same contract twice', async () => {

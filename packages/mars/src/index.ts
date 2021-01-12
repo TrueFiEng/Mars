@@ -1,6 +1,6 @@
 export { runGenerator, Result, Transaction } from './generate/generator'
 export { deploy } from './deploy'
-export { ExecuteOptions } from './execute/execute'
+export { ExecuteOptions, TransactionOverrides } from './execute/execute'
 export { contract } from './syntax/contract'
 export { createProxy } from './syntax/createProxy'
 export { createArtifact, ArtifactFrom } from './syntax/artifact'

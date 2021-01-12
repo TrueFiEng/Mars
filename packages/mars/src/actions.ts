@@ -1,6 +1,7 @@
 import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
 import { ArtifactFrom } from './syntax/artifact'
 import { BooleanLike, Future } from './values'
+import { TransactionOptions } from './execute/sendTransaction'
 export type Action =
   | DeployAction
   | ReadAction
@@ -15,7 +16,7 @@ export interface DeployAction {
   constructor: AbiConstructorEntry
   name: string
   params: any[]
-  options: any
+  options: Partial<TransactionOptions>
   resolve: (address: string) => void
 }
 
@@ -42,6 +43,7 @@ export interface TransactionAction {
   address: Future<string>
   method: AbiFunctionEntry
   params: any[]
+  options: Partial<TransactionOptions>
   resolve: (value: any) => void
 }
 

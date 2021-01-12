@@ -9,6 +9,8 @@ import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify } from '../verification'
 import { context } from '../context'
 
+export type TransactionOverrides = Partial<TransactionOptions>
+
 export interface ExecuteOptions extends TransactionOptions {
   network: string
   deploymentsFile: string
@@ -79,7 +81,8 @@ export async function getExistingDeployment(
   }
 }
 
-async function executeDeploy(action: DeployAction, options: ExecuteOptions) {
+async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions) {
+  const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
   const tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
   const existingAddress = await getExistingDeployment(tx, action.name, options)
@@ -116,7 +119,8 @@ async function executeRead(action: ReadAction, options: ExecuteOptions) {
   action.resolve(result)
 }
 
-async function executeTransaction(action: TransactionAction, options: ExecuteOptions) {
+async function executeTransaction(action: TransactionAction, globalOptions: ExecuteOptions) {
+  const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
   const { txHash } = await sendTransaction(`${action.name}.${action.method.name}`, options, {
     to: resolveValue(action.address),

@@ -64,6 +64,17 @@ function makeArguments(abi: AbiEntry | undefined) {
   const args = abi.inputs.map(
     (input: AbiParam) => `${getInputName(input)}: ${makeInputType(input.type, input.components)}`
   )
+  if (
+    'stateMutability' in abi &&
+    abi.stateMutability !== 'view' &&
+    abi.stateMutability !== 'pure' &&
+    abi.type !== 'constructor'
+  ) {
+    if (args.length === 0) {
+      return '(options?: Mars.TransactionOverrides)'
+    }
+    return `(${args.join(', ')}, options?: Mars.TransactionOverrides)`
+  }
   return `(${args.join(', ')})`
 }
 
