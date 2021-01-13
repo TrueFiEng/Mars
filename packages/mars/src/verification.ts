@@ -18,7 +18,6 @@ function findInputs(sourcePath: string) {
     for (const file of files) {
       const filePath = path.join(dir, file)
       if (isDirectory(filePath)) {
-        console.log(filePath)
         stack.push(filePath)
       } else if (file.endsWith('.sol')) {
         inputFiles.push(filePath)

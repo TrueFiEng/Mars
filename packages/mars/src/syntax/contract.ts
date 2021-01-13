@@ -3,6 +3,7 @@ import { AbiSymbol, Address, ArtifactSymbol, Name } from '../symbols'
 import { context } from '../context'
 import { Future, FutureBoolean, FutureBytes, FutureNumber, resolveBytesLike, resolveNumberLike } from '../values'
 import { AbiConstructorEntry } from '../abi'
+import { TransactionOverrides } from '../execute/execute'
 
 export type Contract<T> = {
   [ArtifactSymbol]: ArtifactFrom<T>
@@ -23,21 +24,34 @@ export interface WithParams {
 }
 
 export function contract<T extends NoParams>(artifact: ArtifactFrom<T>): Contract<T>
+export function contract<T extends NoParams>(artifact: ArtifactFrom<T>, options: TransactionOverrides): Contract<T>
 export function contract<T extends NoParams>(name: string, artifact: ArtifactFrom<T>): Contract<T>
+export function contract<T extends NoParams>(
+  name: string,
+  artifact: ArtifactFrom<T>,
+  options: TransactionOverrides
+): Contract<T>
 export function contract<T extends WithParams>(artifact: ArtifactFrom<T>, params: ConstructorParams<T>): Contract<T>
+export function contract<T extends WithParams>(
+  artifact: ArtifactFrom<T>,
+  params: ConstructorParams<T>,
+  options: TransactionOverrides
+): Contract<T>
 export function contract<T extends WithParams>(
   name: string,
   artifact: ArtifactFrom<T>,
   params: ConstructorParams<T>
 ): Contract<T>
+export function contract<T extends WithParams>(
+  name: string,
+  artifact: ArtifactFrom<T>,
+  params: ConstructorParams<T>,
+  options: TransactionOverrides
+): Contract<T>
 export function contract(...args: any[]): any {
   context.ensureEnabled()
 
-  const withName = typeof args[0] === 'string'
-  const artifact: ArtifactFrom<any> = withName ? args[1] : args[0]
-  const name: string = withName ? args[0] : unCapitalize(artifact[Name])
-  const params = (withName ? args[2] : args[1]) ?? []
-  const options = (withName ? args[3] : args[2]) ?? {}
+  const { name, artifact, params, options } = parseContractArgs(...args)
   const constructor = artifact[AbiSymbol].find(({ type }) => type === 'constructor') as AbiConstructorEntry
 
   const [address, resolveAddress] = Future.create<string>()
@@ -59,6 +73,24 @@ function unCapitalize(value: string) {
   return value !== '' ? `${value[0].toLowerCase()}${value.substring(1)}` : ''
 }
 
+function parseContractArgs(
+  ...args: any[]
+): {
+  name: string
+  artifact: ArtifactFrom<any>
+  params: ConstructorParams<any>
+  options: TransactionOverrides
+} {
+  const withName = typeof args[0] === 'string'
+  const artifactIndex = withName ? 1 : 0
+  const artifact = args[artifactIndex]
+  const name = withName ? args[0] : unCapitalize(artifact[Name])
+  const withParams = Array.isArray(args[artifactIndex + 1])
+  const params = withParams ? args[artifactIndex + 1] : []
+  const options = (withParams ? args[artifactIndex + 2] : args[artifactIndex + 1]) ?? {}
+  return { name, artifact, options, params }
+}
+
 export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>, address: Future<string>): Contract<T> {
   const contract: any = {
     [ArtifactSymbol]: artifact,
@@ -71,12 +103,19 @@ export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>,
         context.ensureEnabled()
         const [result, resolveResult] = Future.create()
         const isView = ['pure', 'view'].includes(entry.stateMutability)
+        let options = {}
+        let params = args
+        if (!isView && args.length > entry.inputs.length) {
+          options = args[args.length - 1]
+          params = params.slice(0, args.length - 1)
+        }
         context.actions.push({
           type: isView ? 'READ' : 'TRANSACTION',
           name,
           address: address,
           method: entry,
-          params: args,
+          params,
+          options,
           resolve: resolveResult,
         })
         const type = entry.outputs?.[0]?.type

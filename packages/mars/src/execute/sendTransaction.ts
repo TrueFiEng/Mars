@@ -6,15 +6,16 @@ import { getEthPriceUsd } from './getEthPriceUsd'
 export interface TransactionOptions {
   wallet: Wallet
   gasPrice: BigNumber
+  gasLimit?: number | BigNumber
   noConfirm: boolean
 }
 
 export async function sendTransaction(
   name: string,
-  { wallet, gasPrice, noConfirm }: TransactionOptions,
+  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
-  const gasLimit = await wallet.provider.estimateGas({ ...transaction, from: wallet.address })
+  const gasLimit = overwrittenGasLimit ?? (await wallet.provider.estimateGas({ ...transaction, from: wallet.address }))
   const withGasLimit = { ...transaction, gasLimit, gasPrice }
 
   const price = await getEthPriceUsd()
