@@ -20,3 +20,12 @@ or if you prefer you can use npm:
 .. code-block::
 
    npm install --save-dev ethereum-mars
+
+In order to generate an artifacts file that Mars will use when deploying, run:
+
+.. code-block::
+
+   npx mars
+
+It is advisable to add the above command at the end your build script so it
+gets executed every time you build a new version of your contracts.
