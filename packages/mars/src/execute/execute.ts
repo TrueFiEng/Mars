@@ -133,10 +133,14 @@ async function executeRead(action: ReadAction, options: ExecuteOptions) {
 async function executeTransaction(action: TransactionAction, globalOptions: ExecuteOptions) {
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
-  const { txHash } = await sendTransaction(`${action.name}.${action.method.name}(${printableTransactionParams(params)})`, options, {
-    to: resolveValue(action.address),
-    data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
-  })
+  const { txHash } = await sendTransaction(
+    `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
+    options,
+    {
+      to: resolveValue(action.address),
+      data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
+    }
+  )
   action.resolve(resolveBytesLike(txHash))
 }
 
