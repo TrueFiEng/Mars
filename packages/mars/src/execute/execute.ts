@@ -133,11 +133,15 @@ async function executeRead(action: ReadAction, options: ExecuteOptions) {
 async function executeTransaction(action: TransactionAction, globalOptions: ExecuteOptions) {
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
-  const { txHash } = await sendTransaction(`${action.name}.${action.method.name}`, options, {
+  const { txHash } = await sendTransaction(`${action.name}.${action.method.name}(${printableTransactionParams(params)})`, options, {
     to: resolveValue(action.address),
     data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
   })
   action.resolve(resolveBytesLike(txHash))
+}
+
+function printableTransactionParams(params: unknown[]) {
+  return params.map(printableToString).join(', ')
 }
 
 async function executeEncode(action: EncodeAction) {
@@ -156,10 +160,10 @@ function resolveValue(value: unknown) {
 }
 
 function executeDebug({ messages }: DebugAction) {
-  console.log(chalk.yellow('🛠', ...messages.map(humanReadableToString)))
+  console.log(chalk.yellow('🛠', ...messages.map(printableToString)))
 }
 
-export function humanReadableToString(data: any): any {
+export function printableToString(data: unknown): string | number | boolean | null | undefined {
   const resolved = data instanceof Future ? Future.resolve(data) : data
   if (!resolved || typeof resolved !== 'object') {
     return resolved
@@ -171,10 +175,10 @@ export function humanReadableToString(data: any): any {
     return `${resolved[ArtifactSymbol][Name]}#${Future.resolve(resolved[Address])}`
   }
   if (Array.isArray(resolved)) {
-    return JSON.stringify(resolved.map(humanReadableToString))
+    return JSON.stringify(resolved.map(printableToString))
   }
   return JSON.stringify(
-    Object.fromEntries(Object.entries(resolved).map(([key, value]) => [key, humanReadableToString(value)])),
+    Object.fromEntries(Object.entries(resolved).map(([key, value]) => [key, printableToString(value)])),
     null,
     2
   )
