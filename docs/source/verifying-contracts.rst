@@ -1,8 +1,8 @@
-Verifying contracts
-===================
+Verifying smart contracts
+=========================
 
 Currently, you can automate contract verification on Etherscan
-if you used Waffle to build your contracts.
+if you are using Waffle to build your contracts.
 
 In order to verify your contracts, use your deployment script
 with the following command line parameters:
