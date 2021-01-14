@@ -1,6 +1,15 @@
-import { Action, DeployAction, EncodeAction, ReadAction, StartConditionalAction, TransactionAction } from '../actions'
-import { Contract, providers, utils } from 'ethers'
-import { AbiSymbol, Address, Bytecode, Name } from '../symbols'
+import chalk from 'chalk'
+import {
+  Action,
+  DebugAction,
+  DeployAction,
+  EncodeAction,
+  ReadAction,
+  StartConditionalAction,
+  TransactionAction,
+} from '../actions'
+import { BigNumber, Contract, providers, utils } from 'ethers'
+import { AbiSymbol, Address, ArtifactSymbol, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
 import { sendTransaction, TransactionOptions } from './sendTransaction'
@@ -49,6 +58,8 @@ async function executeAction(action: Action, options: ExecuteOptions) {
       return executeEncode(action)
     case 'CONDITIONAL_START':
       return executeConditionalStart(action)
+    case 'DEBUG':
+      return executeDebug(action)
   }
 }
 
@@ -142,4 +153,29 @@ function resolveValue(value: unknown) {
     return Future.resolve(address)
   }
   return resolved
+}
+
+function executeDebug({ messages }: DebugAction) {
+  console.log(chalk.yellow('🛠', ...messages.map(humanReadableToString)))
+}
+
+export function humanReadableToString(data: any): any {
+  const resolved = data instanceof Future ? Future.resolve(data) : data
+  if (!resolved || typeof resolved !== 'object') {
+    return resolved
+  }
+  if (resolved instanceof BigNumber) {
+    return resolved.toString()
+  }
+  if (ArtifactSymbol in resolved && Address in resolved) {
+    return `${resolved[ArtifactSymbol][Name]}#${Future.resolve(resolved[Address])}`
+  }
+  if (Array.isArray(resolved)) {
+    return JSON.stringify(resolved.map(humanReadableToString))
+  }
+  return JSON.stringify(
+    Object.fromEntries(Object.entries(resolved).map(([key, value]) => [key, humanReadableToString(value)])),
+    null,
+    2
+  )
 }

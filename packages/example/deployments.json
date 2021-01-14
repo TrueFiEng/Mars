@@ -1,16 +1,24 @@
 {
   "kovan": {
     "dai": {
-      "txHash": "0xa5395bb2ad241d3a7a1813e9191d208a0b974e8eb4585c8eb346f85da27e3c2e",
-      "address": "0x2f9ac14463db2B3283aE99FA9158a01968585DDd"
+      "txHash": "0x7c058a68e08739b173f5acace0e6fa29dd95aafc5601733fef46bfe4de37ca6f",
+      "address": "0x0a3BDD55AbA03BE21365A164bac541845f2412AF"
     },
     "btc": {
-      "txHash": "0x6e3305488edc15414943574008b5dda95c00057432adeb1e4e0cb9f962de169e",
-      "address": "0xC05e6f465aaB3d42aC98C9e860275056872311C1"
+      "txHash": "0x795a6145e6f2fd8574cd0c56fc4f514b826cf61b467abb4c5ee805f1849edd7e",
+      "address": "0x28562C8c670BdA5AA186156Fff49F07C2Ff0124F"
     },
     "market": {
-      "txHash": "0x042584491c4c4323c4ff80807b2d0ebc2259772a51c4df0122a4e8c08a99d098",
-      "address": "0x945989f49B4Ea0756e97ef1B8fBFE81DD5c9142E"
+      "txHash": "0xe8bf839c398e01d19b366bf9ac2fbd07c9c142fd2b8de4ca65218c4e4604dfb4",
+      "address": "0x51Ef1C90C02bE44d8609EAc9A3Fe30b7B907fB9c"
+    },
+    "dai_proxy": {
+      "txHash": "0xe2b80e23d3a90278e0f0e623d74802c00084872e15ad5950480d2f0004c4f6fc",
+      "address": "0xD6c9fb590c15EA0B8FF016934488459E1578C66c"
+    },
+    "btc_proxy": {
+      "txHash": "0x28e6d21a3e8f224967ba3a7d09c9a1298f81f8cad450085949530826399727a9",
+      "address": "0x92146cB5fCC0fCA0d1A0E24f28Ebc447D73983E1"
     }
   }
 }

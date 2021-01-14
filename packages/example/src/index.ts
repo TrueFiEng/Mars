@@ -1,4 +1,4 @@
-import { contract, createProxy, deploy, runIf } from 'ethereum-mars'
+import { contract, createProxy, deploy, runIf, debug } from 'ethereum-mars'
 import { Market, Token, UpgradeabilityProxy } from '../build/artifacts'
 
 deploy({}, (deployer: string) => {
@@ -6,6 +6,8 @@ deploy({}, (deployer: string) => {
   const dai = proxy(contract('dai', Token, { gasLimit: 1000000 }), 'initialize', [100])
   const btc = proxy(contract('btc', Token), 'initialize', [200])
   const market = contract(Market, [dai, btc])
+  debug('DAI', dai)
+  debug('Allowances', [dai.allowance(deployer, market), btc.allowance(deployer, market)])
   runIf(dai.allowance(deployer, market).equals(0), () => dai.approve(market, 100)).else(() => btc.approve(market, 100))
   dai.approve(market, dai.totalSupply().add(42), { gasLimit: 1000000 })
   btc.approve(market, btc.totalSupply())
