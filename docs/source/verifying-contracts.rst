@@ -16,4 +16,4 @@ In order for this to work, the :code:`compilerOptions` in your
 Waffle's default compiler options are different from Etherscan's.
 
 The :code:`compilerVersion` setting also needs to be set to
-one of `compiler versions supported by Etherscan <https://etherscan.io/solcversions>`.
+one of the `compiler versions supported by Etherscan <https://etherscan.io/solcversions>`_.
