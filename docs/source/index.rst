@@ -2,9 +2,8 @@ Welcome!
 ========
 
 .. warning::
-   Mars is in its infancy. While it already can do many useful things it almost
-   certainly contains **A LOT** of bugs. Please use it with caution and probably
-   hold off with mainnet deployments for now.
+   Mars is in its infancy. While it already can do many useful things it may still
+   contain some bugs. Please use it with caution and report or fix anything suspicious.
 
 What is Mars?
 -------------
@@ -17,7 +16,7 @@ To learn more about the motivation behind Mars visit the :doc:`introduction`.
 Show me an example!
 -------------------
 
-The you go:
+There you go:
 
 .. code-block:: typescript
 
@@ -47,11 +46,12 @@ develop. You can view the projects code at
 `the issues <https://github.com/EthWorks/Mars/issues>`_.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    introduction.rst
    getting-started.rst
-   api.rst
+   cli.rst
+   syntax.rst
    futures.rst
    configuration.rst
