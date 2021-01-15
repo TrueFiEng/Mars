@@ -1,6 +1,3 @@
-import sys
-import os
-
 project = 'Ethereum Mars'
 copyright = '2020 Ethworks sp z o.o.'
 author = 'Piotr Szlachciak'

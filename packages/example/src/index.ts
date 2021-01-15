@@ -8,8 +8,9 @@ deploy({}, (deployer) => {
   const apple = proxy(appleImplementation, 'initialize', [100])
   const orange = proxy(orangeImplementation, 'initialize', [200])
   const market = contract(Market, [apple, orange])
-  runIf(apple.allowance(deployer, market).equals(0), () => apple.approve(market, 100))
-    .else(() => orange.approve(market, 100))
+  runIf(apple.allowance(deployer, market).equals(0), () => apple.approve(market, 100)).else(() =>
+    orange.approve(market, 100)
+  )
   apple.approve(market, apple.totalSupply().add(42), { gasLimit: 1000000 })
   orange.approve(market, orange.totalSupply())
 })
