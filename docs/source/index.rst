@@ -35,7 +35,7 @@ environment or deploy to the network directly. If you already deployed some of t
 contracts and their code didn't change then Mars won't redeploy them.
 
 To learn more about how to use Mars visit :doc:`getting-started` or jump straight
-into the :doc:`api`.
+into the :doc:`cli`.
 
 I want to contribute
 --------------------

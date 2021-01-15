@@ -1,3 +1,6 @@
+import sys
+import os
+
 project = 'Ethereum Mars'
 copyright = '2020 Ethworks sp z o.o.'
 author = 'Piotr Szlachciak'
@@ -15,3 +18,5 @@ html_logo = '_static/mars-logo.svg'
 html_theme_options = {
   'logo_only': True,
 }
+
+sys.path.insert(0, os.path.abspath('../../packages/example'))

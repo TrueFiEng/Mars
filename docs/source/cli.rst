@@ -1,6 +1,14 @@
 CLI Reference
 *******************
 
+.. note::
+   Hey! Thanks for trying out Mars. We are still working on this section, so
+   expect more content here in the future.
+
+   While we build the documentation you are welcome to check out the code at
+   `our github repository <https://github.com/EthWorks/Mars>`_. Maybe you fancy
+   contributing?
+
 Artifact Generation
 =====================
 
@@ -34,7 +42,7 @@ Contract Deployment
 
 After artifacts are generated, you are now ready to deploy contracts.
 Deployment scripts are basically Javascript or Typescript files and are simply started as
-``node deploy.js`` or ``ts-node deploy.ts``.
+``node deploy.js`` or ``ts-node deploy.ts``. Learn how to write script by visitting :doc:`syntax`
 
 CLI flags
 ^^^^^^^^^
@@ -46,8 +54,7 @@ CLI flags
 | --infura-key    | -i    | Str  | Either one     |                    | API key for Infura                                              |
 |                 |       |      |                |                    |                                                                 |
 +-----------------+-------+------+ Can be skipped +--------------------+-----------------------------------------------------------------+
-| --alchemy-key   | -a    | Str  |                |                    | API key for Alchemy (is prioritised)                            |
-|                 |       |      | for custom RPC |                    |                                                                 |
+| --alchemy-key   | -a    | Str  | for custom RPC |                    | API key for Alchemy (is prioritised)                            |
 +-----------------+-------+------+----------------+--------------------+-----------------------------------------------------------------+
 | --network       | -n    | Str  | No             | mainnet            | Network name. Should be one of:                                 |
 |                 |       |      |                |                    |                                                                 |
@@ -70,7 +77,6 @@ CLI flags
 | --waffle-config | -w    | Path | No             | ./waffle.json      | Path to waffle.json file. Used only by Etherscan verification   |
 +-----------------+-------+------+----------------+--------------------+-----------------------------------------------------------------+
 | --etherscan-key | -e    | Str  | Yes            |                    | API key for Etherscan.io. Required for verification             |
-|                 |       |      |                |                    |                                                                 |
 |                 |       |      | (if verifying) |                    |                                                                 |
 +-----------------+-------+------+----------------+--------------------+-----------------------------------------------------------------+
 
