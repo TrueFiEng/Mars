@@ -9,6 +9,8 @@ CLI Reference
    `our github repository <https://github.com/EthWorks/Mars>`_. Maybe you fancy
    contributing?
 
+.. _artifacts:
+
 Artifact Generation
 =====================
 

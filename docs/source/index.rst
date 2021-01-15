@@ -46,7 +46,7 @@ develop. You can view the projects code at
 `the issues <https://github.com/EthWorks/Mars/issues>`_.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents:
 
    introduction.rst
@@ -54,4 +54,3 @@ develop. You can view the projects code at
    cli.rst
    syntax.rst
    futures.rst
-   configuration.rst

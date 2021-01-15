@@ -1,3 +1,7 @@
 node_modules
 build
 yarn-error.log
+docs/source/_build
+.idea
+.vscode
+cache

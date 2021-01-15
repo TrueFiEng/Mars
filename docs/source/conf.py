@@ -18,5 +18,3 @@ html_logo = '_static/mars-logo.svg'
 html_theme_options = {
   'logo_only': True,
 }
-
-sys.path.insert(0, os.path.abspath('../../packages/example'))
