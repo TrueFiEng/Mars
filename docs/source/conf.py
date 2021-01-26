@@ -5,6 +5,8 @@ author = 'Piotr Szlachciak'
 templates_path = ['_templates']
 exclude_patterns = []
 
+extensions = ['sphinx.ext.autosectionlabel']
+
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 html_css_files = ['custom.css']

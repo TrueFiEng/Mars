@@ -25,7 +25,7 @@ In order to generate an artifacts file that Mars will use when deploying, run:
 
 .. code-block::
 
-   npx mars
+   yarn mars
 
 It is advisable to add the above command at the end your build script so it
 gets executed every time you build a new version of your contracts.
