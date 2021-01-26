@@ -1,6 +1,15 @@
-import { Action, DeployAction, EncodeAction, ReadAction, StartConditionalAction, TransactionAction } from '../actions'
-import { Contract, providers, utils } from 'ethers'
-import { AbiSymbol, Address, Bytecode, Name } from '../symbols'
+import chalk from 'chalk'
+import {
+  Action,
+  DebugAction,
+  DeployAction,
+  EncodeAction,
+  ReadAction,
+  StartConditionalAction,
+  TransactionAction,
+} from '../actions'
+import { BigNumber, Contract, providers, utils } from 'ethers'
+import { AbiSymbol, Address, ArtifactSymbol, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
 import { sendTransaction, TransactionOptions } from './sendTransaction'
@@ -49,6 +58,8 @@ async function executeAction(action: Action, options: ExecuteOptions) {
       return executeEncode(action)
     case 'CONDITIONAL_START':
       return executeConditionalStart(action)
+    case 'DEBUG':
+      return executeDebug(action)
   }
 }
 
@@ -122,11 +133,19 @@ async function executeRead(action: ReadAction, options: ExecuteOptions) {
 async function executeTransaction(action: TransactionAction, globalOptions: ExecuteOptions) {
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
-  const { txHash } = await sendTransaction(`${action.name}.${action.method.name}`, options, {
-    to: resolveValue(action.address),
-    data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
-  })
+  const { txHash } = await sendTransaction(
+    `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
+    options,
+    {
+      to: resolveValue(action.address),
+      data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
+    }
+  )
   action.resolve(resolveBytesLike(txHash))
+}
+
+function printableTransactionParams(params: unknown[]) {
+  return params.map(printableToString).join(', ')
 }
 
 async function executeEncode(action: EncodeAction) {
@@ -142,4 +161,29 @@ function resolveValue(value: unknown) {
     return Future.resolve(address)
   }
   return resolved
+}
+
+function executeDebug({ messages }: DebugAction) {
+  console.log(chalk.yellow('🛠', ...messages.map(printableToString)))
+}
+
+export function printableToString(data: unknown): string | number | boolean | null | undefined {
+  const resolved = data instanceof Future ? Future.resolve(data) : data
+  if (!resolved || typeof resolved !== 'object') {
+    return resolved
+  }
+  if (resolved instanceof BigNumber) {
+    return resolved.toString()
+  }
+  if (ArtifactSymbol in resolved && Address in resolved) {
+    return `${resolved[ArtifactSymbol][Name]}#${Future.resolve(resolved[Address])}`
+  }
+  if (Array.isArray(resolved)) {
+    return JSON.stringify(resolved.map(printableToString))
+  }
+  return JSON.stringify(
+    Object.fromEntries(Object.entries(resolved).map(([key, value]) => [key, printableToString(value)])),
+    null,
+    2
+  )
 }

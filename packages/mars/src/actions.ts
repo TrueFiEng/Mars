@@ -9,6 +9,7 @@ export type Action =
   | EncodeAction
   | StartConditionalAction
   | EndConditionalAction
+  | DebugAction
 
 export interface DeployAction {
   type: 'DEPLOY'
@@ -52,4 +53,9 @@ export interface EncodeAction {
   method: AbiFunctionEntry
   params: any[]
   resolve: (value: Buffer) => void
+}
+
+export interface DebugAction {
+  type: 'DEBUG'
+  messages: any[]
 }

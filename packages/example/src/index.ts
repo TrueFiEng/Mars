@@ -1,4 +1,4 @@
-import { contract, createProxy, deploy, runIf } from 'ethereum-mars'
+import { contract, createProxy, deploy, runIf, debug } from 'ethereum-mars'
 import { Market, Token, UpgradeabilityProxy } from '../build/artifacts'
 
 deploy({}, (deployer) => {
@@ -8,6 +8,8 @@ deploy({}, (deployer) => {
   const apple = proxy(appleImplementation, 'initialize', [100])
   const orange = proxy(orangeImplementation, 'initialize', [200])
   const market = contract(Market, [apple, orange])
+  debug('Apple', apple)
+  debug('Allowances', [apple.allowance(deployer, market), orange.allowance(deployer, market)])
   runIf(apple.allowance(deployer, market).equals(0), () => apple.approve(market, 100)).else(() =>
     orange.approve(market, 100)
   )
