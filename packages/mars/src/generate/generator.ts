@@ -11,6 +11,7 @@ export function runGenerator(inDir: string, outFile: string) {
   const defs = []
   const imports = []
   for (const file of files) {
+    console.log(file)
     if (!file.endsWith('.json')) continue
 
     const json = JSON.parse(readFileSync(join(resolve(inDir), file), { encoding: 'utf-8' }))
