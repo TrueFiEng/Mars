@@ -50,6 +50,14 @@ function makeDefinition(name: string, abi: Abi) {
   return `export const ${name} = ${artifact};`
 }
 
+function escapeReserved(name: string) {
+  if (name === 'package') {
+    return `_${name}`
+  }
+
+  return name
+}
+
 function makeArguments(abi: AbiEntry | undefined) {
   if (!abi) {
     return `()`
@@ -57,7 +65,7 @@ function makeArguments(abi: AbiEntry | undefined) {
   let unnamedParamsCount = 0
   const getInputName = (input: AbiParam) => {
     if (input.name) {
-      return input.name
+      return escapeReserved(input.name)
     }
     return '_'.repeat(++unnamedParamsCount)
   }

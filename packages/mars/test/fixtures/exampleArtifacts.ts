@@ -23,7 +23,7 @@ export const ComplexContract = Mars.createArtifact<{
 export const ReservedContract = Mars.createArtifact<{
   new(): void;
   foo(_package: Mars.NumberLike, options?: Mars.TransactionOverrides): Mars.Transaction;
-}>("ReservedContract", ReservedContract__JSON)
+}>("ReservedContract", ReservedContract__JSON);
 
 export const SimpleContract = Mars.createArtifact<{
   new(): void;
