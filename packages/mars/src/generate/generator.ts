@@ -50,12 +50,58 @@ function makeDefinition(name: string, abi: Abi) {
   return `export const ${name} = ${artifact};`
 }
 
-function escapeReserved(name: string) {
-  if (name === 'package') {
-    return `_${name}`
-  }
+const RESERVED = [
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'debugger',
+  'default',
+  'delete',
+  'do',
+  'else',
+  'enum',
+  'export',
+  'extends',
+  'false',
+  'finally',
+  'for',
+  'function',
+  'if',
+  'import',
+  'in',
+  'instanceof',
+  'new',
+  'null',
+  'return',
+  'super',
+  'switch',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'typeof',
+  'var',
+  'void',
+  'while',
+  'with',
+  // Strict',
+  'as',
+  'implements',
+  'interface',
+  'let',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'static',
+  'yield',
+]
 
-  return name
+function escapeReserved(name: string) {
+  return RESERVED.includes(name) ? `_${name}` : name
 }
 
 function makeArguments(abi: AbiEntry | undefined) {
