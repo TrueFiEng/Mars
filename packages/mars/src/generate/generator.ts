@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, dirname, join, relative, resolve } from 'path'
 import { Abi, AbiComponent, AbiEntry, AbiParam } from '../abi'
+import { escapeReservedKeyword } from './escapeReservedKeyword'
 
 export const Result = null as any
 export type Transaction = unknown
@@ -50,60 +51,6 @@ function makeDefinition(name: string, abi: Abi) {
   return `export const ${name} = ${artifact};`
 }
 
-const RESERVED = [
-  'break',
-  'case',
-  'catch',
-  'class',
-  'const',
-  'continue',
-  'debugger',
-  'default',
-  'delete',
-  'do',
-  'else',
-  'enum',
-  'export',
-  'extends',
-  'false',
-  'finally',
-  'for',
-  'function',
-  'if',
-  'import',
-  'in',
-  'instanceof',
-  'new',
-  'null',
-  'return',
-  'super',
-  'switch',
-  'this',
-  'throw',
-  'true',
-  'try',
-  'typeof',
-  'var',
-  'void',
-  'while',
-  'with',
-  // Strict',
-  'as',
-  'implements',
-  'interface',
-  'let',
-  'package',
-  'private',
-  'protected',
-  'public',
-  'static',
-  'yield',
-]
-
-function escapeReserved(name: string) {
-  return RESERVED.includes(name) ? `_${name}` : name
-}
-
 function makeArguments(abi: AbiEntry | undefined) {
   if (!abi) {
     return `()`
@@ -111,7 +58,7 @@ function makeArguments(abi: AbiEntry | undefined) {
   let unnamedParamsCount = 0
   const getInputName = (input: AbiParam) => {
     if (input.name) {
-      return escapeReserved(input.name)
+      return escapeReservedKeyword(input.name)
     }
     return '_'.repeat(++unnamedParamsCount)
   }
