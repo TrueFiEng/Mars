@@ -21,8 +21,8 @@ Let's learn Mars features syntax by looking at the example.
 Just like any TS file, Mars scripts start with imports. On line 1, we import Mars helper functions that we aim to use in the script.
 On second line, we can see import of generated :ref:`artifacts <artifacts>`.
 
-``deploy(options: Options, callback: (deployer: string) => void)``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``deploy(options: Options, callback: (deployer: string, config: Config) => void)``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On line 4, the ``deploy`` function is called. This is the main entry point of the script.
 
@@ -53,7 +53,31 @@ On line 4, the ``deploy`` function is called. This is the main entry point of th
 ``callback``
 """"""""""""
 
-Function where deployment logic is passed. It may provide an address of the deployer.
+.. code-block:: typescript
+
+   type Callback = (deployer: string, options: ExecuteOptions) => void
+
+.. note::
+
+Function where deployment logic is passed. It may provide an address of the deployer and options of the deployment execution.
+
+``ExecuteOptions``
+""""""""""
+
+.. code-block:: typescript
+
+   interface ExecuteOptions extends TransactionOptions {
+      network: string
+      deploymentsFile: string
+      dryRun: boolean
+      verification?: {
+         etherscanApiKey: string
+         jsonInputs: JsonInputs
+         waffleConfig: string
+      }
+   }
+
+.. note::
 
 .. important::
 

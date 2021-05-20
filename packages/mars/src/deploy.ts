@@ -4,13 +4,13 @@ import { execute, ExecuteOptions } from './execute/execute'
 
 export async function deploy<T>(
   options: Options,
-  callback: (deployer: string) => T
+  callback: (deployer: string, options: ExecuteOptions) => T
 ): Promise<{ result: T } & { config: ExecuteOptions }> {
   const config = await getConfig(options)
 
   context.enabled = true
   context.actions = []
-  const result = callback(config.wallet.address)
+  const result = callback(config.wallet.address, config)
   context.enabled = false
   await execute(context.actions, config)
   return { result, config }

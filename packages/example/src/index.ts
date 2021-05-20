@@ -4,9 +4,9 @@ import { Market, Token, UpgradeabilityProxy } from '../build/artifacts'
 deploy({}, (deployer) => {
   const appleImplementation = contract('apple', Token)
   const orangeImplementation = contract('orange', Token, { gasLimit: 1000000 })
-  const proxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
-  const apple = proxy(appleImplementation, 'initialize', [100])
-  const orange = proxy(orangeImplementation, 'initialize', [200])
+  const deployBehindProxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
+  const apple = deployBehindProxy(appleImplementation, 'initialize', [100])
+  const orange = deployBehindProxy(orangeImplementation, 'initialize', [200])
   const market = contract(Market, [apple, orange])
   debug('Apple', apple)
   debug('Allowances', [apple.allowance(deployer, market), orange.allowance(deployer, market)])
