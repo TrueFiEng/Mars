@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { basename, dirname, join, relative, resolve } from 'path'
 import { Abi, AbiComponent, AbiEntry, AbiParam } from '../abi'
+import { escapeReservedKeyword } from './escapeReservedKeyword'
 
 export const Result = null as any
 export type Transaction = unknown
@@ -57,7 +58,7 @@ function makeArguments(abi: AbiEntry | undefined) {
   let unnamedParamsCount = 0
   const getInputName = (input: AbiParam) => {
     if (input.name) {
-      return input.name
+      return escapeReservedKeyword(input.name)
     }
     return '_'.repeat(++unnamedParamsCount)
   }
