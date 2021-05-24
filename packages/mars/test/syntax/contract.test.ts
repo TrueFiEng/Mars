@@ -90,6 +90,21 @@ describe('Contract', () => {
     expect(await provider.getBlockNumber()).to.equal(1)
   })
 
+  it('does not deploy same contracts which addresses are of different cases', async () => {
+    const { result: firstCall, provider } = await testDeploy(() => contract(SimpleContract))
+    const deployment = getDeployResult()
+    const addressLowerCase = deployment.test.simpleContract.address.toString().toLowerCase()
+    deployment.test.simpleContract.address = addressLowerCase
+    fs.writeFileSync('./test/deployments.json', JSON.stringify(deployment))
+    const { result: secondCall } = await testDeploy(() => contract(SimpleContract), {
+      injectProvider: provider,
+      saveDeploy: true,
+    })
+    expect(firstCall[Address].resolve()).to.not.equal(secondCall[Address].resolve())
+    expect(firstCall[Address].resolve().toLowerCase()).to.equal(secondCall[Address].resolve().toLowerCase())
+    expect(await provider.getBlockNumber()).to.equal(1)
+  })
+
   it('deploys same contracts with different names', async () => {
     const { result: firstCall, provider } = await testDeploy(() => contract('1', SimpleContract))
     const { result: secondCall } = await testDeploy(() => contract('2', SimpleContract), {

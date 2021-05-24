@@ -84,7 +84,7 @@ export async function getExistingDeployment(
       if (
         tx.data &&
         isBytecodeEqual(existingTx.data, tx.data.toString()) &&
-        receipt.contractAddress === existing.address
+        receipt.contractAddress.toLowerCase() === existing.address.toLowerCase()
       ) {
         return existing.address
       }
