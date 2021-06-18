@@ -15,7 +15,7 @@ import { getDeployTx } from './getDeployTx'
 import { sendTransaction, TransactionOptions } from './sendTransaction'
 import { save, read } from './save'
 import { isBytecodeEqual } from './bytecode'
-import { JsonInputs, verify } from '../verification'
+import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
 
 export type TransactionOverrides = Partial<TransactionOptions>
@@ -28,6 +28,7 @@ export interface ExecuteOptions extends TransactionOptions {
     etherscanApiKey: string
     jsonInputs: JsonInputs
     waffleConfig: string
+    flattenScript?: (name: string) => Promise<string>
   }
 }
 
@@ -109,15 +110,27 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
     }
   }
   if (options.verification) {
-    await verify(
-      options.verification.etherscanApiKey,
-      options.verification.jsonInputs,
-      options.verification.waffleConfig,
-      action.artifact[Name],
-      address,
-      action.constructor ? new utils.Interface([action.constructor]).encodeDeploy(params) : undefined,
-      options.network
-    )
+    if (options.verification.flattenScript) {
+      await verifySingleFile(
+        options.verification.etherscanApiKey,
+        options.verification.flattenScript,
+        options.verification.waffleConfig,
+        action.artifact[Name],
+        address,
+        action.constructor ? new utils.Interface([action.constructor]).encodeDeploy(params) : undefined,
+        options.network
+      )
+    } else {
+      await verify(
+        options.verification.etherscanApiKey,
+        options.verification.jsonInputs,
+        options.verification.waffleConfig,
+        action.artifact[Name],
+        address,
+        action.constructor ? new utils.Interface([action.constructor]).encodeDeploy(params) : undefined,
+        options.network
+      )
+    }
   }
   action.resolve(address)
 }

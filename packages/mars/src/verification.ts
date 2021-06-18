@@ -139,7 +139,7 @@ async function getVerificationRequestBody(
       },
     },
   }
-  const body = querystring.stringify({
+  return querystring.stringify({
     apikey: etherscanApiKey,
     module: 'contract',
     action: 'verifysourcecode',
@@ -151,7 +151,31 @@ async function getVerificationRequestBody(
     constructorArguements: constructorArgs?.slice(2) ?? '',
     licenseType: '1',
   })
-  return body
+}
+
+async function getSingleFileVerificationRequestBody(
+  etherscanApiKey: string,
+  waffleConfigPath: string,
+  source: string,
+  address: string,
+  contractName: string,
+  constructorArgs?: string
+) {
+  const waffleConfig = await getCompilerOptions(waffleConfigPath)
+  return querystring.stringify({
+    apikey: etherscanApiKey,
+    module: 'contract',
+    action: 'verifysourcecode',
+    contractaddress: address.toLowerCase(),
+    sourceCode: source,
+    codeformat: 'solidity-single-file',
+    contractname: contractName,
+    compilerversion: waffleConfig.compilerVersion,
+    constructorArguements: constructorArgs?.slice(2) ?? '',
+    licenseType: '3',
+    optimizationUsed: waffleConfig.isOptimized ? 1 : 0,
+    runs: waffleConfig.optimizerRuns,
+  })
 }
 
 const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
@@ -166,10 +190,9 @@ function clearLine() {
   process.stdout.cursorTo(0)
 }
 
-async function sendRequest(body: string, contractName: string, network?: string): Promise<string | undefined> {
+async function sendRequest(body: any, contractName: string, network?: string): Promise<string | undefined> {
   clearLine()
   process.stdout.write(chalk.blue('Sending request to Etherscan...'))
-
   const res = (
     await axios.post(etherscanUrl(network), body, {
       headers: {
@@ -178,7 +201,7 @@ async function sendRequest(body: string, contractName: string, network?: string)
     })
   ).data
   if (res.status === '0') {
-    console.log(chalk.bold(chalk.yellow(`Verification of ${contractName} failed: ${res.result}`)))
+    console.log(chalk.bold(chalk.yellow(`\nVerification of ${contractName} failed: ${res.result}`)))
     return
   }
   return res.result
@@ -209,6 +232,43 @@ async function waitForResult(etherscanApiKey: string, guid: string, network?: st
       clearLine()
       return true
     }
+  }
+}
+
+export async function verifySingleFile(
+  etherscanApiKey: string,
+  flattenScript: (name: string) => Promise<string>,
+  waffleConfigPath: string,
+  contractName: string,
+  address: string,
+  constructorArgs?: string,
+  network?: string
+) {
+  const flatContract = await flattenScript(`${contractName}.sol`)
+  if (await isContractVerified(etherscanApiKey, address, network)) {
+    console.log(chalk.bold(chalk.green(`Contract ${contractName} is already verified under ${address}. Skipping\n`)))
+    return
+  }
+  console.log(chalk.green(`Verifying ${contractName} on Etherscan`))
+  try {
+    const body = await getSingleFileVerificationRequestBody(
+      etherscanApiKey,
+      waffleConfigPath,
+      flatContract,
+      address,
+      contractName,
+      constructorArgs
+    )
+    await waitForContract()
+    const guid = await sendRequest(body, contractName, network)
+    if (!guid) {
+      return
+    }
+    if (await waitForResult(etherscanApiKey, guid)) {
+      console.log(chalk.bold(chalk.green(`Contract verified at ${getEtherscanContractAddress(address, network)}\n`)))
+    }
+  } catch (err) {
+    console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))
   }
 }
 

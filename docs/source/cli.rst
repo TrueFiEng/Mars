@@ -127,3 +127,12 @@ Waffle's default compiler options are different from Etherscan's.
 
 The :code:`compilerVersion` setting also needs to be set to
 one of the `compiler versions supported by Etherscan <https://etherscan.io/solcversions>`_.
+
+Another option to verify contracts is to provide script that will return flattened contract code based on file name.
+See `flattener.ts` as an example.
+
+.. code-block:: bash
+
+   yarn ts-node deployment.ts --verify src/flattener.ts --etherscan-key <ETHERSCAN_API_KEY>
+
+

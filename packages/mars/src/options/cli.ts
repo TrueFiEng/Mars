@@ -11,6 +11,7 @@ import {
 } from './checks'
 import { Options } from './Options'
 import { usage, ALLOWED_OPTIONS } from './usage'
+import path from 'path'
 
 const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key']
 
@@ -76,8 +77,15 @@ export function getCommandLineOptions(): Options {
 
   const verify = get(parsed, 'v', 'verify')
   if (verify) {
-    ensureBoolean(verify, 'You cannot specify a value alongside verify')
-    result.verify = verify
+    if (typeof verify === 'string') {
+      const scriptPath = path.join(process.cwd(), verify)
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      result.flattenScript = require(scriptPath).default
+      result.verify = true
+    } else {
+      ensureBoolean(verify, 'You cannot specify a value alongside verify')
+      result.verify = verify
+    }
   }
 
   const etherscanApiKey = get(parsed, 'e', 'etherscan-key')
