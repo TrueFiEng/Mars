@@ -26,6 +26,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
       etherscanApiKey: merged.etherscanApiKey,
       jsonInputs: await createJsonInputs(merged.sources),
       waffleConfig: merged.waffleConfig,
+      flattenScript: merged.flattenScript,
     }
   }
 
