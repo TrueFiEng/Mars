@@ -8,11 +8,12 @@ export interface TransactionOptions {
   gasPrice: BigNumber
   gasLimit?: number | BigNumber
   noConfirm: boolean
+  verbose: boolean
 }
 
 export async function sendTransaction(
   name: string,
-  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit }: TransactionOptions,
+  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, verbose }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
   const gasLimit = overwrittenGasLimit ?? (await wallet.provider.estimateGas({ ...transaction, from: wallet.address }))
@@ -34,6 +35,9 @@ export async function sendTransaction(
   console.log(chalk.blue('  Sending'), '...')
   const tx = await wallet.sendTransaction(withGasLimit)
   console.log(chalk.blue('  Hash:'), tx.hash)
+  if (verbose) {
+    console.log(chalk.blue('  Hex data:'), tx.data)
+  }
   const receipt = await tx.wait()
   console.log(chalk.blue('  Block:'), receipt.blockNumber)
   if (receipt.contractAddress) {

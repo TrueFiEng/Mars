@@ -69,6 +69,12 @@ export function getCommandLineOptions(): Options {
     result.dryRun = dryRun
   }
 
+  const verbose = get(parsed, 'V', 'verbose')
+  if (verbose) {
+    ensureBoolean(verbose, 'You cannot specify a value alongside verbose')
+    result.verbose = verbose
+  }
+
   const noConfirm = get(parsed, 'y', 'yes')
   if (noConfirm) {
     ensureBoolean(noConfirm, 'You cannot specify a value alongside yes')

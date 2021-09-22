@@ -39,6 +39,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     wallet,
     network: networkName,
     dryRun: !!merged.dryRun,
+    verbose: !!merged.verbose,
     deploymentsFile: merged.outputFile,
     verification,
   }
