@@ -75,6 +75,7 @@ describe('getCommandLineOptions', () => {
   checkParam('outputFile', 'o', 'out-file', 'file.json', '123')
   checkParam('gasPrice', 'g', 'gas-price', '2', 'foo', BigNumber.from(2))
   checkParam('dryRun', 'd', 'dry-run', '', 'asd', true)
+  checkParam('verbose', 'V', 'verbose', '', 'asd', true)
   checkParam('noConfirm', 'y', 'yes', '', 'asd', true)
   checkParam('verify', 'v', 'verify', '', 'asd', true)
   checkParam('etherscanApiKey', 'e', 'etherscan-key', 'boo', 'bam bam')
