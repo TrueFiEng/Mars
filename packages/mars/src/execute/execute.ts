@@ -24,7 +24,7 @@ export interface ExecuteOptions extends TransactionOptions {
   network: string
   deploymentsFile: string
   dryRun: boolean
-  verbose: boolean
+  logFile: string
   verification?: {
     etherscanApiKey: string
     jsonInputs: JsonInputs

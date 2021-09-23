@@ -69,10 +69,10 @@ export function getCommandLineOptions(): Options {
     result.dryRun = dryRun
   }
 
-  const verbose = get(parsed, 'V', 'verbose')
-  if (verbose) {
-    ensureBoolean(verbose, 'You cannot specify a value alongside verbose')
-    result.verbose = verbose
+  const logFile = get(parsed, 'l', 'log')
+  if (logFile) {
+    ensureString(logFile, 'Invalid log file provided as argument')
+    result.logFile = logFile
   }
 
   const noConfirm = get(parsed, 'y', 'yes')

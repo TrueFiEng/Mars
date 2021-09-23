@@ -1,19 +1,19 @@
 import { utils, providers, constants, Wallet, BigNumber } from 'ethers'
 import readline from 'readline'
-import chalk from 'chalk'
 import { getEthPriceUsd } from './getEthPriceUsd'
+import { log, yellow, blue } from './log'
 
 export interface TransactionOptions {
   wallet: Wallet
   gasPrice: BigNumber
   gasLimit?: number | BigNumber
   noConfirm: boolean
-  verbose: boolean
+  logFile: string
 }
 
 export async function sendTransaction(
   name: string,
-  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, verbose }: TransactionOptions,
+  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, logFile }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
   const gasLimit = overwrittenGasLimit ?? (await wallet.provider.estimateGas({ ...transaction, from: wallet.address }))
@@ -26,24 +26,23 @@ export async function sendTransaction(
   const balance = utils.formatEther(await wallet.getBalance())
   const balanceInUsd = (parseFloat(balance) * price).toFixed(2)
 
-  console.log(chalk.yellow('Transaction:'), name)
-  console.log(chalk.blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
-  console.log(chalk.blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
+  let options = { logFile: logFile, toConsole: true, toFile: true }
+  log({...options}, yellow('Transaction:'), name)
+  log({...options}, blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
+  log({...options}, blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
   if (!noConfirm) {
     await waitForKeyPress()
   }
-  console.log(chalk.blue('  Sending'), '...')
+  log({...options, toFile: false}, blue('  Sending'), '...')
   const tx = await wallet.sendTransaction(withGasLimit)
-  console.log(chalk.blue('  Hash:'), tx.hash)
-  if (verbose) {
-    console.log(chalk.blue('  Hex data:'), tx.data)
-  }
+  log({...options}, blue('  Hash:'), tx.hash)
+  log({...options, toConsole: false}, blue('  Hex data:'), tx.data)
   const receipt = await tx.wait()
-  console.log(chalk.blue('  Block:'), receipt.blockNumber)
+  log({...options}, blue('  Block:'), receipt.blockNumber)
   if (receipt.contractAddress) {
-    console.log(chalk.blue('  Address:'), receipt.contractAddress)
+    log({...options}, blue('  Address:'), receipt.contractAddress)
   }
-  console.log()
+  log({...options})
 
   return {
     txHash: receipt.transactionHash,

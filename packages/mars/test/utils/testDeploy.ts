@@ -8,7 +8,7 @@ export async function testDeploy<T>(
   options: {
     saveDeploy?: boolean
     injectProvider?: MockProvider
-    verbose?: boolean
+    logFile?: string
   } = {
     saveDeploy: true,
   }
@@ -18,7 +18,7 @@ export async function testDeploy<T>(
     network: 'test',
     dryRun: !options.saveDeploy,
     noConfirm: true,
-    verbose: !!options.verbose,
+    logFile: options.logFile ?? "test.log",
     deploymentsFile: './test/deployments.json',
     wallet: provider.getWallets()[0],
     gasPrice: BigNumber.from(0),

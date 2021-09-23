@@ -21,7 +21,7 @@ Options:
   -d, --dry-run               Execute against an in-memory node forked from the
                               target network. Use this to test. When specified
                               the --yes flag is always implied.
-  -V, --verbose               Print all transaction hex data.
+  -l, --log                   Print transaction hex data into given file.
   -y, --yes                   Do not prompt for confirmation before sending
                               transactions.
   -v, --verify                Verify the contracts on Etherscan.
@@ -47,8 +47,8 @@ export const ALLOWED_OPTIONS = [
   'gas-price',
   'd',
   'dry-run',
-  'V',
-  'verbose',
+  'l',
+  'log',
   'y',
   'yes',
   'v',
