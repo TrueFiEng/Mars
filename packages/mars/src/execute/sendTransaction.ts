@@ -26,23 +26,23 @@ export async function sendTransaction(
   const balance = utils.formatEther(await wallet.getBalance())
   const balanceInUsd = (parseFloat(balance) * price).toFixed(2)
 
-  let options = { logFile: logFile, toConsole: true, toFile: true }
-  log({...options}, yellow('Transaction:'), name)
-  log({...options}, blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
-  log({...options}, blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
+  const options = { logFile: logFile, toConsole: true, toFile: true }
+  log({ ...options }, yellow('Transaction:'), name)
+  log({ ...options }, blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
+  log({ ...options }, blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
   if (!noConfirm) {
     await waitForKeyPress()
   }
-  log({...options, toFile: false}, blue('  Sending'), '...')
+  log({ ...options, toFile: false }, blue('  Sending'), '...')
   const tx = await wallet.sendTransaction(withGasLimit)
-  log({...options}, blue('  Hash:'), tx.hash)
-  log({...options, toConsole: false}, blue('  Hex data:'), tx.data)
+  log({ ...options }, blue('  Hash:'), tx.hash)
+  log({ ...options, toConsole: false }, blue('  Hex data:'), tx.data)
   const receipt = await tx.wait()
-  log({...options}, blue('  Block:'), receipt.blockNumber)
+  log({ ...options }, blue('  Block:'), receipt.blockNumber)
   if (receipt.contractAddress) {
-    log({...options}, blue('  Address:'), receipt.contractAddress)
+    log({ ...options }, blue('  Address:'), receipt.contractAddress)
   }
-  log({...options})
+  log({ ...options })
 
   return {
     txHash: receipt.transactionHash,
