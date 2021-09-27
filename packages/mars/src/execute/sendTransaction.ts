@@ -44,11 +44,7 @@ export async function sendTransaction(
   console.log()
 
   if (logFile) {
-    fs.appendFileSync(logFile, 
-      `Transaction: ${name}\n` +
-      `  Hex data: ${tx.data}\n` +
-      `\n`
-    )
+    fs.appendFileSync(logFile, `Transaction: ${name}\n  Hex data: ${tx.data}\n\n`)
   }
 
   return {

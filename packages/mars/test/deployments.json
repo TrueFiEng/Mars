@@ -1,9 +1,5 @@
 {
   "test": {
-    "1": {
-      "txHash": "0xa1f3bf30350cb7ac34e8f393cc12d20ef1fae3942ca8fe64476d096f03a7e442",
-      "address": "0xA193E42526F1FEA8C99AF609dcEabf30C1c29fAA"
-    },
     "simpleContract": {
       "txHash": "0xa1f3bf30350cb7ac34e8f393cc12d20ef1fae3942ca8fe64476d096f03a7e442",
       "address": "0xA193E42526F1FEA8C99AF609dcEabf30C1c29fAA"
