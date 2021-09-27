@@ -44,7 +44,7 @@ export async function sendTransaction(
   console.log()
 
   if (logFile) {
-    fs.appendFileSync(logFile, `Transaction: ${name}\n  Hex data: ${tx.data}\n\n`)
+    logToFile(logFile, `Transaction: ${name}`, `Hash: ${tx.hash}`, `Hex data:`, `${tx.data}`, ``)
   }
 
   return {
@@ -67,4 +67,8 @@ async function waitForKeyPress() {
       rl.close()
     })
   })
+}
+
+function logToFile(logFile: string, ...args: string[]) {
+  fs.appendFileSync(logFile, args.join('\n') + '\n')
 }

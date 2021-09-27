@@ -15,8 +15,9 @@ describe('Log', () => {
       logFile: 'test.log',
     })
     const text = fs.readFileSync(logPath).toString()
-    expect(text.split('\n').length).to.eq(4)
-    expect(text.indexOf('Transaction: ')).to.be.gte(0)
+    expect(text.split('\n').length).to.eq(6)
+    expect(text.indexOf('Transaction:')).to.be.gte(0)
+    expect(text.indexOf('Hash:')).to.be.gte(0)
     expect(text.indexOf('Hex data:')).to.be.gte(0)
   })
 
