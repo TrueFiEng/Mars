@@ -23,5 +23,6 @@ describe.only('Log', () => {
 
   afterEach(async () => {
     fs.unlinkSync(logPath)
+    fs.unlinkSync('./test/deployments.json')
   })
 })
