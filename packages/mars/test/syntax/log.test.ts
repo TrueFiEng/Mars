@@ -4,7 +4,7 @@ import { testDeploy } from '../utils/testDeploy'
 import { contract } from '../../src'
 import { SimpleContract } from '../fixtures/exampleArtifacts'
 
-describe.only('Log', () => {
+describe('Log', () => {
   const logPath = 'test.log'
 
   it('logs deployment', async () => {
