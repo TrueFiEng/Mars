@@ -69,6 +69,12 @@ export function getCommandLineOptions(): Options {
     result.dryRun = dryRun
   }
 
+  const logFile = get(parsed, 'l', 'log')
+  if (logFile) {
+    ensureString(logFile, 'Invalid log file provided as argument')
+    result.logFile = logFile
+  }
+
   const noConfirm = get(parsed, 'y', 'yes')
   if (noConfirm) {
     ensureBoolean(noConfirm, 'You cannot specify a value alongside yes')

@@ -8,6 +8,7 @@ export interface Options {
   outputFile?: string
   gasPrice?: BigNumber
   dryRun?: boolean
+  logFile?: string
   noConfirm?: boolean
   verify?: boolean
   flattenScript?: (contractName: string) => Promise<string>

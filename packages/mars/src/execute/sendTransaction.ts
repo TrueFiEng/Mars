@@ -1,18 +1,20 @@
 import { utils, providers, constants, Wallet, BigNumber } from 'ethers'
 import readline from 'readline'
-import chalk from 'chalk'
 import { getEthPriceUsd } from './getEthPriceUsd'
+import chalk from 'chalk'
+import fs from 'fs'
 
 export interface TransactionOptions {
   wallet: Wallet
   gasPrice: BigNumber
   gasLimit?: number | BigNumber
   noConfirm: boolean
+  logFile: string
 }
 
 export async function sendTransaction(
   name: string,
-  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit }: TransactionOptions,
+  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, logFile }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
   const gasLimit = overwrittenGasLimit ?? (await wallet.provider.estimateGas({ ...transaction, from: wallet.address }))
@@ -41,6 +43,10 @@ export async function sendTransaction(
   }
   console.log()
 
+  if (logFile) {
+    logToFile(logFile, `Transaction: ${name}`, `Hash: ${tx.hash}`, `Hex data:`, `${tx.data}`, ``)
+  }
+
   return {
     txHash: receipt.transactionHash,
     address: receipt.contractAddress || constants.AddressZero,
@@ -61,4 +67,8 @@ async function waitForKeyPress() {
       rl.close()
     })
   })
+}
+
+function logToFile(logFile: string, ...args: string[]) {
+  fs.appendFileSync(logFile, args.join('\n') + '\n')
 }
