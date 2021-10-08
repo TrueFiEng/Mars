@@ -16,8 +16,6 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
     - run: yarn install --frozen-lockfile
-    - run: cd packages/mars && yarn link && cd ../..
-    - run: cd packages/example && yarn link ethereum-mars && cd ../..
     - run: yarn lint
     - run: yarn build
     - run: yarn test
