@@ -8,10 +8,10 @@ import { runIf } from './conditionals'
 type Params<T> = T extends (...args: infer A) => any ? A : never
 
 export interface Proxy {
-  <T, U extends keyof T>(name: string, contract: Contract<T>, onInitialize: U, params: Params<T[U]>): Contract<T>
-  <T, U extends keyof T>(contract: Contract<T>, onInitialize: U, params: Params<T[U]>): Contract<T>
-  <T>(name: string, contract: Contract<T>, onInitialize: (contract: Contract<T>) => unknown): Contract<T>
-  <T>(contract: Contract<T>, onInitialize: (contract: Contract<T>) => unknown): Contract<T>
+  <T, U extends keyof T>(name: string, contract: Contract<T>, onInitialize?: U, params?: Params<T[U]>): Contract<T>
+  <T, U extends keyof T>(contract: Contract<T>, onInitialize?: U, params?: Params<T[U]>): Contract<T>
+  <T>(name: string, contract: Contract<T>, onInitialize?: (contract: Contract<T>) => unknown): Contract<T>
+  <T>(contract: Contract<T>, onInitialize?: (contract: Contract<T>) => unknown): Contract<T>
 }
 
 type MethodCall<T> = keyof T | ((contract: Contract<T>) => unknown)
