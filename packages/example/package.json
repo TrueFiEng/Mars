@@ -16,7 +16,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "ethereum-mars": "file:./../mars"
+    "ethereum-mars": "file:../mars"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^3.3.0",
