@@ -6,7 +6,7 @@ jobs:
   test:
     strategy:
       matrix:
-        node: ['16.x', '14.x', '12.x', '10.x']
+        node: ['10.x', '12.x']
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -17,7 +17,7 @@ jobs:
         node-version: ${{ matrix.node }}
     - run: yarn install --frozen-lockfile
     - run: cd packages/mars && yarn link && cd ../..
-    - run: cd packages/examples && yarn link ethereum-mars && cd ../..
+    - run: cd packages/example && yarn link ethereum-mars && cd ../..
     - run: yarn lint
     - run: yarn build
     - run: yarn test
