@@ -37,8 +37,7 @@
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
     "build": "yarn build:test:contracts && tsc",
     "build:test:contracts": "waffle ./test/waffle.json",
-    "test": "mocha",
-    "coverage": "nyc yarn run test",
+    "test": "nyc mocha",
     "prepublishOnly": "rm -rf build && yarn build"
   },
   "dependencies": {
