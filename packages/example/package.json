@@ -13,7 +13,8 @@
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
     "build": "yarn waffle && mars",
     "deploy": "ts-node src/index.ts",
-    "test": "mocha"
+    "test": "mocha",
+    "cover": "echo 'no coverage defined, running tests...' && yarn test"
   },
   "dependencies": {
     "ethereum-mars": "0.x"

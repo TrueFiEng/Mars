@@ -1,0 +1,14 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "all": true,
+  "extension": [".ts"],
+  "exclude": [
+    "**/*.js",
+    "**/*.d.ts"
+  ],
+  "check-coverage": true,
+  "branches": 62,
+  "lines": 80,
+  "functions": 74,
+  "statements": 79
+}

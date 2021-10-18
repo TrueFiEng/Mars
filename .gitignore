@@ -5,3 +5,4 @@ docs/source/_build
 .idea
 .vscode
 cache
+.nyc_output
