@@ -3,12 +3,13 @@
   "all": true,
   "extension": [".ts"],
   "exclude": [
+    "test",
     "**/*.js",
     "**/*.d.ts"
   ],
   "check-coverage": true,
-  "branches": 62,
-  "lines": 80,
-  "functions": 74,
-  "statements": 79
+  "branches": 65,
+  "lines": 75,
+  "functions": 65,
+  "statements": 74
 }

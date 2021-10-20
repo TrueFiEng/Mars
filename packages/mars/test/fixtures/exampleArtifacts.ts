@@ -4,6 +4,8 @@ import * as Mars from "../../src";
 const ComplexContract__JSON = require("./../build/ComplexContract.json");
 const ReservedContract__JSON = require("./../build/ReservedContract.json");
 const SimpleContract__JSON = require("./../build/SimpleContract.json");
+const UpgradeabilityProxy__JSON = require("./../build/UpgradeabilityProxy.json");
+const UpgradeableContract__JSON = require("./../build/UpgradeableContract.json");
 
 export const ComplexContract = Mars.createArtifact<{
   new(_: Mars.NumberLike, __: Mars.StringLike): void;
@@ -29,3 +31,15 @@ export const SimpleContract = Mars.createArtifact<{
   new(): void;
   hello(): Mars.Future<string>;
 }>("SimpleContract", SimpleContract__JSON);
+
+export const UpgradeabilityProxy = Mars.createArtifact<{
+  new(): void;
+  implementation(): Mars.Future<string>;
+  upgradeTo(implementation: Mars.AddressLike, options?: Mars.TransactionOverrides): Mars.Transaction;
+}>("UpgradeabilityProxy", UpgradeabilityProxy__JSON);
+
+export const UpgradeableContract = Mars.createArtifact<{
+  new(): void;
+  initialize(_x: Mars.NumberLike, options?: Mars.TransactionOverrides): Mars.Transaction;
+  x(): Mars.FutureNumber;
+}>("UpgradeableContract", UpgradeableContract__JSON);
