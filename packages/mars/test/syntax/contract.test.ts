@@ -160,8 +160,7 @@ describe('Contract', () => {
     expectFuture(xAfterInit, BigNumber.from(1000))
   })
 
-  // TODO: BUG. parseProxyArgs -> support no init fn being passed. Also () => onInitialize in createProxy.
-  it.skip('deploys using an upgradeability proxy without running init function', async () => {
+  it('deploys using an upgradeability proxy without running init function', async () => {
     let xAfterNoInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
     const { result: proxyDeploymentCall } = await testDeploy(() => {
       const upgradeable = contract('upgradeable', UpgradeableContract)
@@ -174,6 +173,21 @@ describe('Contract', () => {
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
     expectFuture(xAfterNoInit, BigNumber.from(0))
+  })
+
+  it('deploys using an upgradeability proxy without providing init params', async () => {
+    let xAfterNoInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
+    const { result: proxyDeploymentCall } = await testDeploy(() => {
+      const upgradeable = contract('upgradeable', UpgradeableContract)
+      const proxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
+      const proxied = proxy(upgradeable, 'initializeOne')
+      xAfterNoInit = proxied.x()
+      return proxied
+    })
+
+    const proxyAddress = proxyDeploymentCall[Address].resolve()
+    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
+    expectFuture(xAfterNoInit, BigNumber.from(1))
   })
 
   afterEach(() => {
