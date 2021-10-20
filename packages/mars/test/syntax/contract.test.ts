@@ -1,11 +1,13 @@
 import fs from 'fs'
 import {expect} from 'chai'
-import {testDeploy} from '../utils/testDeploy'
-import {contract, createProxy} from '../../src'
+import {testDeploy} from '../utils'
+import {contract, createProxy, FutureNumber} from '../../src'
 import SimpleContractJSON from '../build/SimpleContract.json'
 import ComplexContractJSON from '../build/ComplexContract.json'
 import {Address} from '../../src/symbols'
 import {ComplexContract, SimpleContract, UpgradeabilityProxy, UpgradeableContract} from '../fixtures/exampleArtifacts'
+import {BigNumber} from "ethers";
+import {expectFuture} from "../utils";
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
@@ -144,14 +146,34 @@ describe('Contract', () => {
   })
 
   it('deploys using an upgradeability proxy', async () => {
-    const { result: proxyDeploymentCall, provider } = await testDeploy(() => {
+    let xAfterInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
+    const { result: proxyDeploymentCall } = await testDeploy(() => {
       const upgradeable = contract('upgradeable', UpgradeableContract)
       const proxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
-      return proxy(upgradeable, 'initialize', [1000])
+      const proxied = proxy(upgradeable, 'initialize', [1000])
+      xAfterInit = proxied.x()
+      return proxied
     })
 
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
+    expectFuture(xAfterInit, BigNumber.from(1000))
+  });
+
+  // TODO: BUG. parseProxyArgs -> support no init fn being passed. Also () => onInitialize in createProxy.
+  it.skip('deploys using an upgradeability proxy without running init function', async () => {
+    let xAfterNoInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
+    const { result: proxyDeploymentCall } = await testDeploy(() => {
+      const upgradeable = contract('upgradeable', UpgradeableContract)
+      const proxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
+      const proxied = proxy(upgradeable)
+      xAfterNoInit = proxied.x()
+      return proxied
+    })
+
+    const proxyAddress = proxyDeploymentCall[Address].resolve()
+    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
+    expectFuture(xAfterNoInit, BigNumber.from(0))
   });
 
   afterEach(() => {
