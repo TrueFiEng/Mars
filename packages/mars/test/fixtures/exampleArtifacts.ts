@@ -1,6 +1,5 @@
 /* eslint-disable */
 import * as Mars from "../../src";
-import {Future} from "../../src";
 
 const ComplexContract__JSON = require("./../build/ComplexContract.json");
 const ReservedContract__JSON = require("./../build/ReservedContract.json");
@@ -41,6 +40,6 @@ export const UpgradeabilityProxy = Mars.createArtifact<{
 
 export const UpgradeableContract = Mars.createArtifact<{
   new(): void;
-  x(): Mars.FutureNumber;
   initialize(_x: Mars.NumberLike, options?: Mars.TransactionOverrides): Mars.Transaction;
+  x(): Mars.FutureNumber;
 }>("UpgradeableContract", UpgradeableContract__JSON);
