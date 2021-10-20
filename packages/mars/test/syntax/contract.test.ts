@@ -1,19 +1,19 @@
 import fs from 'fs'
-import {expect} from 'chai'
-import {testDeploy} from '../utils'
-import {contract, createProxy, FutureNumber} from '../../src'
+import { expect } from 'chai'
+import { testDeploy } from '../utils'
+import { contract, createProxy, FutureNumber } from '../../src'
 import SimpleContractJSON from '../build/SimpleContract.json'
 import ComplexContractJSON from '../build/ComplexContract.json'
-import {Address} from '../../src/symbols'
-import {ComplexContract, SimpleContract, UpgradeabilityProxy, UpgradeableContract} from '../fixtures/exampleArtifacts'
-import {BigNumber} from "ethers";
-import {expectFuture} from "../utils";
+import { Address } from '../../src/symbols'
+import { ComplexContract, SimpleContract, UpgradeabilityProxy, UpgradeableContract } from '../fixtures/exampleArtifacts'
+import { BigNumber } from 'ethers'
+import { expectFuture } from '../utils'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
 
   it('deploys contract (no name, no params)', async () => {
-    const {result, provider} = await testDeploy(() => contract(SimpleContract))
+    const { result, provider } = await testDeploy(() => contract(SimpleContract))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${SimpleContractJSON.evm.deployedBytecode.object}`
     )
@@ -21,7 +21,7 @@ describe('Contract', () => {
   })
 
   it('deploys contract (no name, no params, gas override)', async () => {
-    const {result, provider} = await testDeploy(() => contract(SimpleContract, {gasLimit: 2000000}))
+    const { result, provider } = await testDeploy(() => contract(SimpleContract, { gasLimit: 2000000 }))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${SimpleContractJSON.evm.deployedBytecode.object}`
     )
@@ -30,7 +30,7 @@ describe('Contract', () => {
   })
 
   it('deploys contract (with name, no params)', async () => {
-    const {result, provider} = await testDeploy(() => contract('someName', SimpleContract))
+    const { result, provider } = await testDeploy(() => contract('someName', SimpleContract))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${SimpleContractJSON.evm.deployedBytecode.object}`
     )
@@ -38,7 +38,7 @@ describe('Contract', () => {
   })
 
   it('deploys contract (with name, no params, gas override)', async () => {
-    const {result, provider} = await testDeploy(() => contract('someName', SimpleContract, {gasLimit: 2000000}))
+    const { result, provider } = await testDeploy(() => contract('someName', SimpleContract, { gasLimit: 2000000 }))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${SimpleContractJSON.evm.deployedBytecode.object}`
     )
@@ -47,7 +47,7 @@ describe('Contract', () => {
   })
 
   it('deploys contract (no name, with params)', async () => {
-    const {result, provider} = await testDeploy(() => contract(ComplexContract, [10, 'test']))
+    const { result, provider } = await testDeploy(() => contract(ComplexContract, [10, 'test']))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${ComplexContractJSON.evm.deployedBytecode.object}`
     )
@@ -55,7 +55,7 @@ describe('Contract', () => {
   })
 
   it('deploys contract (no name, with params, gas override)', async () => {
-    const {result, provider} = await testDeploy(() => contract(ComplexContract, [10, 'test'], {gasLimit: 2000000}))
+    const { result, provider } = await testDeploy(() => contract(ComplexContract, [10, 'test'], { gasLimit: 2000000 }))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${ComplexContractJSON.evm.deployedBytecode.object}`
     )
@@ -64,7 +64,7 @@ describe('Contract', () => {
   })
 
   it('deploys contract (with name, with params)', async () => {
-    const {result, provider} = await testDeploy(() => contract('contractName', ComplexContract, [10, 'test']))
+    const { result, provider } = await testDeploy(() => contract('contractName', ComplexContract, [10, 'test']))
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${ComplexContractJSON.evm.deployedBytecode.object}`
     )
@@ -72,8 +72,8 @@ describe('Contract', () => {
   })
 
   it('deploys contract (with name, with params and gas override)', async () => {
-    const {result, provider} = await testDeploy(() =>
-      contract('contractName', ComplexContract, [10, 'test'], {gasLimit: 2000000})
+    const { result, provider } = await testDeploy(() =>
+      contract('contractName', ComplexContract, [10, 'test'], { gasLimit: 2000000 })
     )
     expect(await provider.getCode(result[Address].resolve())).to.equal(
       `0x${ComplexContractJSON.evm.deployedBytecode.object}`
@@ -83,8 +83,8 @@ describe('Contract', () => {
   })
 
   it('does not deploy same contract twice', async () => {
-    const {result: firstCall, provider} = await testDeploy(() => contract(SimpleContract))
-    const {result: secondCall} = await testDeploy(() => contract(SimpleContract), {
+    const { result: firstCall, provider } = await testDeploy(() => contract(SimpleContract))
+    const { result: secondCall } = await testDeploy(() => contract(SimpleContract), {
       injectProvider: provider,
       saveDeploy: true,
     })
@@ -93,12 +93,12 @@ describe('Contract', () => {
   })
 
   it('does not deploy same contracts which addresses are of different cases', async () => {
-    const {result: firstCall, provider} = await testDeploy(() => contract(SimpleContract))
+    const { result: firstCall, provider } = await testDeploy(() => contract(SimpleContract))
     const deployment = getDeployResult()
     const addressLowerCase = deployment.test.simpleContract.address.toString().toLowerCase()
     deployment.test.simpleContract.address = addressLowerCase
     fs.writeFileSync('./test/deployments.json', JSON.stringify(deployment))
-    const {result: secondCall} = await testDeploy(() => contract(SimpleContract), {
+    const { result: secondCall } = await testDeploy(() => contract(SimpleContract), {
       injectProvider: provider,
       saveDeploy: true,
     })
@@ -108,8 +108,8 @@ describe('Contract', () => {
   })
 
   it('deploys same contracts with different names', async () => {
-    const {result: firstCall, provider} = await testDeploy(() => contract('1', SimpleContract))
-    const {result: secondCall} = await testDeploy(() => contract('2', SimpleContract), {
+    const { result: firstCall, provider } = await testDeploy(() => contract('1', SimpleContract))
+    const { result: secondCall } = await testDeploy(() => contract('2', SimpleContract), {
       injectProvider: provider,
       saveDeploy: true,
     })
@@ -118,8 +118,8 @@ describe('Contract', () => {
   })
 
   it('redeploys contract with different constructor args', async () => {
-    const {result: firstCall, provider} = await testDeploy(() => contract(ComplexContract, [10, 'test']))
-    const {result: secondCall} = await testDeploy(() => contract(ComplexContract, [11, 'test']), {
+    const { result: firstCall, provider } = await testDeploy(() => contract(ComplexContract, [10, 'test']))
+    const { result: secondCall } = await testDeploy(() => contract(ComplexContract, [11, 'test']), {
       injectProvider: provider,
       saveDeploy: true,
     })
@@ -128,10 +128,10 @@ describe('Contract', () => {
   })
 
   it('redeploys contract if bytecode has changed', async () => {
-    const {result: firstCall, provider} = await testDeploy(() =>
+    const { result: firstCall, provider } = await testDeploy(() =>
       contract('contractName', ComplexContract, [10, 'test'])
     )
-    const {result: secondCall} = await testDeploy(() => contract('contractName', SimpleContract), {
+    const { result: secondCall } = await testDeploy(() => contract('contractName', SimpleContract), {
       injectProvider: provider,
       saveDeploy: true,
     })
@@ -158,7 +158,7 @@ describe('Contract', () => {
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
     expectFuture(xAfterInit, BigNumber.from(1000))
-  });
+  })
 
   // TODO: BUG. parseProxyArgs -> support no init fn being passed. Also () => onInitialize in createProxy.
   it.skip('deploys using an upgradeability proxy without running init function', async () => {
@@ -174,7 +174,7 @@ describe('Contract', () => {
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
     expectFuture(xAfterNoInit, BigNumber.from(0))
-  });
+  })
 
   afterEach(() => {
     fs.unlinkSync('./test/deployments.json')

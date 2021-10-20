@@ -1,11 +1,11 @@
 import { expect, use } from 'chai'
 import { solidity } from 'ethereum-waffle'
-import { contract} from '../../src'
+import { contract } from '../../src'
 import { testDeploy } from '../utils'
 import { ComplexContract } from '../fixtures/exampleArtifacts'
 import { BigNumber, constants, Contract } from 'ethers'
 import { AbiSymbol, Address } from '../../src/symbols'
-import {expectFuture} from "../utils";
+import { expectFuture } from '../utils'
 
 use(solidity)
 
