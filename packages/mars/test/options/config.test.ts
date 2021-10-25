@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { BigNumber } from 'ethers'
+import {BigNumber, Wallet} from 'ethers'
 import { getConfig } from '../../src/options'
 
 const PRIVATE_KEY_1 = `0x${'1'.repeat(64)}`
@@ -32,15 +32,15 @@ describe('getConfig', () => {
 
   it('respects options precedence', async () => {
     const result1 = await getConfig({ privateKey: PRIVATE_KEY_1, ...defaults })
-    expect(result1.wallet.privateKey).to.equal(PRIVATE_KEY_1)
+    expect((result1.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)
 
     setEnv({ PRIVATE_KEY: PRIVATE_KEY_2 })
     const result2 = await getConfig({ privateKey: PRIVATE_KEY_1, ...defaults })
-    expect(result2.wallet.privateKey).to.equal(PRIVATE_KEY_2)
+    expect((result2.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_2)
 
     setArgv(['-p', PRIVATE_KEY_3])
     const result3 = await getConfig({ privateKey: PRIVATE_KEY_1, ...defaults })
-    expect(result3.wallet.privateKey).to.equal(PRIVATE_KEY_3)
+    expect((result3.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_3)
   })
 
   it('dry run implies noConfirm', async () => {

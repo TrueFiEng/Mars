@@ -1,11 +1,11 @@
-import { utils, providers, constants, Wallet, BigNumber } from 'ethers'
+import {utils, providers, constants, BigNumber, Signer} from 'ethers'
 import readline from 'readline'
 import { getEthPriceUsd } from './getEthPriceUsd'
 import chalk from 'chalk'
 import fs from 'fs'
 
 export interface TransactionOptions {
-  wallet: Wallet
+  signer: Signer
   gasPrice: BigNumber
   gasLimit?: number | BigNumber
   noConfirm: boolean
@@ -14,17 +14,17 @@ export interface TransactionOptions {
 
 export async function sendTransaction(
   name: string,
-  { wallet, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, logFile }: TransactionOptions,
+  { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, logFile }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
-  const gasLimit = overwrittenGasLimit ?? (await wallet.provider.estimateGas({ ...transaction, from: wallet.address }))
+  const gasLimit = overwrittenGasLimit ?? (await signer.estimateGas({ ...transaction, from: await signer.getAddress() }))
   const withGasLimit = { ...transaction, gasLimit, gasPrice }
 
   const price = await getEthPriceUsd()
 
   const fee = utils.formatEther(gasPrice.mul(gasLimit))
   const feeInUsd = (parseFloat(fee) * price).toFixed(2)
-  const balance = utils.formatEther(await wallet.getBalance())
+  const balance = utils.formatEther(await signer.getBalance())
   const balanceInUsd = (parseFloat(balance) * price).toFixed(2)
 
   console.log(chalk.yellow('Transaction:'), name)
@@ -34,7 +34,7 @@ export async function sendTransaction(
     await waitForKeyPress()
   }
   console.log(chalk.blue('  Sending'), '...')
-  const tx = await wallet.sendTransaction(withGasLimit)
+  const tx = await signer.sendTransaction(withGasLimit)
   console.log(chalk.blue('  Hash:'), tx.hash)
   const receipt = await tx.wait()
   console.log(chalk.blue('  Block:'), receipt.blockNumber)

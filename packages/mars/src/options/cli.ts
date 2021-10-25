@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers'
 import minimist from 'minimist'
 import {
+  ensureAddress,
   ensureApiKey,
   ensureBoolean,
   ensureNetwork,
@@ -67,6 +68,12 @@ export function getCommandLineOptions(): Options {
   if (dryRun) {
     ensureBoolean(dryRun, 'You cannot specify a value alongside dry run')
     result.dryRun = dryRun
+  }
+
+  const fromAddress = get(parsed, 'f', 'from')
+  if (fromAddress) {
+    ensureAddress(fromAddress, 'Invalid transaction sender address provided')
+    result.fromAddress = fromAddress
   }
 
   const logFile = get(parsed, 'l', 'log')

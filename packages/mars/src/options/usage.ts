@@ -21,6 +21,8 @@ Options:
   -d, --dry-run               Execute against an in-memory node forked from the
                               target network. Use this to test. When specified
                               the --yes flag is always implied.
+  -f, --from [address]        The address of an unlocked account to be used to send transactions. Useful in combination
+                              with --dry-run. A shortcut of Ganache's 'from'.
   -l, --log                   Print transaction hex data into given file.
   -y, --yes                   Do not prompt for confirmation before sending
                               transactions.
