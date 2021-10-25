@@ -58,7 +58,7 @@ function parseProxyArgs(...args: any[]): [string, Contract<any>, ((contract: Con
   const params = args[withName ? 3 : 2] ?? []
   const onInitializeArg = args[withName ? 2 : 1]
   const onInitialize = onInitializeArg ? normalizeCall(contract, onInitializeArg, params) : undefined
-  return [name, contract, onInitialize as (contract: Contract<any>) => unknown]
+  return [name, contract, onInitialize]
 }
 
 function normalizeCall<T>(
