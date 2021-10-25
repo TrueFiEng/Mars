@@ -45,19 +45,20 @@ export function createProxy(...args: any[]): any {
       implementation[ArtifactSymbol],
       proxy[Address]
     )
-    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize(contractBehindProxy))
+    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize && onInitialize(contractBehindProxy))
 
     return contractBehindProxy
   }
 }
 
-function parseProxyArgs(...args: any[]): [string, Contract<any>, (contract: Contract<any>) => unknown] {
+function parseProxyArgs(...args: any[]): [string, Contract<any>, ((contract: Contract<any>) => unknown) | undefined] {
   const withName = typeof args[0] === 'string'
   const name: string = withName ? args[0] : undefined
   const contract: Contract<any> = args[withName ? 1 : 0]
-  const params = args[withName ? 3 : 2]
-  const onInitialize = normalizeCall(contract, args[withName ? 2 : 1], params)
-  return [name, contract, onInitialize as (contract: Contract<any>) => unknown]
+  const params = args[withName ? 3 : 2] ?? []
+  const onInitializeArg = args[withName ? 2 : 1]
+  const onInitialize = onInitializeArg ? normalizeCall(contract, onInitializeArg, params) : undefined
+  return [name, contract, onInitialize]
 }
 
 function normalizeCall<T>(
