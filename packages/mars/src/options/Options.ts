@@ -8,6 +8,7 @@ export interface Options {
   outputFile?: string
   gasPrice?: BigNumber
   dryRun?: boolean
+  fromAddress?: string
   logFile?: string
   noConfirm?: boolean
   verify?: boolean

@@ -30,13 +30,13 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     }
   }
 
-  const { wallet, networkName } = await getWallet(merged)
-  const gasPrice = merged.gasPrice ?? (await wallet.provider.getGasPrice())
+  const { signer, networkName } = await getSigner(merged)
+  const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
   return {
     gasPrice,
     noConfirm: !!merged.noConfirm,
-    wallet,
+    signer,
     network: networkName,
     dryRun: !!merged.dryRun,
     logFile: merged.logFile ?? '',
@@ -45,8 +45,8 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 }
 
-async function getWallet(options: Options) {
-  const { network, infuraApiKey, alchemyApiKey, dryRun, privateKey } = options
+async function getSigner(options: Options) {
+  const { network, infuraApiKey, alchemyApiKey, dryRun, fromAddress, privateKey } = options
   if (network === undefined) {
     throw new Error('No network specified. This should never happen.')
   }
@@ -61,23 +61,26 @@ async function getWallet(options: Options) {
     throw new Error('Cannot construct rpc url. This should never happen.')
   }
 
-  let wallet
+  let signer
   if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
       fork: rpcUrl,
+      unlocked_accounts: fromAddress ? [fromAddress] : [],
       accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
     })
     const provider = new providers.Web3Provider(ganache as any)
-    wallet = new Wallet(privateKey ?? randomWallet, provider)
+    signer = fromAddress
+      ? provider.getSigner(fromAddress)
+      : new Wallet(privateKey ?? randomWallet, provider)
   } else {
     const provider = new providers.JsonRpcProvider(rpcUrl)
     if (privateKey === undefined) {
       exit('No private key specified.')
     }
-    wallet = new Wallet(privateKey, provider)
+    signer = new Wallet(privateKey, provider)
   }
 
-  const networkName = network.startsWith('http') ? (await wallet.provider.getNetwork()).name : network
-  return { wallet, networkName }
+  const networkName = network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
+  return { signer: signer, networkName }
 }

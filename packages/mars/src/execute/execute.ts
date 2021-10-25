@@ -79,8 +79,9 @@ export async function getExistingDeployment(
   const existing = read(options.deploymentsFile, options.network, name)
   if (existing) {
     const [existingTx, receipt] = await Promise.all([
-      options.wallet.provider.getTransaction(existing.txHash),
-      options.wallet.provider.getTransactionReceipt(existing.txHash),
+      // TODO: support abstract signers where no provider exists
+      options.signer.provider!.getTransaction(existing.txHash),
+      options.signer.provider!.getTransactionReceipt(existing.txHash),
     ])
     if (existingTx && receipt) {
       if (
@@ -139,7 +140,7 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
 async function executeRead(action: ReadAction, options: ExecuteOptions) {
   const params = action.params.map((param) => resolveValue(param))
   const address = resolveValue(action.address)
-  const contract = new Contract(address, [action.method], options.wallet)
+  const contract = new Contract(address, [action.method], options.signer)
   const result = await contract[action.method.name](...params)
   action.resolve(result)
 }
