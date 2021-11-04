@@ -13,6 +13,7 @@ describe('getConfig', () => {
   let argvBackup: string[]
 
   beforeEach(() => {
+    process.argv = ['mars']
     envBackup = process.env
     argvBackup = process.argv
   })
