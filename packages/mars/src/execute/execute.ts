@@ -21,7 +21,7 @@ import { context } from '../context'
 export type TransactionOverrides = Partial<TransactionOptions>
 
 export interface ExecuteOptions extends TransactionOptions {
-  network: string
+  networkName: string
   deploymentsFile: string
   dryRun: boolean
   logFile: string
@@ -76,7 +76,7 @@ export async function getExistingDeployment(
   name: string,
   options: ExecuteOptions
 ): Promise<string | undefined> {
-  const existing = read(options.deploymentsFile, options.network, name)
+  const existing = read(options.deploymentsFile, options.networkName, name)
   if (existing) {
     const [existingTx, receipt] = await Promise.all([
       // TODO: support abstract signers where no provider exists
@@ -108,7 +108,7 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
     // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
     ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
     if (!options.dryRun) {
-      save(options.deploymentsFile, options.network, action.name, { txHash, address })
+      save(options.deploymentsFile, options.networkName, action.name, { txHash, address })
     }
   }
   if (options.verification) {
@@ -120,7 +120,7 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
         action.artifact[Name],
         address,
         action.constructor ? new utils.Interface([action.constructor]).encodeDeploy(params) : undefined,
-        options.network
+        options.networkName
       )
     } else {
       await verify(
@@ -130,7 +130,7 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
         action.artifact[Name],
         address,
         action.constructor ? new utils.Interface([action.constructor]).encodeDeploy(params) : undefined,
-        options.network
+        options.networkName
       )
     }
   }

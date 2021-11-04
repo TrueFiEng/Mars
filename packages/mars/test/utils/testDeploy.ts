@@ -15,7 +15,7 @@ export async function testDeploy<T>(
 ) {
   const provider = options.injectProvider ?? new MockProvider()
   const config: ExecuteOptions = {
-    network: 'test',
+    networkName: 'test',
     dryRun: !options.saveDeploy,
     noConfirm: true,
     logFile: options.logFile ?? '',

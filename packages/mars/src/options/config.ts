@@ -13,7 +13,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     ...getDefaultOptions(),
     ...options,
     ...getEnvironmentOptions(),
-    ...getCommandLineOptions(),
+    ...(options.disableCommandLineOptions ? false : getCommandLineOptions()),
   }
 
   if (merged.dryRun && merged.noConfirm === undefined) {
@@ -37,7 +37,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     gasPrice,
     noConfirm: !!merged.noConfirm,
     signer,
-    network: networkName,
+    networkName: networkName,
     dryRun: !!merged.dryRun,
     logFile: merged.logFile ?? '',
     deploymentsFile: merged.outputFile,
@@ -51,7 +51,10 @@ async function getSigner(options: Options) {
     throw new Error('No network specified. This should never happen.')
   }
   let rpcUrl
-  if (network.startsWith('http')) {
+  let provider
+  if (typeof network === 'object'){
+    provider = new providers.Web3Provider(network as any)
+  } else if (network.startsWith('http')) {
     rpcUrl = network
   } else if (alchemyApiKey) {
     rpcUrl = `https://eth-${network}.alchemyapi.io/v2/${alchemyApiKey}`
@@ -65,22 +68,24 @@ async function getSigner(options: Options) {
   if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
-      fork: rpcUrl,
+      fork: network ?? rpcUrl,
       unlocked_accounts: fromAddress ? [fromAddress] : [],
       accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
     })
-    const provider = new providers.Web3Provider(ganache as any)
+    provider = new providers.Web3Provider(ganache as any)
     signer = fromAddress
       ? provider.getSigner(fromAddress)
       : new Wallet(privateKey ?? randomWallet, provider)
   } else {
-    const provider = new providers.JsonRpcProvider(rpcUrl)
+    provider ??= new providers.JsonRpcProvider(rpcUrl)
     if (privateKey === undefined) {
       exit('No private key specified.')
     }
     signer = new Wallet(privateKey, provider)
   }
 
-  const networkName = network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
+  const networkName = typeof network === 'object' || network.startsWith('http')
+    ? (await signer.provider.getNetwork()).name
+    : network
   return { signer: signer, networkName }
 }

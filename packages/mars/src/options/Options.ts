@@ -1,8 +1,9 @@
 import { BigNumber } from 'ethers'
+import Ganache from "ganache-core";
 
 export interface Options {
   privateKey?: string
-  network?: string
+  network?: string | Ganache.Provider
   infuraApiKey?: string
   alchemyApiKey?: string
   outputFile?: string
@@ -17,4 +18,5 @@ export interface Options {
   sources?: string
   waffleConfig?: string
   dataPrintMode?: boolean
+  disableCommandLineOptions?: boolean
 }
