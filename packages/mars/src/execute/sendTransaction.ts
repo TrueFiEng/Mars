@@ -1,4 +1,4 @@
-import {utils, providers, constants, BigNumber, Signer} from 'ethers'
+import { utils, providers, constants, BigNumber, Signer } from 'ethers'
 import readline from 'readline'
 import { getEthPriceUsd } from './getEthPriceUsd'
 import chalk from 'chalk'
@@ -17,7 +17,8 @@ export async function sendTransaction(
   { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, logFile }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
-  const gasLimit = overwrittenGasLimit ?? (await signer.estimateGas({ ...transaction, from: await signer.getAddress() }))
+  const gasLimit =
+    overwrittenGasLimit ?? (await signer.estimateGas({ ...transaction, from: await signer.getAddress() }))
   const withGasLimit = { ...transaction, gasLimit, gasPrice }
 
   const price = await getEthPriceUsd()

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import {BigNumber, Wallet} from 'ethers'
+import { BigNumber, Wallet } from 'ethers'
 import { getConfig } from '../../src/options'
 
 const PRIVATE_KEY_1 = `0x${'1'.repeat(64)}`

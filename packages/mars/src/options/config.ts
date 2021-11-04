@@ -52,7 +52,7 @@ async function getSigner(options: Options) {
   }
   let rpcUrl
   let provider
-  if (typeof network === 'object'){
+  if (typeof network === 'object') {
     provider = new providers.Web3Provider(network as any)
   } else if (network.startsWith('http')) {
     rpcUrl = network
@@ -73,9 +73,7 @@ async function getSigner(options: Options) {
       accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
     })
     provider = new providers.Web3Provider(ganache as any)
-    signer = fromAddress
-      ? provider.getSigner(fromAddress)
-      : new Wallet(privateKey ?? randomWallet, provider)
+    signer = fromAddress ? provider.getSigner(fromAddress) : new Wallet(privateKey ?? randomWallet, provider)
   } else {
     provider ??= new providers.JsonRpcProvider(rpcUrl)
     if (privateKey === undefined) {
@@ -84,8 +82,7 @@ async function getSigner(options: Options) {
     signer = new Wallet(privateKey, provider)
   }
 
-  const networkName = typeof network === 'object' || network.startsWith('http')
-    ? (await signer.provider.getNetwork()).name
-    : network
+  const networkName =
+    typeof network === 'object' || network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
   return { signer: signer, networkName }
 }
