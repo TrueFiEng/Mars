@@ -14,7 +14,7 @@ import { Options } from './Options'
 import { usage, ALLOWED_OPTIONS } from './usage'
 import path from 'path'
 
-const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key']
+const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key', 'f', 'from']
 
 export function getCommandLineOptions(): Options {
   const parsed = minimist(process.argv.slice(2), { string: STRING_ARGUMENTS })

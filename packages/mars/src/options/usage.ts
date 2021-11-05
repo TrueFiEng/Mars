@@ -49,6 +49,8 @@ export const ALLOWED_OPTIONS = [
   'gas-price',
   'd',
   'dry-run',
+  'f',
+  'from',
   'l',
   'log',
   'y',
