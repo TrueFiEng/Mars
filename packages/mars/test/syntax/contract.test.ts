@@ -145,6 +145,20 @@ describe('Contract', () => {
     expect(getDeployResult().test.contractName.address).to.equal(secondCall[Address].resolve())
   })
 
+  it('does not redeploy modified contract if update was skipped explicitly', async () => {
+    const { result: firstCall, provider } = await testDeploy(() =>
+      contract('contractName', ComplexContract, [10, 'test'])
+    )
+    const { result: secondCall } = await testDeploy(
+      () => contract('contractName', SimpleContract, { skipUpgrade: true }),
+      {
+        injectProvider: provider,
+        saveDeploy: true,
+      }
+    )
+    expect(firstCall[Address].resolve()).to.equal(secondCall[Address].resolve())
+  })
+
   it('deploys using an upgradeability proxy', async () => {
     let xAfterInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
     const { result: proxyDeploymentCall } = await testDeploy(() => {

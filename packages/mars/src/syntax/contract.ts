@@ -64,6 +64,7 @@ export function contract(...args: any[]): any {
     params,
     options,
     resolve: resolveAddress,
+    skipUpgrade: !!options.skipUpgrade,
   })
 
   return makeContractInstance(name, artifact, address)
