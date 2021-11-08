@@ -2,7 +2,7 @@
   "name": "ethereum-mars",
   "description": "The amazing smart contract deployment tool",
   "license": "MIT",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "keywords": [
     "deployment",
     "ethereum",
