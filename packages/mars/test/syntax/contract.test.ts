@@ -149,12 +149,15 @@ describe('Contract', () => {
     const { result: firstCall, provider } = await testDeploy(() =>
       contract('contractName', ComplexContract, [10, 'test'])
     )
-    const { result: secondCall } = await testDeploy(() => contract('contractName', SimpleContract, {skipUpgrade: true}), {
-      injectProvider: provider,
-      saveDeploy: true,
-    })
+    const { result: secondCall } = await testDeploy(
+      () => contract('contractName', SimpleContract, { skipUpgrade: true }),
+      {
+        injectProvider: provider,
+        saveDeploy: true,
+      }
+    )
     expect(firstCall[Address].resolve()).to.equal(secondCall[Address].resolve())
-  });
+  })
 
   it('deploys using an upgradeability proxy', async () => {
     let xAfterInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
