@@ -19,6 +19,7 @@ export interface DeployAction {
   params: any[]
   options: Partial<TransactionOptions>
   resolve: (address: string) => void
+  skipUpgrade: boolean
 }
 
 export interface StartConditionalAction {
