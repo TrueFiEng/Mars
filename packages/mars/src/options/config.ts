@@ -45,6 +45,10 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 }
 
+function isNetworkProvider(network: string | Ganache.Provider) : network is Ganache.Provider {
+  return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
+}
+
 async function getSigner(options: Options) {
   const { network, infuraApiKey, alchemyApiKey, dryRun, fromAddress, privateKey } = options
   if (network === undefined) {
@@ -52,7 +56,7 @@ async function getSigner(options: Options) {
   }
   let rpcUrl: string | undefined
   let provider: providers.JsonRpcProvider
-  if (typeof network === 'object') {
+  if (isNetworkProvider(network)) {
     provider = new providers.Web3Provider(network as any)
   } else if (network.startsWith('http')) {
     rpcUrl = network
@@ -83,6 +87,6 @@ async function getSigner(options: Options) {
   }
 
   const networkName =
-    typeof network === 'object' || network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
+    isNetworkProvider(network) || network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
   return { signer: signer, networkName }
 }
