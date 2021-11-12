@@ -18,7 +18,9 @@ import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
 
-export type TransactionOverrides = Partial<TransactionOptions>
+export type TransactionOverrides = Partial<TransactionOptions> & {
+  skipUpgrade?: boolean
+}
 
 export interface ExecuteOptions extends TransactionOptions {
   networkName: string
@@ -74,6 +76,7 @@ function executeConditionalStart({ condition }: StartConditionalAction) {
 export async function getExistingDeployment(
   tx: providers.TransactionRequest,
   name: string,
+  shouldSkipUpgrade: boolean,
   options: ExecuteOptions
 ): Promise<string | undefined> {
   const existing = read(options.deploymentsFile, options.networkName, name)
@@ -83,6 +86,9 @@ export async function getExistingDeployment(
       options.signer.provider!.getTransaction(existing.txHash),
       options.signer.provider!.getTransactionReceipt(existing.txHash),
     ])
+    if (existingTx && receipt && shouldSkipUpgrade) {
+      return existing.address
+    }
     if (existingTx && receipt) {
       if (
         tx.data &&
@@ -99,7 +105,7 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
   const tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
-  const existingAddress = await getExistingDeployment(tx, action.name, options)
+  const existingAddress = await getExistingDeployment(tx, action.name, action.skipUpgrade, options)
   let address: string, txHash: string
   if (existingAddress) {
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
