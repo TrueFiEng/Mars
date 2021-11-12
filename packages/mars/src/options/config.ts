@@ -45,7 +45,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 }
 
-function isNetworkProvider(network: string | Ganache.Provider) : network is Ganache.Provider {
+function isNetworkProvider(network: string | Ganache.Provider): network is Ganache.Provider {
   return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
 }
 
