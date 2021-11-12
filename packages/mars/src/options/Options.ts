@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import Ganache from 'ganache-core'
+import type Ganache from 'ganache-core'
 
 export interface Options {
   /**

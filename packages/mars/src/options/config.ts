@@ -50,8 +50,8 @@ async function getSigner(options: Options) {
   if (network === undefined) {
     throw new Error('No network specified. This should never happen.')
   }
-  let rpcUrl
-  let provider
+  let rpcUrl: string | undefined
+  let provider: providers.JsonRpcProvider
   if (typeof network === 'object') {
     provider = new providers.Web3Provider(network as any)
   } else if (network.startsWith('http')) {
