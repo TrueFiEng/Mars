@@ -15,12 +15,12 @@ export async function testDeploy<T>(
 ) {
   const provider = options.injectProvider ?? new MockProvider()
   const config: ExecuteOptions = {
-    network: 'test',
+    networkName: 'test',
     dryRun: !options.saveDeploy,
     noConfirm: true,
     logFile: options.logFile ?? '',
     deploymentsFile: './test/deployments.json',
-    wallet: provider.getWallets()[0],
+    signer: provider.getSigner(0),
     gasPrice: BigNumber.from(0),
   }
   context.enabled = true

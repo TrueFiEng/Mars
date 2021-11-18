@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers'
 import minimist from 'minimist'
 import {
+  ensureAddress,
   ensureApiKey,
   ensureBoolean,
   ensureNetwork,
@@ -13,7 +14,7 @@ import { Options } from './Options'
 import { usage, ALLOWED_OPTIONS } from './usage'
 import path from 'path'
 
-const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key']
+const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key', 'f', 'from']
 
 export function getCommandLineOptions(): Options {
   const parsed = minimist(process.argv.slice(2), { string: STRING_ARGUMENTS })
@@ -67,6 +68,12 @@ export function getCommandLineOptions(): Options {
   if (dryRun) {
     ensureBoolean(dryRun, 'You cannot specify a value alongside dry run')
     result.dryRun = dryRun
+  }
+
+  const fromAddress = get(parsed, 'f', 'from')
+  if (fromAddress) {
+    ensureAddress(fromAddress, 'Invalid transaction sender address provided')
+    result.fromAddress = fromAddress
   }
 
   const logFile = get(parsed, 'l', 'log')

@@ -10,7 +10,7 @@ export async function deploy<T>(
 
   context.enabled = true
   context.actions = []
-  const result = callback(config.wallet.address, config)
+  const result = callback(await config.signer.getAddress(), config)
   context.enabled = false
   await execute(context.actions, config)
   return { result, config }

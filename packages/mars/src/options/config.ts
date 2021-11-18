@@ -13,7 +13,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     ...getDefaultOptions(),
     ...options,
     ...getEnvironmentOptions(),
-    ...getCommandLineOptions(),
+    ...(options.disableCommandLineOptions ? false : getCommandLineOptions()),
   }
 
   if (merged.dryRun && merged.noConfirm === undefined) {
@@ -30,14 +30,14 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     }
   }
 
-  const { wallet, networkName } = await getWallet(merged)
-  const gasPrice = merged.gasPrice ?? (await wallet.provider.getGasPrice())
+  const { signer, networkName } = await getSigner(merged)
+  const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
   return {
     gasPrice,
     noConfirm: !!merged.noConfirm,
-    wallet,
-    network: networkName,
+    signer,
+    networkName: networkName,
     dryRun: !!merged.dryRun,
     logFile: merged.logFile ?? '',
     deploymentsFile: merged.outputFile,
@@ -45,13 +45,20 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 }
 
-async function getWallet(options: Options) {
-  const { network, infuraApiKey, alchemyApiKey, dryRun, privateKey } = options
+function isNetworkProvider(network: string | Ganache.Provider): network is Ganache.Provider {
+  return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
+}
+
+async function getSigner(options: Options) {
+  const { network, infuraApiKey, alchemyApiKey, dryRun, fromAddress, privateKey } = options
   if (network === undefined) {
     throw new Error('No network specified. This should never happen.')
   }
-  let rpcUrl
-  if (network.startsWith('http')) {
+  let rpcUrl: string | undefined
+  let provider: providers.JsonRpcProvider
+  if (isNetworkProvider(network)) {
+    provider = new providers.Web3Provider(network as any)
+  } else if (network.startsWith('http')) {
     rpcUrl = network
   } else if (alchemyApiKey) {
     rpcUrl = `https://eth-${network}.alchemyapi.io/v2/${alchemyApiKey}`
@@ -61,23 +68,25 @@ async function getWallet(options: Options) {
     throw new Error('Cannot construct rpc url. This should never happen.')
   }
 
-  let wallet
+  let signer
   if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
-      fork: rpcUrl,
+      fork: network ?? rpcUrl,
+      unlocked_accounts: fromAddress ? [fromAddress] : [],
       accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
     })
-    const provider = new providers.Web3Provider(ganache as any)
-    wallet = new Wallet(privateKey ?? randomWallet, provider)
+    provider = new providers.Web3Provider(ganache as any)
+    signer = fromAddress ? provider.getSigner(fromAddress) : new Wallet(privateKey ?? randomWallet, provider)
   } else {
-    const provider = new providers.JsonRpcProvider(rpcUrl)
+    provider ??= new providers.JsonRpcProvider(rpcUrl)
     if (privateKey === undefined) {
       exit('No private key specified.')
     }
-    wallet = new Wallet(privateKey, provider)
+    signer = new Wallet(privateKey, provider)
   }
 
-  const networkName = network.startsWith('http') ? (await wallet.provider.getNetwork()).name : network
-  return { wallet, networkName }
+  const networkName =
+    isNetworkProvider(network) || network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
+  return { signer: signer, networkName }
 }

@@ -5,6 +5,11 @@ export function ensurePrivateKey(value: unknown, message: string): asserts value
   ensureRegex(PRIVATE_KEY_REGEX, value, message)
 }
 
+const ADDRESS = /^0x[a-f\d]{40}$/i
+export function ensureAddress(value: unknown, message: string): asserts value is string {
+  ensureRegex(ADDRESS, value, message)
+}
+
 const API_KEY_REGEX = /^[^\s]+$/
 export function ensureApiKey(value: unknown, message: string): asserts value is string {
   ensureRegex(API_KEY_REGEX, value, message)
