@@ -42,6 +42,7 @@
     "prepublishOnly": "rm -rf build && yarn build"
   },
   "dependencies": {
+    "@gnosis.pm/safe-core-sdk": "^1.0.0",
     "@resolver-engine/imports": "^0.3.3",
     "@resolver-engine/imports-fs": "^0.3.3",
     "argparse": "^2.0.1",
