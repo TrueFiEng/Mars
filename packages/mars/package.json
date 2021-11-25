@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@gnosis.pm/safe-core-sdk": "^1.0.0",
+    "@gnosis.pm/safe-service-client": "^1.0.1",
     "@resolver-engine/imports": "^0.3.3",
     "@resolver-engine/imports-fs": "^0.3.3",
     "argparse": "^2.0.1",

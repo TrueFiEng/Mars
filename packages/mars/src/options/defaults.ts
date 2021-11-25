@@ -5,7 +5,7 @@ export function getDefaultOptions() {
     infuraApiKey: 'f21d1fe4b8c9455faa3a60222236c26e',
     sources: './contracts',
     waffleConfig: './waffle.json',
-    network: 'mainnet',
+    ethNetworkName: 'mainnet',
     outputFile: './deployments.json',
   }
 }
