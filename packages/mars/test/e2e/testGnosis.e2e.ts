@@ -5,9 +5,12 @@ import {OperationType, SafeTransactionDataPartial} from '@gnosis.pm/safe-core-sd
 import {getDeployTx} from "../../src/execute/getDeployTx";
 import {SimpleContract} from "../fixtures/exampleArtifacts";
 import {AbiSymbol, Bytecode} from "../../src/symbols";
+import {ContractDeployer} from "../../src/gnosis/contractDeployer";
 
+// TODO: convenient way to pass env variables for mocha
 const config = {
   txServiceUri: 'https://safe-transaction.rinkeby.gnosis.io', // Rinkeby Gnosis Transaction Service URI
+  // TODO: Fetch from env.
   infuraApiKey: '2d765c7dfe354b56bf2fc3cc03a8c34d', // marcin's created infura free tier subscription
   ethNetworkName: 'rinkeby', // in TT we test Gnosis Safes in Rinkeby
   ttSafe: '0x8772CD484C059EC5c61459a0abb5A45ece16701f', // TT Rinkeby Test Safe
@@ -22,7 +25,8 @@ const config = {
 }
 
 // based on https://docs.gnosis-safe.io/build/sdks/core-sdk
-describe("Gnosis Safe as multisig contract deployment service in Rinkeby", () => {
+describe("Gnosis Safe as multisig contract deployment and interaction service in Rinkeby", () => {
+  let contractDeployer: ContractDeployer
   let safeServiceClient: SafeServiceClient
   let owner: Signer
   let delegate: Signer
@@ -32,6 +36,7 @@ describe("Gnosis Safe as multisig contract deployment service in Rinkeby", () =>
   beforeEach(async () => {
     safeServiceClient = new SafeServiceClient(config.txServiceUri)
     const web3Provider = new providers.InfuraProvider(config.ethNetworkName, config.infuraApiKey)
+    contractDeployer = new ContractDeployer(web3Provider)
     owner = new ethers.Wallet(config.owner.privateKey, web3Provider)
     delegate = new ethers.Wallet(config.delegate.privateKey, web3Provider)
     safeByOwner = await Safe.create({
@@ -46,7 +51,7 @@ describe("Gnosis Safe as multisig contract deployment service in Rinkeby", () =>
     await safeByDelegate.connect({})
   })
 
-  it("Prints address and owners", async () => {
+  it("Prints Safe address and its owners", async () => {
     const address = safeByOwner.getAddress()
     console.log(`Address: ${address}`)
 
@@ -67,38 +72,65 @@ describe("Gnosis Safe as multisig contract deployment service in Rinkeby", () =>
         label: 'marcin\'s delegate'
       })
 
-      console.log(`Delegate add signature: ${addedDelegate.signature}`)
+      console.log(`Delegate ${addedDelegate} added.`)
     }
 
     console.log('Delegates:')
     delegates.map(d => console.log(`${d.delegate} (${d.label}) added by ${d.delegator}`))
   })
 
-  it('Enqueues a simple contract deployment transaction by a delegate', async () => {
-    const simpleContractDeploymentTx = getDeployTx(SimpleContract[AbiSymbol], SimpleContract[Bytecode], [])
+  // yup, this is a large test; we need a sequential ordering of steps which mocha does not support yet
+  // see: https://github.com/mochajs/mocha/issues/2684
+  it('Enqueues a contract deployment by a delegate, approves, executes and calls the created via multisig', async () => {
 
-    const safeDeploymentTx: SafeTransactionDataPartial = {
-      data: simpleContractDeploymentTx.data as string,
-      safeTxGas: 80000000
+    // Contract deployment
+    const simpleContractDeploymentTx = getDeployTx(SimpleContract[AbiSymbol], SimpleContract[Bytecode], [])
+    const safeSimpleContractDeploymentTx = await contractDeployer.createDeploymentTx(simpleContractDeploymentTx)
+    const safeScriptTx: SafeTransactionDataPartial = {
+      to: safeSimpleContractDeploymentTx.to,
+      data: safeSimpleContractDeploymentTx.data,
+      value: '0'
     } as SafeTransactionDataPartial
-    const safeTransaction = await safeByOwner.createTransaction(safeDeploymentTx)
+    const safeTransaction = await safeByOwner.createTransaction(safeScriptTx)
     const safeTransactionHash = await safeByOwner.getTransactionHash(safeTransaction)
     await safeServiceClient.proposeTransaction({
       safeAddress: safeByOwner.getAddress(),
       safeTxHash: safeTransactionHash,
       safeTransaction,
-      senderAddress: await owner.getAddress()
+      senderAddress: await owner.getAddress(),
     })
+    console.log(`Safe transaction proposed successfully: txHash = ${safeTransactionHash}`)
+
+    // Off-chain approve tx in Gnosis Transaction Service
+    // for an on-chain approval, you need to interact with the contract via the safe sdk (not the service client)
+    const confirmationSignature = await safeByOwner.signTransactionHash(safeTransactionHash);
+    const confirmationResponse = await safeServiceClient.confirmTransaction(safeTransactionHash, confirmationSignature.data)
+    console.log(`Confirmed with the owner ${safeByOwner.getAddress()}. Signature is: ${confirmationResponse.signature}`)
+
+    // Execute transaction
+
+    // Get the address of a newly deployed contract
+
+    // Create contract interaction transaction with multisig
+
+    // Approve interaction
+
+    // Execute interaction
+
+    // Get the value of interaction
 
     console.log(`Simple contract deployment via Safe tx hash: ${safeTransactionHash}`)
   })
 
-  it('Find tx details', async () => {
-    const t = await safeServiceClient.getTransaction('0x683fe944de35598048d190a7e39932c0d4b8036805c859eaa1d4f224e8b07dfa')
-    const pending = await safeServiceClient.getPendingTransactions(safeByOwner.getAddress())
+  describe('Utility pieces that can be called separately for diagnostic or debugging', () => {
+    it('Get Safe TX details', async () => {
+      // EDIT THIS!
+      const safeTxHash = '0xe8f81f77337535e7e058cf97f7f50633e70f914f8707b6e512ceb05b09541783'
 
-    const approvalResult = await safeByOwner.approveTransactionHash(t.safeTxHash)
-    //safeByOwner.executeTransaction()
+      const tx = await safeServiceClient.getTransaction(safeTxHash)
+
+      console.log(JSON.stringify(tx, null, 2))
+    })
   })
 })
 
