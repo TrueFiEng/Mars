@@ -91,13 +91,13 @@ describe("Gnosis Safe as multisig contract deployment and interaction service in
       data: safeSimpleContractDeploymentTx.data,
       value: '0'
     } as SafeTransactionDataPartial
-    const safeTransaction = await safeByOwner.createTransaction(safeScriptTx)
-    const safeTransactionHash = await safeByOwner.getTransactionHash(safeTransaction)
+    const safeTransaction = await safeByDelegate.createTransaction(safeScriptTx)
+    const safeTransactionHash = await safeByDelegate.getTransactionHash(safeTransaction)
     await safeServiceClient.proposeTransaction({
-      safeAddress: safeByOwner.getAddress(),
+      safeAddress: safeByDelegate.getAddress(),
       safeTxHash: safeTransactionHash,
       safeTransaction,
-      senderAddress: await owner.getAddress(),
+      senderAddress: await delegate.getAddress(),
     })
     console.log(`Safe transaction proposed successfully: txHash = ${safeTransactionHash}`)
 
