@@ -11,11 +11,9 @@ import { expect } from 'chai'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Contract__JSON = require('./../build/UpgradeableContract.json')
 
-// TODO: convenient way to pass env variables for mocha
 const config = {
   txServiceUri: 'https://safe-transaction.rinkeby.gnosis.io', // Rinkeby Gnosis Transaction Service URI
-  // TODO: Fetch from env.
-  infuraApiKey: '2d765c7dfe354b56bf2fc3cc03a8c34d', // marcin's created infura free tier subscription
+  infuraApiKey: process.env.INFURA_KEY as string, // infura.io project id
   ethNetworkName: 'rinkeby', // in TT we test Gnosis Safes in Rinkeby
   ttSafe: '0x8772CD484C059EC5c61459a0abb5A45ece16701f', // TT Rinkeby Test Safe
   owner: {
@@ -109,7 +107,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
 
     // Asserts: call the deployed and initialized contract off-multisig to examine availability and state
     const actual = await contract.x()
-    expect(actual).to.be.equal(11223344)
+    expect(actual.toNumber()).to.be.equal(11223344)
   })
 
   describe('Utility pieces that can be called separately for diagnostic or debugging', () => {
