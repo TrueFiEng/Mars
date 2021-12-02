@@ -3,11 +3,12 @@ import Safe, {EthersAdapter} from '@gnosis.pm/safe-core-sdk'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
 import {SafeTransaction, SafeTransactionDataPartial} from '@gnosis.pm/safe-core-sdk-types'
 import {getDeployTx} from '../../src/execute/getDeployTx'
-import {SimpleContract} from '../fixtures/exampleArtifacts'
+import {UpgradeableContract} from '../fixtures/exampleArtifacts'
 import {AbiSymbol, Bytecode} from '../../src/symbols'
 import {ContractDeployer} from '../../src/gnosis/contractDeployer'
+import {expect} from "chai";
 
-const SimpleContract__JSON = require('./../build/SimpleContract.json')
+const Contract__JSON = require('./../build/UpgradeableContract.json')
 
 // TODO: convenient way to pass env variables for mocha
 const config = {
@@ -83,15 +84,12 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     delegates.map((d) => console.log(`${d.delegate} (${d.label}) added by ${d.delegator}`))
   })
 
-  // yup, this is a large test; we need a sequential ordering of steps which mocha does not support yet
-
-
-// see: https://github.com/mochajs/mocha/issues/2684
   it('Multisig-deploys a contract and multisig-calls a contract\'s operation', async () => {
     // Contract deployment using multisig workflow
-    const bytecode = SimpleContract[Bytecode];
-    const directDeploymentTx = getDeployTx(SimpleContract[AbiSymbol], bytecode, [])
+    const bytecode = UpgradeableContract[Bytecode];
+    const directDeploymentTx = getDeployTx(UpgradeableContract[AbiSymbol], bytecode, [])
     const {transaction: deploymentTx, address} = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
+    console.log(`Pre-computed address of the contract to be deployed: ${address}`)
 
     const {
       safeTransaction: safeDeploymentTx,
@@ -101,14 +99,18 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     await executeInSafe(safeDeploymentTx);
 
     // Contract interaction using a separate multisig workflow
-    const simpleContract = new Contract(address, SimpleContract__JSON.abi, delegate)
-    const rawInteractionTx = await simpleContract.populateTransaction.hello()
+    const contract = new Contract(address, Contract__JSON.abi, delegate)
+    const rawInteractionTx = await contract.populateTransaction.initialize(11223344)
     const {
       safeTransaction: safeInteractionTx,
       safeTransactionHash: safeInteractionTxHash
     } = await proposeInSafe(rawInteractionTx)
     await confirmInSafe(safeInteractionTxHash)
     await executeInSafe(safeInteractionTx)
+
+    // Asserts: call the deployed and initialized contract off-multisig to examine availability and state
+    const actual = await contract.x()
+    expect(actual).to.be.equal(11223344)
   })
 
   describe('Utility pieces that can be called separately for diagnostic or debugging', () => {
@@ -136,7 +138,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
       safeTransaction: safeTransaction,
       senderAddress: await delegate.getAddress(),
     })
-    console.log(`Safe transaction proposed successfully: txHash = ${safeTransactionHash}`)
+    console.log(`Safe transaction proposed successfully: tx hash = ${safeTransactionHash}`)
     return {safeTransaction, safeTransactionHash};
   }
 
@@ -148,14 +150,16 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
       safeTransactionHash,
       confirmationSignature.data
     )
-    console.log(`Confirmed with the owner ${safeByOwner.getAddress()}. Signature is: ${confirmationResponse.signature}`)
+    console.log(
+      `Confirmed off-chain by owner ${safeByOwner.getAddress()}. ` +
+      `Signature is: ${confirmationResponse.signature}`)
   }
 
   async function executeInSafe(safeDeploymentTx: SafeTransaction) {
     // Execute transaction
     const executionResult = await safeByOwner.executeTransaction(safeDeploymentTx)
-    console.log(`Execution tx hash: ${executionResult.hash}`)
+    console.log(`Executing... (tx hash: ${executionResult.hash})`)
     await executionResult.transactionResponse?.wait()
-    console.log(`Deployment executed in the network!`)
+    console.log(`Executed (tx hash ${executionResult.hash}) in the network!`)
   }
 })
