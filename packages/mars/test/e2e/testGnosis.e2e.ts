@@ -1,13 +1,14 @@
-import {Contract, ethers, providers, Signer} from 'ethers'
-import Safe, {EthersAdapter} from '@gnosis.pm/safe-core-sdk'
+import { Contract, ethers, providers, Signer } from 'ethers'
+import Safe, { EthersAdapter } from '@gnosis.pm/safe-core-sdk'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
-import {SafeTransaction, SafeTransactionDataPartial} from '@gnosis.pm/safe-core-sdk-types'
-import {getDeployTx} from '../../src/execute/getDeployTx'
-import {UpgradeableContract} from '../fixtures/exampleArtifacts'
-import {AbiSymbol, Bytecode} from '../../src/symbols'
-import {ContractDeployer} from '../../src/gnosis/contractDeployer'
-import {expect} from "chai";
+import { SafeTransaction, SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types'
+import { getDeployTx } from '../../src/execute/getDeployTx'
+import { UpgradeableContract } from '../fixtures/exampleArtifacts'
+import { AbiSymbol, Bytecode } from '../../src/symbols'
+import { ContractDeployer } from '../../src/gnosis/contractDeployer'
+import { expect } from 'chai'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Contract__JSON = require('./../build/UpgradeableContract.json')
 
 // TODO: convenient way to pass env variables for mocha
@@ -45,12 +46,12 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     owner = new ethers.Wallet(config.owner.privateKey, web3Provider)
     delegate = new ethers.Wallet(config.delegate.privateKey, web3Provider)
     safeByOwner = await Safe.create({
-      ethAdapter: new EthersAdapter({ethers, signer: owner}),
+      ethAdapter: new EthersAdapter({ ethers, signer: owner }),
       safeAddress: config.ttSafe,
     })
     await safeByOwner.connect({})
     safeByDelegate = await Safe.create({
-      ethAdapter: new EthersAdapter({ethers, signer: delegate}),
+      ethAdapter: new EthersAdapter({ ethers, signer: delegate }),
       safeAddress: config.ttSafe,
     })
     await safeByDelegate.connect({})
@@ -84,27 +85,25 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     delegates.map((d) => console.log(`${d.delegate} (${d.label}) added by ${d.delegator}`))
   })
 
-  it('Multisig-deploys a contract and multisig-calls a contract\'s operation', async () => {
+  it("Multisig-deploys a contract and multisig-calls a contract's operation", async () => {
     // Contract deployment using multisig workflow
-    const bytecode = UpgradeableContract[Bytecode];
+    const bytecode = UpgradeableContract[Bytecode]
     const directDeploymentTx = getDeployTx(UpgradeableContract[AbiSymbol], bytecode, [])
-    const {transaction: deploymentTx, address} = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
+    const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
     console.log(`Pre-computed address of the contract to be deployed: ${address}`)
 
-    const {
-      safeTransaction: safeDeploymentTx,
-      safeTransactionHash: safeDeploymentTxHash
-    } = await proposeInSafe(deploymentTx);
-    await confirmInSafe(safeDeploymentTxHash);
-    await executeInSafe(safeDeploymentTx);
+    const { safeTransaction: safeDeploymentTx, safeTransactionHash: safeDeploymentTxHash } = await proposeInSafe(
+      deploymentTx
+    )
+    await confirmInSafe(safeDeploymentTxHash)
+    await executeInSafe(safeDeploymentTx)
 
     // Contract interaction using a separate multisig workflow
     const contract = new Contract(address, Contract__JSON.abi, delegate)
     const rawInteractionTx = await contract.populateTransaction.initialize(11223344)
-    const {
-      safeTransaction: safeInteractionTx,
-      safeTransactionHash: safeInteractionTxHash
-    } = await proposeInSafe(rawInteractionTx)
+    const { safeTransaction: safeInteractionTx, safeTransactionHash: safeInteractionTxHash } = await proposeInSafe(
+      rawInteractionTx
+    )
     await confirmInSafe(safeInteractionTxHash)
     await executeInSafe(safeInteractionTx)
 
@@ -139,7 +138,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
       senderAddress: await delegate.getAddress(),
     })
     console.log(`Safe transaction proposed successfully: tx hash = ${safeTransactionHash}`)
-    return {safeTransaction, safeTransactionHash};
+    return { safeTransaction, safeTransactionHash }
   }
 
   async function confirmInSafe(safeTransactionHash: string) {
@@ -151,8 +150,8 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
       confirmationSignature.data
     )
     console.log(
-      `Confirmed off-chain by owner ${safeByOwner.getAddress()}. ` +
-      `Signature is: ${confirmationResponse.signature}`)
+      `Confirmed off-chain by owner ${safeByOwner.getAddress()}. ` + `Signature is: ${confirmationResponse.signature}`
+    )
   }
 
   async function executeInSafe(safeDeploymentTx: SafeTransaction) {
