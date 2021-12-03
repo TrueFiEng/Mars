@@ -111,13 +111,14 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
   })
 
   describe('Utility pieces that can be called separately for diagnostic or debugging', () => {
-    it('Get Safe TX details', async () => {
-      // EDIT THIS!
-      const safeTxHash = '0xe8f81f77337535e7e058cf97f7f50633e70f914f8707b6e512ceb05b09541783'
-
-      const tx = await safeServiceClient.getTransaction(safeTxHash)
-
-      console.log(JSON.stringify(tx, null, 2))
+    it("Get safe's latest transactions", async () => {
+      const multisigTransactions = await safeServiceClient.getMultisigTransactions(safeByOwner.getAddress())
+      multisigTransactions.results.forEach((tx) => {
+        console.log('=====================================================================')
+        console.log(`TX ${tx.transactionHash}`)
+        console.log('=====================================================================')
+        console.log(JSON.stringify(tx, null, 2))
+      })
     })
   })
 
