@@ -90,7 +90,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
     console.log(`Pre-computed address of the contract to be deployed: ${address}`)
 
-    const { safeTransaction: safeDeploymentTx, safeTransactionHash: safeDeploymentTxHash } = await proposeInSafe(
+    const { safeMultisigTx: safeDeploymentTx, safeMultisigTxHash: safeDeploymentTxHash } = await proposeInSafe(
       deploymentTx
     )
     await confirmInSafe(safeDeploymentTxHash)
@@ -99,7 +99,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     // Contract interaction using a separate multisig workflow
     const contract = new Contract(address, Contract__JSON.abi, delegate)
     const rawInteractionTx = await contract.populateTransaction.initialize(11223344)
-    const { safeTransaction: safeInteractionTx, safeTransactionHash: safeInteractionTxHash } = await proposeInSafe(
+    const { safeMultisigTx: safeInteractionTx, safeMultisigTxHash: safeInteractionTxHash } = await proposeInSafe(
       rawInteractionTx
     )
     await confirmInSafe(safeInteractionTxHash)
@@ -110,33 +110,58 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     expect(actual.toNumber()).to.be.equal(11223344)
   })
 
+  it('Multisig batched transactions to do as much work in a single shot of approvals and execution', async () => {
+    const bytecode = UpgradeableContract[Bytecode]
+    const directDeploymentTx = getDeployTx(UpgradeableContract[AbiSymbol], bytecode, [])
+    const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
+    console.log(`Pre-computed address of the contract to be deployed: ${address}`)
+    const contract = new Contract(address, Contract__JSON.abi, delegate)
+    const interactionTx = await contract.populateTransaction.initialize(11223344)
+
+    // See: here we propose a batch of 1) deployment and 2) contract interaction
+    const { safeMultisigTx, safeMultisigTxHash } = await proposeInSafe([deploymentTx, interactionTx])
+    await confirmInSafe(safeMultisigTxHash)
+    await executeInSafe(safeMultisigTx)
+
+    // Asserts: call the deployed and initialized contract off-multisig to examine availability and state
+    const actual = await contract.x()
+    expect(actual.toNumber()).to.be.equal(11223344)
+  })
+
   describe('Utility pieces that can be called separately for diagnostic or debugging', () => {
-    it('Get Safe TX details', async () => {
-      // EDIT THIS!
-      const safeTxHash = '0xe8f81f77337535e7e058cf97f7f50633e70f914f8707b6e512ceb05b09541783'
-
-      const tx = await safeServiceClient.getTransaction(safeTxHash)
-
-      console.log(JSON.stringify(tx, null, 2))
+    it("Get safe's latest transactions", async () => {
+      const multisigTransactions = await safeServiceClient.getMultisigTransactions(safeByOwner.getAddress())
+      multisigTransactions.results.forEach((tx) => {
+        console.log('=====================================================================')
+        console.log(`TX ${tx.transactionHash}`)
+        console.log('=====================================================================')
+        console.log(JSON.stringify(tx, null, 2))
+      })
     })
   })
 
-  async function proposeInSafe(tx: providers.TransactionRequest) {
-    const safeScriptTx: SafeTransactionDataPartial = {
-      to: tx.to,
-      data: tx.data,
-      value: tx.value?.toString() ?? '0',
-    } as SafeTransactionDataPartial
-    const safeTransaction = await safeByDelegate.createTransaction(safeScriptTx)
-    const safeTransactionHash = await safeByDelegate.getTransactionHash(safeTransaction)
+  async function proposeInSafe(
+    tx: providers.TransactionRequest | providers.TransactionRequest[]
+  ): Promise<{ safeMultisigTx: SafeTransaction; safeMultisigTxHash: string }> {
+    const txs = Array.isArray(tx) ? tx : [tx]
+    const safeMultisigParts: SafeTransactionDataPartial[] = txs.map(
+      (tx) =>
+        ({
+          to: tx.to,
+          data: tx.data,
+          value: tx.value?.toString() ?? '0',
+        } as SafeTransactionDataPartial)
+    )
+    const safeMultisigTx = await safeByDelegate.createTransaction(safeMultisigParts)
+    const safeMultisigTxHash = await safeByDelegate.getTransactionHash(safeMultisigTx)
     await safeServiceClient.proposeTransaction({
       safeAddress: safeByDelegate.getAddress(),
-      safeTxHash: safeTransactionHash,
-      safeTransaction: safeTransaction,
+      safeTxHash: safeMultisigTxHash,
+      safeTransaction: safeMultisigTx,
       senderAddress: await delegate.getAddress(),
     })
-    console.log(`Safe transaction proposed successfully: tx hash = ${safeTransactionHash}`)
-    return { safeTransaction, safeTransactionHash }
+    console.log(`Safe transaction proposed successfully: tx hash = ${safeMultisigTxHash}`)
+    return { safeMultisigTx, safeMultisigTxHash }
   }
 
   async function confirmInSafe(safeTransactionHash: string) {
