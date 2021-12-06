@@ -20,7 +20,7 @@
     "ethereum-mars": "0.x"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "^3.3.0",
+    "@openzeppelin/contracts": "^4.4.0",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",

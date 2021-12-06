@@ -41,6 +41,11 @@ export interface Options {
   waffleConfig?: string
   dataPrintMode?: boolean
   /***
+   * If true (boolean) or multisig config path (string) provided then it uses multisig strategy for deployment.
+   * If true -> the default location and name of the config assumed (./multisig.json)
+   */
+  multisig?: boolean | string
+  /***
    * Disables collecting options from the command line program invocation. Useful in running end-2-end tests with mocha.
    */
   disableCommandLineOptions?: boolean
