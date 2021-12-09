@@ -21,6 +21,9 @@ deploy(
   },
   (deployer, config) => {
     debug(`Deployer is ${deployer}`)
+
+    const creationMultisig = multisig('Contract creation, proxying and initialization')
+
     const proxy = createProxy(UpgradeabilityProxy)
     const isRinkeby = config.networkName === 'rinkeby'
 
@@ -44,6 +47,11 @@ deploy(
     const firstMarket = contract('firstMarket', Market, [wellKnown, preProxied])
     const secondMarket = contract('secondMarket', Market, [firstProxied, secondBare])
 
+    // explicit or implicit(=without this)
+    creationMultisig.propose()
+
+    const conditionalInitMultisig = multisig('Conditional initialization')
+
     // contract initialization
     runIf(firstProxied.isInitialized().not(), () => {
       firstProxied.initialize(1002003)
@@ -63,6 +71,8 @@ deploy(
       secondBare.initialize(333)
     })
 
+    const crossDependantInitializationMultisig = multisig('Cross-dependant initialization multisig')
+
     // to show dependencies on initialization of other contracts
     firstProxied.approve(secondMarket, 50000)
     secondBare.approve(secondMarket, 50000)
@@ -72,3 +82,7 @@ deploy(
     })
   }
 ).then()
+
+function multisig(title: string): any {
+  // fake impl; design discussion purpose only
+}
