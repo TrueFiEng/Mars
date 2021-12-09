@@ -13,6 +13,7 @@
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
     "build": "yarn waffle && mars",
     "deploy": "ts-node src/index.ts",
+    "deploy:multisig": "ts-node src/multisig.ts",
     "test": "mocha",
     "cover": "echo 'no coverage defined, running tests...' && yarn test"
   },

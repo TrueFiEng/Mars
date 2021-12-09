@@ -12,7 +12,7 @@ contract Token is ERC20 {
     function initialize(uint _val) public {
         isInit = true;
         val = _val;
-        _mint(msg.sender, 1);
+        _mint(msg.sender, 100000);
     }
 
     function isInitialized() public view returns (bool) {

@@ -57,6 +57,8 @@ async function getSigner(options: Options) {
   let rpcUrl: string | undefined
   let provider: providers.JsonRpcProvider
   if (isNetworkProvider(network)) {
+    // this causes 'MaxListenersExceededWarning: Possible EventEmitter memory leak detected.' when many contracts in use
+    // details at https://github.com/ChainSafe/web3.js/issues/1648
     provider = new providers.Web3Provider(network as any)
   } else if (network.startsWith('http')) {
     rpcUrl = network
