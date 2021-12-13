@@ -1,6 +1,6 @@
 import { Contract, providers } from 'ethers'
 import { randomBytes } from 'ethers/lib/utils'
-import { computeCreate2Address } from '../create2Address'
+import { computeCreate2Address } from '../../create2Address'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const createCall = require('./createCall.json')
@@ -26,7 +26,7 @@ export class ContractDeployer {
     unwrappedDeploymentTx: providers.TransactionRequest,
     contractBytecode: string
   ): Promise<DeterministicDeployment> {
-    const deployerContract = await this.getDeployerContract()
+    const deployerContract = this.getDeployerContract()
     const salt = randomBytes(32)
 
     const transaction = await deployerContract.populateTransaction.performCreate2(0, unwrappedDeploymentTx.data, salt)
@@ -35,8 +35,8 @@ export class ContractDeployer {
     return { address, transaction }
   }
 
-  async getDeployerContract(): Promise<Contract> {
-    const currentChainId = await this.provider.getNetwork()
+  getDeployerContract(): Contract {
+    const currentChainId = this.provider.network
     if (currentChainId === undefined)
       throw 'Cannot establish network in which Gnosis contract deployer contract operates'
 

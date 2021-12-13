@@ -1,4 +1,5 @@
 import { Action } from './actions'
+import { MultisigContext } from './syntax/multisig'
 
 export const context = {
   enabled: false,
@@ -10,4 +11,5 @@ export const context = {
   actions: [] as Action[],
   // Counts depth of conditional transactions after the failed one
   conditionalDepth: 0,
+  multisig: new MultisigContext(),
 }

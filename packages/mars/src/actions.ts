@@ -2,6 +2,7 @@ import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
 import { ArtifactFrom } from './syntax/artifact'
 import { BooleanLike, Future } from './values'
 import { TransactionOptions } from './execute/sendTransaction'
+
 export type Action =
   | DeployAction
   | ReadAction
@@ -10,6 +11,8 @@ export type Action =
   | StartConditionalAction
   | EndConditionalAction
   | DebugAction
+  | MultisigActionStart
+  | MultisigActionEnd
 
 export interface DeployAction {
   type: 'DEPLOY'
@@ -59,4 +62,12 @@ export interface EncodeAction {
 export interface DebugAction {
   type: 'DEBUG'
   messages: any[]
+}
+
+export interface MultisigActionStart {
+  type: 'MULTISIG_START'
+}
+
+export interface MultisigActionEnd {
+  type: 'MULTISIG_END'
 }

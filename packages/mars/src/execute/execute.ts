@@ -13,7 +13,7 @@ import { AbiSymbol, Address, ArtifactSymbol, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
 import { sendTransaction, TransactionOptions } from './sendTransaction'
-import { save, read } from './save'
+import { read, save } from './save'
 import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
@@ -64,6 +64,10 @@ async function executeAction(action: Action, options: ExecuteOptions) {
       return executeConditionalStart(action)
     case 'DEBUG':
       return executeDebug(action)
+    case 'MULTISIG_START':
+      return context.multisig.processStart()
+    case 'MULTISIG_END':
+      return context.multisig.processEnd()
   }
 }
 

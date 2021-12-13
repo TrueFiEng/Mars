@@ -5,7 +5,7 @@ import { SafeTransaction, SafeTransactionDataPartial } from '@gnosis.pm/safe-cor
 import { getDeployTx } from '../../src/execute/getDeployTx'
 import { UpgradeableContract } from '../fixtures/exampleArtifacts'
 import { AbiSymbol, Bytecode } from '../../src/symbols'
-import { ContractDeployer } from '../../src/gnosis/contractDeployer'
+import { ContractDeployer } from '../../src/multisig/gnosis/contractDeployer'
 import { expect } from 'chai'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
