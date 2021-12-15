@@ -1,1 +1,1 @@
-export { Multisig } from './multisig'
+export { MultisigBuilder } from './multisig'

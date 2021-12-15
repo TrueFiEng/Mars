@@ -40,7 +40,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
   beforeEach(async () => {
     safeServiceClient = new SafeServiceClient(config.txServiceUri)
     const web3Provider = new providers.InfuraProvider(config.ethNetworkName, config.infuraApiKey)
-    deployer = new ContractDeployer(web3Provider)
+    deployer = new ContractDeployer(web3Provider.network.chainId)
     owner = new ethers.Wallet(config.owner.privateKey, web3Provider)
     delegate = new ethers.Wallet(config.delegate.privateKey, web3Provider)
     safeByOwner = await Safe.create({

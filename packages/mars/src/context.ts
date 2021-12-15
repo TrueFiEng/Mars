@@ -11,5 +11,6 @@ export const context = {
   actions: [] as Action[],
   // Counts depth of conditional transactions after the failed one
   conditionalDepth: 0,
-  multisig: new MultisigContext(),
+  // TODO extract GlobalContext class and remove undefined
+  multisig: undefined as MultisigContext | undefined,
 }

@@ -22,7 +22,7 @@ export interface Options {
   alchemyApiKey?: string
   outputFile?: string
   gasPrice?: BigNumber
-  /***
+  /**
    * If true then it forks an existing chain locally and executes the deployment on such.
    * Equivalent to Ganache's 'fork' option.
    */
@@ -40,12 +40,11 @@ export interface Options {
   sources?: string
   waffleConfig?: string
   dataPrintMode?: boolean
-  /***
-   * If true (boolean) or multisig config path (string) provided then it uses multisig strategy for deployment.
-   * If true -> the default location and name of the config assumed (./multisig.json)
+  /**
+   * Gnosis Safe contract address to be used in multisig deployments.
    */
-  multisig?: boolean | string
-  /***
+  multisigGnosisSafe?: string
+  /**
    * Disables collecting options from the command line program invocation. Useful in running end-2-end tests with mocha.
    */
   disableCommandLineOptions?: boolean

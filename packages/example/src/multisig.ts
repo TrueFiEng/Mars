@@ -2,6 +2,7 @@ import { contract, createProxy, debug, deploy, Options, runIf } from 'ethereum-m
 import { Market, Token, UpgradeabilityProxy } from '../build/artifacts'
 import ganache from 'ganache-core'
 import { Wallet } from 'ethers'
+import { multisig } from 'ethereum-mars/build/src/syntax/multisig'
 
 const inMemoryRunOptions = ((): Options => {
   const wallet = Wallet.createRandom()
@@ -24,10 +25,12 @@ const options = process.argv.indexOf('--network') < 0 ? inMemoryRunOptions : {}
 deploy(options, (deployer, config) => {
   debug(`Deployer is ${deployer}`)
 
-  const creationMultisig = multisig('Contract creation, proxying and initialization')
+  const isRinkeby = config.networkName === 'rinkeby'
+  const useMultisig = isRinkeby
+
+  const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
 
   const proxy = createProxy(UpgradeabilityProxy)
-  const isRinkeby = config.networkName === 'rinkeby'
 
   // existing contracts, already deployed
   const wellKnown = isRinkeby ? '0x124BCA8F86a1eC3b84d68BEDB0Cc640D301C3eEF' : contract('wellKnown', Token)
@@ -49,8 +52,8 @@ deploy(options, (deployer, config) => {
   const firstMarket = contract('firstMarket', Market, [wellKnown, preProxied])
   const secondMarket = contract('secondMarket', Market, [firstProxied, secondBare])
 
-  creationMultisig.propose()
-  const conditionalInitMultisig = multisig('Conditional initialization')
+  creationMultisig?.propose()
+  const conditionalInitMultisig = useMultisig ? multisig('Conditional initialization') : undefined
 
   // contract initialization
   runIf(firstProxied.isInitialized().not(), () => {
@@ -71,8 +74,10 @@ deploy(options, (deployer, config) => {
     secondBare.initialize(333)
   })
 
-  conditionalInitMultisig.propose()
-  const crossDependantInitializationMultisig = multisig('Cross-dependant initialization multisig')
+  conditionalInitMultisig?.propose()
+  const crossDependantInitializationMultisig = useMultisig
+    ? multisig('Cross-dependant initialization multisig')
+    : undefined
 
   // to show dependencies on initialization of other contracts
   firstProxied.approve(secondMarket, 50000)
@@ -82,14 +87,5 @@ deploy(options, (deployer, config) => {
     secondMarket.supply(33333, 22222)
   })
 
-  crossDependantInitializationMultisig.propose()
+  crossDependantInitializationMultisig?.propose()
 }).then()
-
-function multisig(title: string): { propose: () => void } {
-  // fake impl; design discussion purpose only
-  return {
-    propose: () => {
-      return
-    },
-  }
-}

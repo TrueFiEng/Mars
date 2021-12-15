@@ -1,5 +1,8 @@
 import { context } from '../context'
-import { Multisig } from '../multisig'
+import { MultisigBuilder } from '../multisig'
+import { ExecuteOptions } from '../execute/execute'
+import { providers } from 'ethers'
+import { MultisigConfig } from '../multisig/multisigConfig'
 
 /***
  * Designates a wrapping block of syntax statements that are to be executed as a single multisig transaction batch.
@@ -18,8 +21,11 @@ export interface MultisigBlock {
  */
 export function multisig(name: string): MultisigBlock {
   context.ensureEnabled()
+  const multisig = context.multisig
 
-  context.multisig.defineStart(name)
+  if (!multisig) throw new Error('Multisig context does not exist. Ensure you configured it for the deployment.')
+
+  multisig.defineStart(name)
   context.actions.push({
     type: 'MULTISIG_START',
   })
@@ -29,7 +35,7 @@ export function multisig(name: string): MultisigBlock {
     propose() {
       context.ensureEnabled()
 
-      context.multisig.defineEnd()
+      multisig.defineEnd()
       context.actions.push({
         type: 'MULTISIG_END',
       })
@@ -38,11 +44,18 @@ export function multisig(name: string): MultisigBlock {
 }
 
 /***
- * Multisig context of deployment process
+ * Multisig context of deployment process.
+ *
+ * A global overview of all the multisigs in the deployment. Manages them globally.
  */
 export class MultisigContext {
-  private _all: Multisig[] = []
-  private _current?: Multisig
+  private _all: MultisigBuilder[] = []
+  private _config: MultisigConfig
+  private _current?: MultisigBuilder
+
+  constructor(config: MultisigConfig) {
+    this._config = config
+  }
 
   public defineStart(name: string): void {
     if (this.isActive())
@@ -50,16 +63,16 @@ export class MultisigContext {
 
     if (this.contains(multisig.name)) throw new Error(`Multisig name ${multisig.name} already defined.`)
 
-    const handler = new Multisig(name)
-    this._current = handler
-    this._all.push(handler)
+    const builder = new MultisigBuilder(name, this._config.networkChainId)
+    this._current = builder
+    this._all.push(builder)
   }
 
   public defineEnd(): void {
     this._current = undefined
   }
 
-  public processStart(): void {
+  public async executeStart(): Promise<void> {
     if (this._all.length == 0)
       throw new Error('There are no multisig elements to process. This indicates a bug in code.')
 
@@ -67,7 +80,11 @@ export class MultisigContext {
     this._all = this._all.slice(1)
   }
 
-  public processEnd(): void {
+  public executeEnd(options: ExecuteOptions): void {
+    // TODO: support abstract signers without provider
+    const executable = this._current!.buildExecutable(<providers.JsonRpcProvider>options.signer.provider)
+    executable.propose()
+
     this._current = undefined
   }
 
@@ -75,7 +92,7 @@ export class MultisigContext {
     return this._current !== undefined
   }
 
-  public current(): Multisig | undefined {
+  public current(): MultisigBuilder | undefined {
     return this._current
   }
 

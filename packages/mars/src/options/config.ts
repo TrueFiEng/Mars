@@ -33,6 +33,14 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const { signer, networkName } = await getSigner(merged)
   const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
+  let multisig: ExecuteOptions['multisig'] = undefined
+  if (merged.multisigGnosisSafe) {
+    multisig = {
+      networkChainId: (await signer.provider.getNetwork()).chainId,
+      gnosisSafeAddress: merged.multisigGnosisSafe,
+    }
+  }
+
   return {
     gasPrice,
     noConfirm: !!merged.noConfirm,
@@ -42,6 +50,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     logFile: merged.logFile ?? '',
     deploymentsFile: merged.outputFile,
     verification,
+    multisig,
   }
 }
 

@@ -13,8 +13,9 @@ export interface DeterministicDeployment {
 /**
  * Creates contract deployment transactions targeting deterministic addresses using CREATE2 opcode.
  */
+// TODO: rename as the current logic does not interact with the network (no deployment takes place); but it creates a tx
 export class ContractDeployer {
-  constructor(private provider: providers.JsonRpcProvider) {}
+  constructor(private networkChainId: number) {}
 
   /**
    * Creates a new contract deployment transactions and precomputes its deterministic creation address.
@@ -36,11 +37,7 @@ export class ContractDeployer {
   }
 
   getDeployerContract(): Contract {
-    const currentChainId = this.provider.network
-    if (currentChainId === undefined)
-      throw 'Cannot establish network in which Gnosis contract deployer contract operates'
-
-    const address = createCall.networkAddresses[currentChainId.chainId]
-    return new Contract(address, createCall.abi, this.provider)
+    const address = createCall.networkAddresses[this.networkChainId]
+    return new Contract(address, createCall.abi)
   }
 }

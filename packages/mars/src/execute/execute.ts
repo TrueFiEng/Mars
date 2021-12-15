@@ -17,6 +17,7 @@ import { read, save } from './save'
 import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
+import { MultisigConfig } from '../multisig/multisigConfig'
 
 export type TransactionOverrides = Partial<TransactionOptions> & {
   skipUpgrade?: boolean
@@ -33,6 +34,7 @@ export interface ExecuteOptions extends TransactionOptions {
     waffleConfig: string
     flattenScript?: (name: string) => Promise<string>
   }
+  multisig?: MultisigConfig
 }
 
 export async function execute(actions: Action[], options: ExecuteOptions) {
@@ -42,6 +44,7 @@ export async function execute(actions: Action[], options: ExecuteOptions) {
 }
 
 async function executeAction(action: Action, options: ExecuteOptions) {
+  // TODO: check if within an executed multisig and skip till multisig end
   if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
       context.conditionalDepth++
@@ -65,9 +68,9 @@ async function executeAction(action: Action, options: ExecuteOptions) {
     case 'DEBUG':
       return executeDebug(action)
     case 'MULTISIG_START':
-      return context.multisig.processStart()
+      return context.multisig!.executeStart()
     case 'MULTISIG_END':
-      return context.multisig.processEnd()
+      return context.multisig!.executeEnd(options)
   }
 }
 
@@ -85,6 +88,7 @@ export async function getExistingDeployment(
 ): Promise<string | undefined> {
   const existing = read(options.deploymentsFile, options.networkName, name)
   if (existing) {
+    // TODO: multisig - skip as it's hard for MVP; workaround -> manually delete an entry in deployments file
     const [existingTx, receipt] = await Promise.all([
       // TODO: support abstract signers where no provider exists
       options.signer.provider!.getTransaction(existing.txHash),
@@ -115,10 +119,14 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
     address = existingAddress
   } else {
-    // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
-    ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
-    if (!options.dryRun) {
-      save(options.deploymentsFile, options.networkName, action.name, { txHash, address })
+    if (action.multisig) {
+      address = await action.multisig.addContractDeployment(tx, action.artifact[Bytecode])
+    } else {
+      // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
+      ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
+      if (!options.dryRun) {
+        save(options.deploymentsFile, options.networkName, action.name, { txHash, address })
+      }
     }
   }
   if (options.verification) {
