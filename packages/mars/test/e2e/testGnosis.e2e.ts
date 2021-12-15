@@ -47,12 +47,10 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
       ethAdapter: new EthersAdapter({ ethers, signer: owner }),
       safeAddress: config.ttSafe,
     })
-    await safeByOwner.connect({})
     safeByDelegate = await Safe.create({
       ethAdapter: new EthersAdapter({ ethers, signer: delegate }),
       safeAddress: config.ttSafe,
     })
-    await safeByDelegate.connect({})
   })
 
   it('Prints Safe address and its owners', async () => {

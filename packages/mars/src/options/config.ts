@@ -7,6 +7,7 @@ import { getCommandLineOptions } from './cli'
 import { getDefaultOptions } from './defaults'
 import { getEnvironmentOptions } from './environment'
 import { Options } from './Options'
+import { ensureMultisigConfig } from '../multisig/multisigConfig'
 
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
@@ -33,13 +34,11 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const { signer, networkName } = await getSigner(merged)
   const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
-  let multisig: ExecuteOptions['multisig'] = undefined
-  if (merged.multisigGnosisSafe) {
-    multisig = {
-      networkChainId: (await signer.provider.getNetwork()).chainId,
-      gnosisSafeAddress: merged.multisigGnosisSafe,
-    }
-  }
+  const multisig = ensureMultisigConfig({
+    networkChainId: (await signer.provider.getNetwork()).chainId,
+    gnosisSafeAddress: merged.multisigGnosisSafe,
+    gnosisServiceUri: merged.multisigGnosisServiceUri,
+  })
 
   return {
     gasPrice,

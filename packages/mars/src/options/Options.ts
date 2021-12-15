@@ -42,8 +42,14 @@ export interface Options {
   dataPrintMode?: boolean
   /**
    * Gnosis Safe contract address to be used in multisig deployments.
+   * See: https://gnosis-safe.io/
    */
   multisigGnosisSafe?: string
+  /**
+   * Gnosis Transaction Service uri. Off-chain service that servers HTTP requests.
+   * See: https://safe-transaction.gnosis.io/
+   */
+  multisigGnosisServiceUri?: string
   /**
    * Disables collecting options from the command line program invocation. Useful in running end-2-end tests with mocha.
    */

@@ -1,7 +1,6 @@
 import { context } from '../context'
 import { MultisigBuilder } from '../multisig'
 import { ExecuteOptions } from '../execute/execute'
-import { providers } from 'ethers'
 import { MultisigConfig } from '../multisig/multisigConfig'
 
 /***
@@ -69,9 +68,13 @@ export class MultisigContext {
   }
 
   public defineEnd(): void {
+    if (!this.isActive())
+      throw new Error('Multisig block has not been opened. Ensure you created a multisig block first.')
+
     this._current = undefined
   }
 
+  // TODO: consider moving into multisig fn
   public async executeStart(): Promise<void> {
     if (this._all.length == 0)
       throw new Error('There are no multisig elements to process. This indicates a bug in code.')
@@ -80,10 +83,10 @@ export class MultisigContext {
     this._all = this._all.slice(1)
   }
 
-  public executeEnd(options: ExecuteOptions): void {
+  public async executeEnd(options: ExecuteOptions): Promise<void> {
     // TODO: support abstract signers without provider
-    const executable = this._current!.buildExecutable(<providers.JsonRpcProvider>options.signer.provider)
-    executable.propose()
+    const executable = this._current!.buildExecutable(options.signer, this._config)
+    await executable.propose(this._current!.txBatch)
 
     this._current = undefined
   }
