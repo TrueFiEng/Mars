@@ -52,6 +52,7 @@ export interface TransactionAction {
   params: any[]
   options: Partial<TransactionOptions>
   resolve: (value: any) => void
+  multisig?: MultisigBuilder
 }
 
 export interface EncodeAction {

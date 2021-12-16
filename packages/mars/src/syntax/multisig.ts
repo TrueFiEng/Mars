@@ -1,7 +1,8 @@
 import { context } from '../context'
-import { MultisigBuilder } from '../multisig'
+import { MultisigBuilder, MultisigConfig, readSavedMultisig } from '../multisig'
 import { ExecuteOptions } from '../execute/execute'
-import { MultisigConfig } from '../multisig/multisigConfig'
+import { save } from '../execute/save'
+import { SavedMultisigEntry, saveMultisig } from '../multisig/multisigState'
 
 /***
  * Designates a wrapping block of syntax statements that are to be executed as a single multisig transaction batch.
@@ -74,7 +75,6 @@ export class MultisigContext {
     this._current = undefined
   }
 
-  // TODO: consider moving into multisig fn
   public async executeStart(): Promise<void> {
     if (this._all.length == 0)
       throw new Error('There are no multisig elements to process. This indicates a bug in code.')
@@ -83,12 +83,32 @@ export class MultisigContext {
     this._all = this._all.slice(1)
   }
 
-  public async executeEnd(options: ExecuteOptions): Promise<void> {
-    // TODO: support abstract signers without provider
+  // TODO: refactor -> decouple state management from this
+  public async executeEnd(options: ExecuteOptions): Promise<{ continue: boolean }> {
     const executable = this._current!.buildExecutable(options.signer, this._config)
-    await executable.propose(this._current!.txBatch)
+    const multisigData = readSavedMultisig(options.deploymentsFile, options.networkName, executable.name)
+    let state: SavedMultisigEntry
+    if (!multisigData || multisigData.state == 'UNKNOWN') {
+      const multisigId = await executable.propose(this._current!.txBatch)
+      state = {
+        id: multisigId,
+        state: 'PROPOSED',
+      }
+      saveMultisig(options.deploymentsFile, options.networkName, executable.name, state)
+      return { continue: false }
+    } else if (multisigData.state == 'PROPOSED') {
+      const checkedState = await executable.checkState(multisigData.id)
+      if (checkedState.kind == 'EXECUTED') {
+        save(options.deploymentsFile, options.networkName, executable.name, {
+          id: multisigData.id,
+          state: 'EXECUTED',
+        } as SavedMultisigEntry)
+      }
+      return { continue: false }
+    }
 
     this._current = undefined
+    return { continue: true }
   }
 
   public isActive(): boolean {

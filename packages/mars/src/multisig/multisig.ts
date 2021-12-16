@@ -4,6 +4,7 @@ import { MultisigConfig } from './multisigConfig'
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types'
 import Safe, { EthersAdapter } from '@gnosis.pm/safe-core-sdk'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
+import { MultisigState } from './multisigState'
 
 /**
  * Builds multisig parts and provides construction of multisig executable.
@@ -16,9 +17,6 @@ export class MultisigBuilder {
 
   public name: string
   public txBatch: providers.TransactionRequest[]
-  // TODO: consider more complex state management
-  public isExecuted: boolean
-  public txHash?: string
 
   /**
    * Creates a multisig builder instance.
@@ -29,7 +27,6 @@ export class MultisigBuilder {
   constructor(name: string, networkChainId: number) {
     this.name = name
     this.txBatch = []
-    this.isExecuted = false
     this._contractDeployer = new ContractDeployer(networkChainId)
   }
 
@@ -64,7 +61,7 @@ export class MultisigBuilder {
    * @param config multisig configuration
    */
   public buildExecutable(signer: Signer, config: MultisigConfig): MultisigExecutable {
-    return new MultisigExecutable(signer, config)
+    return new MultisigExecutable(this.name, signer, config)
   }
 }
 
@@ -73,13 +70,17 @@ export class MultisigBuilder {
  *
  * Encapsulates the multisig implementation details (multisig vendor/service) from all the other logic.
  */
-class MultisigExecutable {
+// TODO: extract gnosis specifics from here
+export class MultisigExecutable {
   private _signer: Signer
   private _safe?: Safe
   private _config: MultisigConfig
   private _safeServiceClient: SafeServiceClient
 
-  constructor(signer: Signer, config: MultisigConfig) {
+  public name: string
+
+  constructor(name: string, signer: Signer, config: MultisigConfig) {
+    this.name = name
     this._config = config
     this._signer = signer
     this._safeServiceClient = new SafeServiceClient(config.gnosisServiceUri)
@@ -93,7 +94,7 @@ class MultisigExecutable {
    * It is guaranteed though that the final execution of the multisig must be transacted and finalized in the network.
    *
    * @param tx either a single transaction request or a batch of many
-   * @returns transaction hash of the whole multisig batch transaction
+   * @returns unique id of the multisig transaction
    */
   public async propose(tx: providers.TransactionRequest | providers.TransactionRequest[]): Promise<string> {
     const safe = await this.ensureSafe()
@@ -116,6 +117,18 @@ class MultisigExecutable {
     })
 
     return safeMultisigTxHash
+  }
+
+  /**
+   * Returns info about the state of the multisig.
+   * @param id multisig identifier
+   */
+  public async checkState(id: string): Promise<MultisigState> {
+    const response = await this._safeServiceClient.getTransaction(id)
+
+    return response.isExecuted
+      ? { kind: 'EXECUTED', id: response.transactionHash }
+      : { kind: 'PROPOSED', id: response.transactionHash }
   }
 
   private async ensureSafe(): Promise<Safe> {

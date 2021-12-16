@@ -25,8 +25,12 @@
   },
   "multisig": {
     "Contract creation, proxying and initialization": {
-      "isExecuted": false,
-      "txHash": "0x1234abcd...."
+      "id": "0x1234abcd....",
+      "status": "executed"
+    },
+    "Conditional initialization": {
+      "id": "0x5678abcd....",
+      "status": "proposed"
     }
   }
 }
