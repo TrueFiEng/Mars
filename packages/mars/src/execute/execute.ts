@@ -40,7 +40,8 @@ export interface ExecuteOptions extends TransactionOptions {
 
 export async function execute(actions: Action[], options: ExecuteOptions) {
   for (const action of actions) {
-    log('Executing ' + action.type)
+    // TODO: improve action logging details
+    log('⚙️ EXE ' + action.type)
     const result = await executeAction(action, options)
     if (result && !result.continue) break
   }

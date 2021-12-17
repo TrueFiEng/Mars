@@ -99,10 +99,12 @@ export class MultisigContext {
     } else if (multisigData.state == 'PROPOSED') {
       const checkedState = await executable.checkState(multisigData.id)
       if (checkedState.kind == 'EXECUTED') {
-        save(options.deploymentsFile, options.networkName, executable.name, {
+        state = {
           id: multisigData.id,
           state: 'EXECUTED',
-        } as SavedMultisigEntry)
+        }
+        save(options.deploymentsFile, options.networkName, executable.name, state)
+        return { continue: true }
       }
       return { continue: false }
     }

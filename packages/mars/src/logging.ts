@@ -24,11 +24,11 @@ export interface TxLogData {
 }
 
 export function logTx(txName: string, tx: providers.TransactionRequest | providers.TransactionResponse | TxLogData) {
-  log(`Transaction: '${txName}' Hash: ${(tx as any).hash} From: ${tx.from} To: ${tx.to} Hex data: ${tx.data} `)
+  log(`📕 Transaction: '${txName}' Hash: ${(tx as any).hash} From: ${tx.from} To: ${tx.to} Hex data: ${tx.data} `)
 }
 
 export function log(...args: string[]) {
-  const argsJoined = args.join('\n') + '\n'
+  const argsJoined = args.join('\n')
 
   if (logConfig.mode.console) {
     console.log(argsJoined)

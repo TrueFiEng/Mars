@@ -26,7 +26,7 @@ export function createProxy(...args: any[]): any {
   const artifact: ArtifactFrom<any> = args[0]
   const params: any[] = Array.isArray(args[1]) ? args[1] : []
   const onUpgradeIndex = params.length > 0 ? 2 : 1
-  const onUpgrade: any = args[onUpgradeIndex] ?? 'upgradeTo'
+  const onUpgrade: any = args[onUpgradeIndex]
 
   return (...args: any[]) => {
     const [name, implementation, onInitialize] = parseProxyArgs(...args)
@@ -35,17 +35,27 @@ export function createProxy(...args: any[]): any {
       implementation(): Future<string>
     }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params)
     // TODO support proxies without implementation method
-    const currentImplementation = proxy.implementation()
+    let currentImplementation: Future<string>
+    if (onInitialize || onUpgrade) {
+      currentImplementation = proxy.implementation()
+    }
 
-    const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
-    runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
+    if (onUpgrade) {
+      const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
+      runIf(currentImplementation!.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
+    }
 
     const contractBehindProxy = makeContractInstance(
       implementation[Name],
       implementation[ArtifactSymbol],
       proxy[Address]
     )
-    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize && onInitialize(contractBehindProxy))
+    if (onInitialize) {
+      runIf(
+        currentImplementation!.equals(constants.AddressZero),
+        () => onInitialize && onInitialize(contractBehindProxy)
+      )
+    }
 
     return contractBehindProxy
   }

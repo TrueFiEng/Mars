@@ -119,6 +119,7 @@ export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>,
           params,
           options,
           resolve: resolveResult,
+          multisig: context.multisig?.current(),
         })
         const type = entry.outputs?.[0]?.type
         const length = entry.outputs?.length

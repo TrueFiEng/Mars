@@ -4,8 +4,8 @@ import { MultisigConfig } from './multisigConfig'
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types'
 import Safe, { EthersAdapter } from '@gnosis.pm/safe-core-sdk'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
-import { MultisigState } from './multisigState'
-import { logTx } from '../logging'
+import { Executed, MultisigState, Proposed } from './multisigState'
+import { log, logTx } from '../logging'
 
 /**
  * Builds multisig parts and provides construction of multisig executable.
@@ -133,10 +133,11 @@ export class MultisigExecutable {
    */
   public async checkState(id: string): Promise<MultisigState> {
     const response = await this._safeServiceClient.getTransaction(id)
-
-    return response.isExecuted
-      ? { kind: 'EXECUTED', id: response.transactionHash }
-      : { kind: 'PROPOSED', id: response.transactionHash }
+    const state = response.isExecuted
+      ? ({ kind: 'EXECUTED', txHash: response.transactionHash } as Executed)
+      : ({ kind: 'PROPOSED', txHash: response.transactionHash } as Proposed)
+    log(`🔍 Checking multisig (ID=${id}). State: ${state.kind}. TxHash: ${state.txHash}`)
+    return state
   }
 
   private async ensureSafe(): Promise<Safe> {

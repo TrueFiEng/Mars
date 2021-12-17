@@ -9,12 +9,12 @@ export type Unknown = {
 
 export type Proposed = {
   kind: 'PROPOSED'
-  id: string
+  txHash: string
 }
 
 export type Executed = {
   kind: 'EXECUTED'
-  id: string
+  txHash: string
 }
 
 /**
