@@ -8,6 +8,7 @@ import { getDefaultOptions } from './defaults'
 import { getEnvironmentOptions } from './environment'
 import { Options } from './Options'
 import { ensureMultisigConfig } from '../multisig/multisigConfig'
+import { logConfig } from '../logging'
 
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
@@ -39,6 +40,9 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     gnosisSafeAddress: merged.multisigGnosisSafe,
     gnosisServiceUri: merged.multisigGnosisServiceUri,
   })
+
+  logConfig.mode.file = !!merged.logFile
+  logConfig.filepath = merged.logFile ?? ''
 
   return {
     gasPrice,

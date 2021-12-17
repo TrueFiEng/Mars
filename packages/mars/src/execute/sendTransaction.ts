@@ -2,7 +2,7 @@ import { BigNumber, constants, providers, Signer, utils } from 'ethers'
 import readline from 'readline'
 import { getEthPriceUsd } from './getEthPriceUsd'
 import chalk from 'chalk'
-import fs from 'fs'
+import { logTx } from '../logging'
 
 export interface TransactionOptions {
   signer: Signer
@@ -52,9 +52,7 @@ export async function sendTransaction(
   }
   console.log()
 
-  if (logFile) {
-    logToFile(logFile, `Transaction: ${name}`, `Hash: ${tx.hash}`, `Hex data:`, `${tx.data}`, ``)
-  }
+  logTx(name, tx)
 
   return {
     txHash: receipt.transactionHash,
@@ -76,8 +74,4 @@ async function waitForKeyPress() {
       rl.close()
     })
   })
-}
-
-function logToFile(logFile: string, ...args: string[]) {
-  fs.appendFileSync(logFile, args.join('\n') + '\n')
 }

@@ -5,6 +5,7 @@ import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types'
 import Safe, { EthersAdapter } from '@gnosis.pm/safe-core-sdk'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
 import { MultisigState } from './multisigState'
+import { logTx } from '../logging'
 
 /**
  * Builds multisig parts and provides construction of multisig executable.
@@ -99,22 +100,29 @@ export class MultisigExecutable {
   public async propose(tx: providers.TransactionRequest | providers.TransactionRequest[]): Promise<string> {
     const safe = await this.ensureSafe()
     const txs = Array.isArray(tx) ? tx : [tx]
-    const safeMultisigParts: SafeTransactionDataPartial[] = txs.map(
-      (tx) =>
-        ({
-          to: tx.to,
-          data: tx.data,
-          value: tx.value?.toString() ?? '0',
-        } as SafeTransactionDataPartial)
-    )
+    const safeMultisigParts: SafeTransactionDataPartial[] = txs.map((tx) => {
+      const part = {
+        to: tx.to,
+        data: tx.data,
+        value: tx.value?.toString() ?? '0',
+      } as SafeTransactionDataPartial
+      logTx(`[MULTISIG-PART] ${this.name}`, {
+        from: '',
+        to: tx.to,
+        data: tx.data,
+      })
+      return part
+    })
     const safeMultisigTx = await safe.createTransaction(safeMultisigParts)
     const safeMultisigTxHash = await safe.getTransactionHash(safeMultisigTx)
+    const senderAddress = await this._signer.getAddress()
     await this._safeServiceClient.proposeTransaction({
       safeAddress: safe.getAddress(),
       safeTxHash: safeMultisigTxHash,
       safeTransaction: safeMultisigTx,
-      senderAddress: await this._signer.getAddress(),
+      senderAddress,
     })
+    logTx(`[MULTISIG] ${this.name}`, { hash: safeMultisigTxHash, from: senderAddress, to: safe.getAddress() })
 
     return safeMultisigTxHash
   }
