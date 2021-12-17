@@ -18,6 +18,7 @@ import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
 import { MultisigConfig } from '../multisig/multisigConfig'
+import { log } from '../logging'
 
 export type TransactionOverrides = Partial<TransactionOptions> & {
   skipUpgrade?: boolean
@@ -39,6 +40,7 @@ export interface ExecuteOptions extends TransactionOptions {
 
 export async function execute(actions: Action[], options: ExecuteOptions) {
   for (const action of actions) {
+    log('Executing ' + action.type)
     const result = await executeAction(action, options)
     if (result && !result.continue) break
   }
@@ -52,7 +54,6 @@ interface ActionResult {
 }
 
 async function executeAction(action: Action, options: ExecuteOptions): Promise<ActionResult | void> {
-  // TODO: check if within an executed multisig and skip till multisig end
   if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
       context.conditionalDepth++

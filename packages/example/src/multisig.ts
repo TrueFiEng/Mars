@@ -3,6 +3,7 @@ import { Market, Token, UpgradeabilityProxy } from '../build/artifacts'
 import ganache from 'ganache-core'
 import { Wallet } from 'ethers'
 import { multisig } from 'ethereum-mars/build/src/syntax/multisig'
+import { logConfig } from 'ethereum-mars/build/src/logging'
 
 const inMemoryRunOptions = ((): Options => {
   const wallet = Wallet.createRandom()
@@ -19,6 +20,9 @@ const inMemoryRunOptions = ((): Options => {
 })()
 
 const options = process.argv.indexOf('--network') < 0 ? inMemoryRunOptions : {}
+options.multisigGnosisSafe = '0x8772CD484C059EC5c61459a0abb5A45ece16701f'
+options.multisigGnosisServiceUri = 'https://safe-transaction.rinkeby.gnosis.io'
+logConfig.mode.console = true
 
 // based upon https://github.com/trusttoken/smart-contracts/blob/main/deploy/truefi2.ts
 // to reproduce complexity level of the standard deployment script

@@ -32,5 +32,15 @@
       "id": "0x5678abcd....",
       "status": "proposed"
     }
+  },
+  "rinkeby": {
+    "preProxied": {
+      "address": "0x263c3a8f5ce2535ce544c9115e5d67260887f2fe",
+      "multisig": true
+    },
+    "preProxied_proxy": {
+      "address": "0x67c7e426eae6d35e118168805403879efadf7102",
+      "multisig": true
+    }
   }
 }

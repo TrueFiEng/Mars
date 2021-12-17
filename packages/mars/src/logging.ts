@@ -24,10 +24,10 @@ export interface TxLogData {
 }
 
 export function logTx(txName: string, tx: providers.TransactionRequest | providers.TransactionResponse | TxLogData) {
-  logToSinks(`Transaction: '${txName}' Hash: ${(tx as any).hash} From: ${tx.from} To: ${tx.to} Hex data: ${tx.data} `)
+  log(`Transaction: '${txName}' Hash: ${(tx as any).hash} From: ${tx.from} To: ${tx.to} Hex data: ${tx.data} `)
 }
 
-export function logToSinks(...args: string[]) {
+export function log(...args: string[]) {
   const argsJoined = args.join('\n') + '\n'
 
   if (logConfig.mode.console) {

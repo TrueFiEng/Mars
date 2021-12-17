@@ -2,9 +2,6 @@ import { Contract, providers } from 'ethers'
 import { randomBytes } from 'ethers/lib/utils'
 import { computeCreate2Address } from '../../create2Address'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const createCall = require('./createCall.json')
-
 export interface DeterministicDeployment {
   address: string
   transaction: providers.TransactionRequest
@@ -40,4 +37,99 @@ export class ContractDeployer {
     const address = createCall.networkAddresses[this.networkChainId]
     return new Contract(address, createCall.abi)
   }
+}
+
+const createCall = {
+  defaultAddress: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+  released: true,
+  contractName: 'CreateCall',
+  version: '1.3.0',
+  networkAddresses: {
+    1: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    4: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    10: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
+    42: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    5: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    56: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    69: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
+    100: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    137: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    246: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    1285: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    1287: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    4002: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    42161: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    42220: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
+    43114: '0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d',
+    73799: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+    333999: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
+  } as { [id: number]: string },
+  abi: [
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'address',
+          name: 'newContract',
+          type: 'address',
+        },
+      ],
+      name: 'ContractCreation',
+      type: 'event',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: 'value',
+          type: 'uint256',
+        },
+        {
+          internalType: 'bytes',
+          name: 'deploymentData',
+          type: 'bytes',
+        },
+      ],
+      name: 'performCreate',
+      outputs: [
+        {
+          internalType: 'address',
+          name: 'newContract',
+          type: 'address',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: 'value',
+          type: 'uint256',
+        },
+        {
+          internalType: 'bytes',
+          name: 'deploymentData',
+          type: 'bytes',
+        },
+        {
+          internalType: 'bytes32',
+          name: 'salt',
+          type: 'bytes32',
+        },
+      ],
+      name: 'performCreate2',
+      outputs: [
+        {
+          internalType: 'address',
+          name: 'newContract',
+          type: 'address',
+        },
+      ],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ],
 }
