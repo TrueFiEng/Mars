@@ -40,3 +40,9 @@ export class Future<T> {
     throw new Error('This will get overridden.')
   }
 }
+
+type FutureArray<T> = T extends [V, ...Rest] ? [Future<V>, ...FutureArray<Rest>] : []
+
+export function map<Args, T>(futures: FutureArray<Args>, fn: (...args: Args) => T): Future<T> {
+  return new Future(() => Future.resolve(fn(futures.map(f => f.resolve()))));
+}
