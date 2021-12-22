@@ -47,7 +47,7 @@ type FutureArray<T> = T extends Array<any> ? FutureTuple<T> : Future<T>[]
 type UnpackArray<T> = T extends FutureArray<infer U> ? U : never
 type ForceArray<T> = T extends Array<any> ? T : T[]
 
-export function flatMap<T extends FutureArray<any>, R>(
+export function reduce<T extends FutureArray<any>, R>(
   futures: T,
   fn: (...args: ForceArray<UnpackArray<T>>) => R
 ): Future<R> {
