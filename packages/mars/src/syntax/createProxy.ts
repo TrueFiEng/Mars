@@ -16,6 +16,19 @@ export interface Proxy {
 
 type MethodCall<T> = keyof T | ((contract: Contract<T>) => unknown)
 
+function getImplementation(
+  proxy: Contract<{
+    new (...args: any): void
+    implementation(): Future<string>
+  }>
+): Future<string> {
+  const IMPLEMENTATION_SLOT = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc'
+  if (proxy.implementation) {
+    return proxy.implementation()
+  }
+  return proxy.getStorageAt(IMPLEMENTATION_SLOT)
+}
+
 export function createProxy<T extends NoParams>(artifact: ArtifactFrom<T>, onUpgrade?: MethodCall<T>): Proxy
 export function createProxy<T extends WithParams>(
   artifact: ArtifactFrom<T>,
@@ -34,8 +47,7 @@ export function createProxy(...args: any[]): any {
       new (...args: any): void
       implementation(): Future<string>
     }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params)
-    // TODO support proxies without implementation method
-    const currentImplementation = proxy.implementation()
+    const currentImplementation = getImplementation(proxy)
 
     const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
     runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))

@@ -4,6 +4,7 @@ import {
   DebugAction,
   DeployAction,
   EncodeAction,
+  GetStorageAction,
   ReadAction,
   StartConditionalAction,
   TransactionAction,
@@ -41,6 +42,15 @@ export async function execute(actions: Action[], options: ExecuteOptions) {
   }
 }
 
+async function executeGetStorageAt(
+  { address: futureAddress, storageAddress, resolve }: GetStorageAction,
+  options: ExecuteOptions
+) {
+  const address = resolveValue(futureAddress)
+  const storageValue = await options.signer.provider?.getStorageAt(address, storageAddress)
+  resolve(storageValue ?? '0x')
+}
+
 async function executeAction(action: Action, options: ExecuteOptions) {
   if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
@@ -64,6 +74,8 @@ async function executeAction(action: Action, options: ExecuteOptions) {
       return executeConditionalStart(action)
     case 'DEBUG':
       return executeDebug(action)
+    case 'GET_STORAGE_AT':
+      return executeGetStorageAt(action, options)
   }
 }
 
