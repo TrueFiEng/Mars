@@ -41,12 +41,17 @@ export class Future<T> {
   }
 }
 
-type FutureTuple<T> = T extends [infer V, ...(infer Rest)] ? [Future<V>, ...FutureTuple<Rest>] : []
+type FutureTuple<T> = T extends [infer V, ...infer Rest] ? [Future<V>, ...FutureTuple<Rest>] : []
 
 type FutureArray<T> = T extends Array<any> ? FutureTuple<T> : Future<T>[]
 type UnpackArray<T> = T extends FutureArray<infer U> ? U : never
 type ForceArray<T> = T extends Array<any> ? T : T[]
 
-export function flatMap<T extends FutureArray<any>, R>(futures: T, fn: (...args: ForceArray<UnpackArray<T>>) => R): Future<R> {
-  return new Future(() => Future.resolve(fn(...((futures as any[]).map((f) => f.resolve()) as ForceArray<UnpackArray<T>>))))
+export function flatMap<T extends FutureArray<any>, R>(
+  futures: T,
+  fn: (...args: ForceArray<UnpackArray<T>>) => R
+): Future<R> {
+  return new Future(() =>
+    Future.resolve(fn(...((futures as any[]).map((f) => f.resolve()) as ForceArray<UnpackArray<T>>)))
+  )
 }
