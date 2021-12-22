@@ -10,6 +10,6 @@
   "check-coverage": true,
   "branches": 65,
   "lines": 75,
-  "functions": 65,
+  "functions": 60,
   "statements": 74
 }
