@@ -10,6 +10,7 @@ export type Action =
   | StartConditionalAction
   | EndConditionalAction
   | DebugAction
+  | GetStorageAction
 
 export interface DeployAction {
   type: 'DEPLOY'
@@ -59,4 +60,11 @@ export interface EncodeAction {
 export interface DebugAction {
   type: 'DEBUG'
   messages: any[]
+}
+
+export interface GetStorageAction {
+  type: 'GET_STORAGE_AT'
+  address: Future<string>
+  storageAddress: string
+  resolve: (value: any) => void
 }

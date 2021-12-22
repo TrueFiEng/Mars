@@ -11,7 +11,9 @@ export type Contract<T> = {
   [Address]: Future<string>
 } & {
   [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (...args: A) => R : never
-}
+} & {
+    getStorageAt: (address: string) => Future<string>
+  }
 
 export type ConstructorParams<T> = T extends { new (...args: infer A): any } ? A : any
 
@@ -124,6 +126,17 @@ export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>,
         return type && length === 1 && isView ? castFuture(type, result) : result
       }
     }
+  }
+  contract.getStorageAt = (storageAddress: string) => {
+    context.ensureEnabled()
+    const [result, resolveResult] = Future.create()
+    context.actions.push({
+      type: 'GET_STORAGE_AT',
+      address,
+      storageAddress,
+      resolve: resolveResult,
+    })
+    return result
   }
   return contract
 }
