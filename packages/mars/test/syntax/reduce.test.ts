@@ -24,6 +24,9 @@ describe('Reduce', () => {
   })
 
   it('returns callback result for empty list', async () => {
-    expectFuture(reduce([], () => 100), 100)
-  });
+    expectFuture(
+      reduce([], () => 100),
+      100
+    )
+  })
 })
