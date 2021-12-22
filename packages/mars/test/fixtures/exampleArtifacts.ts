@@ -1,13 +1,19 @@
 /* eslint-disable */
 import * as Mars from "../../src";
 
+const Address__JSON = require("./../build/Address.json");
 const ComplexContract__JSON = require("./../build/ComplexContract.json");
+const OpenZeppelinProxy__JSON = require("./../build/OpenZeppelinProxy.json");
 const ReservedContract__JSON = require("./../build/ReservedContract.json");
 const SimpleContract__JSON = require("./../build/SimpleContract.json");
 const UpgradeabilityProxy__JSON = require("./../build/UpgradeabilityProxy.json");
 const UpgradeableContract__JSON = require("./../build/UpgradeableContract.json");
 const UpgradeableContract2__JSON = require("./../build/UpgradeableContract2.json");
-const OpenZeppelinProxy_JSON = require("./../build/OpenZeppelinProxy.json");
+const UpgradeableProxy__JSON = require("./../build/UpgradeableProxy.json");
+
+export const Address = Mars.createArtifact<{
+  new(): void;
+}>("Address", Address__JSON);
 
 export const ComplexContract = Mars.createArtifact<{
   new(_: Mars.NumberLike, __: Mars.StringLike): void;
@@ -23,6 +29,11 @@ export const ComplexContract = Mars.createArtifact<{
   viewReturnsStruct(): Mars.Future<{a: Mars.FutureNumber, b: Mars.FutureNumber, c: Mars.Future<Mars.Future<{x: Mars.FutureNumber, y: Mars.FutureNumber}>[]>}>;
   viewReturnsTuple(): Mars.Future<[Mars.FutureNumber, Mars.Future<string>, Mars.FutureBoolean]>;
 }>("ComplexContract", ComplexContract__JSON);
+
+export const OpenZeppelinProxy = Mars.createArtifact<{
+  new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
+  upgradeTo(implementation: Mars.AddressLike, options?: Mars.TransactionOverrides): Mars.Transaction;
+}>("OpenZeppelinProxy", OpenZeppelinProxy__JSON);
 
 export const ReservedContract = Mars.createArtifact<{
   new(): void;
@@ -40,11 +51,6 @@ export const UpgradeabilityProxy = Mars.createArtifact<{
   upgradeTo(implementation: Mars.AddressLike, options?: Mars.TransactionOverrides): Mars.Transaction;
 }>("UpgradeabilityProxy", UpgradeabilityProxy__JSON);
 
-export const OpenZeppelinProxy = Mars.createArtifact<{
-  new(implementation: Mars.AddressLike, data: Mars.BytesLike): void;
-  upgradeTo(implementation: Mars.AddressLike, options?: Mars.TransactionOverrides): Mars.Transaction;
-}>("OpenZeppelinProxy", OpenZeppelinProxy_JSON);
-
 export const UpgradeableContract = Mars.createArtifact<{
   new(): void;
   initialize(_x: Mars.NumberLike, options?: Mars.TransactionOverrides): Mars.Transaction;
@@ -56,3 +62,7 @@ export const UpgradeableContract2 = Mars.createArtifact<{
   new(): void;
   x(): Mars.FutureNumber;
 }>("UpgradeableContract2", UpgradeableContract2__JSON);
+
+export const UpgradeableProxy = Mars.createArtifact<{
+  new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
+}>("UpgradeableProxy", UpgradeableProxy__JSON);
