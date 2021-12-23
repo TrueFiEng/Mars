@@ -1,7 +1,7 @@
 import { ConstructorParams, contract, Contract, makeContractInstance, NoParams, WithParams } from './contract'
 import { Address, ArtifactSymbol, Name } from '../symbols'
 import { Future } from '../values'
-import { constants } from 'ethers'
+import { constants, utils } from 'ethers'
 import { ArtifactFrom } from './artifact'
 import { runIf } from './conditionals'
 
@@ -27,7 +27,7 @@ function getImplementation(
   if (proxy.implementation) {
     return proxy.implementation()
   }
-  return proxy.getStorageAt(IMPLEMENTATION_SLOT)
+  return proxy.getStorageAt(IMPLEMENTATION_SLOT).map(slot => utils.getAddress(`0x${slot.slice(-40)}`))
 }
 
 export function createProxy<T extends NoParams>(artifact: ArtifactFrom<T>, onUpgrade?: MethodCall<T>): Proxy
