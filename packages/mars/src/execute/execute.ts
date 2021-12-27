@@ -97,14 +97,19 @@ export async function getExistingDeployment(
   options: ExecuteOptions
 ): Promise<string | undefined> {
   const existing = read<SaveEntry>(options.deploymentsFile, options.networkName, name)
-  if (existing && existing.txHash) {
+  if (!existing) return
+
+  if (existing.multisig) {
+    // multisig returns a deterministic addresses
+    return existing.address
+  } else if (existing.txHash) {
     const [existingTx, receipt] = await Promise.all([
       // TODO: support abstract signers where no provider exists
       options.signer.provider!.getTransaction(existing.txHash),
       options.signer.provider!.getTransactionReceipt(existing.txHash),
     ])
     // TODO: multisig improvement candidate; for now we do not look for internal ex contract deployment data
-    if ((existingTx && receipt && shouldSkipUpgrade) || options.multisig) {
+    if (existingTx && receipt && shouldSkipUpgrade) {
       return existing.address
     }
     if (existingTx && receipt) {

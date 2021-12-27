@@ -1,7 +1,6 @@
 import { context } from '../context'
 import { MultisigBuilder, MultisigConfig, readSavedMultisig } from '../multisig'
 import { ExecuteOptions } from '../execute/execute'
-import { save } from '../execute/save'
 import { SavedMultisigEntry, saveMultisig } from '../multisig/multisigState'
 
 /***
@@ -103,7 +102,7 @@ export class MultisigContext {
           id: multisigData.id,
           state: 'EXECUTED',
         }
-        save(options.deploymentsFile, options.networkName, executable.name, state)
+        saveMultisig(options.deploymentsFile, options.networkName, executable.name, state)
         return { continue: true }
       }
       return { continue: false }

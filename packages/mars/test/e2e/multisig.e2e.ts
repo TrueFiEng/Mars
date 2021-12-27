@@ -14,15 +14,16 @@ const options = {
   multisigGnosisSafe: '0x8772CD484C059EC5c61459a0abb5A45ece16701f',
   multisigGnosisServiceUri: 'https://safe-transaction.rinkeby.gnosis.io',
   disableCommandLineOptions: true,
+  noConfirm: true,
 } as Options
 logConfig.mode.console = true
 
 describe('Multisig', () => {
-  it('Executes 2 multisigs in separate runs', async () => {
+  it('Executes multisigs in separate runs', async () => {
     await deploy(options, (deployer, config) => {
       debug(`Deployer is ${deployer}`)
 
-      const useMultisig = config.networkName === 'rinkeby'
+      const useMultisig = false //config.networkName === 'rinkeby'
 
       // CREATION Multisig
       const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
@@ -46,7 +47,7 @@ describe('Multisig', () => {
   })
 
   it('Approves off-chain a proposed Safe transaction', async () => {
-    const safeTxHashToApprove = '0x3580fb55faf475e9a642f4f1313bb125eb8565d58b2b1e26f170d350fa93f5ce'
+    const safeTxHashToApprove = '0x721272a0429dadb60968cfbf4304606ad6cd70c22543dd1414ae8bb3ef093b22'
 
     const safeServiceClient = new SafeServiceClient(options.multisigGnosisServiceUri!)
     const web3Provider = new providers.InfuraProvider(options.network!.toString(), options!.infuraApiKey)

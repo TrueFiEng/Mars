@@ -26,7 +26,7 @@ export function createProxy(...args: any[]): any {
   const artifact: ArtifactFrom<any> = args[0]
   const params: any[] = Array.isArray(args[1]) ? args[1] : []
   const onUpgradeIndex = params.length > 0 ? 2 : 1
-  const onUpgrade: any = args[onUpgradeIndex]
+  const onUpgrade: any = args[onUpgradeIndex] ?? 'upgradeTo'
 
   return (...args: any[]) => {
     const [name, implementation, onInitialize] = parseProxyArgs(...args)
