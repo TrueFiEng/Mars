@@ -4,6 +4,7 @@ import { Future } from '../values'
 import { constants } from 'ethers'
 import { ArtifactFrom } from './artifact'
 import { runIf } from './conditionals'
+import { context } from '../context'
 
 type Params<T> = T extends (...args: infer A) => any ? A : never
 
@@ -34,28 +35,28 @@ export function createProxy(...args: any[]): any {
       new (...args: any): void
       implementation(): Future<string>
     }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params)
-    // TODO support proxies without implementation method
     let currentImplementation: Future<string>
-    if (onInitialize || onUpgrade) {
+    try {
+      // TODO support proxies without implementation method
       currentImplementation = proxy.implementation()
+    } catch (e) {
+      // TODO: refactoring candidate, in multisig scenarios we can't know the current impl before the proxy is created
+      if (context.multisig?.isActive()) {
+        currentImplementation = new Future<string>(() => constants.AddressZero)
+      } else {
+        throw e
+      }
     }
 
-    if (onUpgrade) {
-      const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
-      runIf(currentImplementation!.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
-    }
+    const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
+    runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
 
     const contractBehindProxy = makeContractInstance(
       implementation[Name],
       implementation[ArtifactSymbol],
       proxy[Address]
     )
-    if (onInitialize) {
-      runIf(
-        currentImplementation!.equals(constants.AddressZero),
-        () => onInitialize && onInitialize(contractBehindProxy)
-      )
-    }
+    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize && onInitialize(contractBehindProxy))
 
     return contractBehindProxy
   }

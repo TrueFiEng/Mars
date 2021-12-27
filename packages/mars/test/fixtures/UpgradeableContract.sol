@@ -11,8 +11,7 @@ contract UpgradeableContract {
         x = _x;
     }
 
-    function initializeOne() public {
-        require(!initialized, "Contract instance has already been initialized");
+    function reInitializeOne() public {
         initialized = true;
         x = 1;
     }

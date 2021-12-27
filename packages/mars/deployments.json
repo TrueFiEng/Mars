@@ -1,4 +1,14 @@
 {
   "rinkeby": {
+    "impl": {
+      "txHash": "0xdc3a166022400472c1f977ff71db3550546d2678b33fde454b65da56ef88fefa",
+      "address": "0x683c82cF944eEa3e8d860BeE2a52dEdE855BD977",
+      "multisig": false
+    },
+    "impl_proxy": {
+      "txHash": "0x7520c616ea2375fa4f17301699ac7f2a90f842201ff6a67c1976e96f053dc758",
+      "address": "0x0FfB2B02e60812B9039A9aF52f143f7eaCbCFBC0",
+      "multisig": false
+    }
   }
 }

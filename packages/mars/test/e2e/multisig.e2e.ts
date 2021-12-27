@@ -40,7 +40,7 @@ describe('Multisig', () => {
       // CONDITIONAL INIT Multisig
       const conditionalInitMultisig = useMultisig ? multisig('Conditional conditional init') : undefined
       runIf(proxied.x().equals(112233), () => {
-        proxied.initialize(2244)
+        proxied.reInitializeOne()
       })
       conditionalInitMultisig?.propose()
     })

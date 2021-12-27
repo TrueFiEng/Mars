@@ -1,13 +1,12 @@
 import fs from 'fs'
 import { expect } from 'chai'
-import { testDeploy } from '../utils'
+import { expectFuture, testDeploy } from '../utils'
 import { contract, createProxy, FutureNumber } from '../../src'
 import SimpleContractJSON from '../build/SimpleContract.json'
 import ComplexContractJSON from '../build/ComplexContract.json'
 import { Address } from '../../src/symbols'
 import { ComplexContract, SimpleContract, UpgradeabilityProxy, UpgradeableContract } from '../fixtures/exampleArtifacts'
 import { BigNumber } from 'ethers'
-import { expectFuture } from '../utils'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
@@ -194,7 +193,7 @@ describe('Contract', () => {
     const { result: proxyDeploymentCall } = await testDeploy(() => {
       const upgradeable = contract('upgradeable', UpgradeableContract)
       const proxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
-      const proxied = proxy(upgradeable, 'initializeOne')
+      const proxied = proxy(upgradeable, 'reInitializeOne')
       xAfterNoInit = proxied.x()
       return proxied
     })
