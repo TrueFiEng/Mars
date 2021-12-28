@@ -135,8 +135,8 @@ export class MultisigExecutable {
     const response = await this._safeServiceClient.getTransaction(id)
     const state = response.isExecuted
       ? ({ kind: 'EXECUTED', txHash: response.transactionHash } as Executed)
-      : ({ kind: 'PROPOSED', txHash: response.transactionHash } as Proposed)
-    log(`🔍 Checking multisig (ID=${id}). State: ${state.kind}. TxHash: ${state.txHash}`)
+      : ({ kind: 'PROPOSED' } as Proposed)
+    log(`🔍 Checking multisig (ID=${id}). State: ${state.kind}.`)
     return state
   }
 

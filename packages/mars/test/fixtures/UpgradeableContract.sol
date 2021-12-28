@@ -15,4 +15,9 @@ contract UpgradeableContract {
         initialized = true;
         x = 1;
     }
+
+    function resetTo(uint256 _x) public {
+        initialized = false;
+        x = _x;
+    }
 }

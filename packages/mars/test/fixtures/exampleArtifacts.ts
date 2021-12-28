@@ -42,5 +42,6 @@ export const UpgradeableContract = Mars.createArtifact<{
   new(): void;
   initialize(_x: Mars.NumberLike, options?: Mars.TransactionOverrides): Mars.Transaction;
   reInitializeOne(options?: Mars.TransactionOverrides): Mars.Transaction;
+  resetTo(_x: Mars.NumberLike, options?: Mars.TransactionOverrides): Mars.Transaction;
   x(): Mars.FutureNumber;
 }>("UpgradeableContract", UpgradeableContract__JSON);

@@ -9,7 +9,6 @@ export type Unknown = {
 
 export type Proposed = {
   kind: 'PROPOSED'
-  txHash: string
 }
 
 export type Executed = {
@@ -30,6 +29,7 @@ interface SavedMultisigSection {
 export interface SavedMultisigEntry {
   id: string
   state: string
+  txHash?: string
 }
 
 const multisigDeploymentFileSection = '_multisig'

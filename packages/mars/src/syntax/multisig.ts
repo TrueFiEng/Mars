@@ -2,6 +2,7 @@ import { context } from '../context'
 import { MultisigBuilder, MultisigConfig, readSavedMultisig } from '../multisig'
 import { ExecuteOptions } from '../execute/execute'
 import { SavedMultisigEntry, saveMultisig } from '../multisig/multisigState'
+import { log } from '../logging'
 
 /***
  * Designates a wrapping block of syntax statements that are to be executed as a single multisig transaction batch.
@@ -88,6 +89,11 @@ export class MultisigContext {
     const multisigData = readSavedMultisig(options.deploymentsFile, options.networkName, executable.name)
     let state: SavedMultisigEntry
     if (!multisigData || multisigData.state == 'UNKNOWN') {
+      if (this._current!.txBatch.length == 0) {
+        log(`Skipping multisig '${executable.name}' due to empty tx set.'`)
+        return { continue: true }
+      }
+      // TODO: propose and confirm to appear in the queue, see: https://github.com/gnosis/safe-core-sdk/issues/130
       const multisigId = await executable.propose(this._current!.txBatch)
       state = {
         id: multisigId,
@@ -101,6 +107,7 @@ export class MultisigContext {
         state = {
           id: multisigData.id,
           state: 'EXECUTED',
+          txHash: checkedState.txHash,
         }
         saveMultisig(options.deploymentsFile, options.networkName, executable.name, state)
         return { continue: true }

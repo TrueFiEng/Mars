@@ -23,31 +23,27 @@ describe('Multisig', () => {
     await deploy(options, (deployer, config) => {
       debug(`Deployer is ${deployer}`)
 
-      const useMultisig = false //config.networkName === 'rinkeby'
+      const useMultisig = config.networkName === 'rinkeby'
 
       // CREATION Multisig
       const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
       const proxy = createProxy(UpgradeabilityProxy)
       const impl = contract('impl', UpgradeableContract)
-      const proxied = proxy(impl)
+      const proxied = proxy(impl, 'initialize', [112233])
       creationMultisig?.propose()
 
-      // INIT Multisig
-      const initMultisig = useMultisig ? multisig('Contract init') : undefined
-      proxied.initialize(112233)
-      initMultisig?.propose()
-
       // CONDITIONAL INIT Multisig
-      const conditionalInitMultisig = useMultisig ? multisig('Conditional conditional init') : undefined
+      const conditionalInitMultisig = useMultisig ? multisig('Conditional init') : undefined
+      debug(`X value: ${proxied.x()}`)
       runIf(proxied.x().equals(112233), () => {
-        proxied.reInitializeOne()
+        proxied.resetTo(102030)
       })
       conditionalInitMultisig?.propose()
     })
   })
 
   it('Approves off-chain a proposed Safe transaction', async () => {
-    const safeTxHashToApprove = '0x721272a0429dadb60968cfbf4304606ad6cd70c22543dd1414ae8bb3ef093b22'
+    const safeTxHashToApprove = '0xa65f4a142f38ade16d6e6a5d51be0542ed5c990f8ab5d983cadbb317ba6f94cb'
 
     const safeServiceClient = new SafeServiceClient(options.multisigGnosisServiceUri!)
     const web3Provider = new providers.InfuraProvider(options.network!.toString(), options!.infuraApiKey)

@@ -100,7 +100,7 @@ export async function getExistingDeployment(
   if (!existing) return
 
   if (existing.multisig) {
-    // multisig returns a deterministic addresses
+    // TODO: multisig improvement candidate; for now we do not look for internal ex contract deployment data
     return existing.address
   } else if (existing.txHash) {
     const [existingTx, receipt] = await Promise.all([
@@ -108,7 +108,6 @@ export async function getExistingDeployment(
       options.signer.provider!.getTransaction(existing.txHash),
       options.signer.provider!.getTransactionReceipt(existing.txHash),
     ])
-    // TODO: multisig improvement candidate; for now we do not look for internal ex contract deployment data
     if (existingTx && receipt && shouldSkipUpgrade) {
       return existing.address
     }
@@ -188,8 +187,13 @@ async function executeTransaction(action: TransactionAction, globalOptions: Exec
   }
 
   if (action.multisig) {
-    const txWithGas = await withGas(transaction, options.gasLimit, options.gasPrice, options.signer)
-    await action.multisig.addContractInteraction(txWithGas)
+    let txToAdd: providers.TransactionRequest
+    try {
+      txToAdd = await withGas(transaction, options.gasLimit, options.gasPrice, options.signer)
+    } catch (e) {
+      txToAdd = transaction
+    }
+    await action.multisig.addContractInteraction(txToAdd)
   } else {
     const { txHash } = await sendTransaction(
       `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
