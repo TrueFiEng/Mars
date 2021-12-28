@@ -27,7 +27,7 @@ function getImplementation(
   if (proxy.implementation) {
     return proxy.implementation()
   }
-  return proxy.getStorageAt(IMPLEMENTATION_SLOT).map(slot => utils.getAddress(`0x${slot.slice(-40)}`))
+  return proxy.getStorageAt(IMPLEMENTATION_SLOT).map((slot) => utils.getAddress(`0x${slot.slice(-40)}`))
 }
 
 export function createProxy<T extends NoParams>(artifact: ArtifactFrom<T>, onUpgrade?: MethodCall<T>): Proxy
