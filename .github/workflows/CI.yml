@@ -10,10 +10,6 @@ jobs:
         node: [16, 14, 12]
         os: [ubuntu-latest]
         lts: [true]
-        include:
-          - node: 17
-            os: ubuntu-latest
-            lts: false
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ !matrix.lts }}
     steps:
