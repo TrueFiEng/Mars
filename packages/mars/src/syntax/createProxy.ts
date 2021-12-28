@@ -27,6 +27,7 @@ function getImplementation(
   if (proxy.implementation) {
     return proxy.implementation()
   }
+  // TODO: Ivan - could we add a line of doc why -40? Is it for normalization? What about ICAP support?
   return proxy.getStorageAt(IMPLEMENTATION_SLOT).map((slot) => utils.getAddress(`0x${slot.slice(-40)}`))
 }
 
