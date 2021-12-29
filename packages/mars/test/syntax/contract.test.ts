@@ -262,7 +262,7 @@ describe('Contract', () => {
         [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
         'upgradeTo'
       )
-      proxy(upgradeable)
+      proxy(upgradeable, { noRedeploy: true })
 
       // Second iteration of proxy creation
       upgradeable = contract('upgradeable', UpgradeableContract2)
@@ -272,7 +272,7 @@ describe('Contract', () => {
         'upgradeTo'
       )
 
-      const proxied = proxy(upgradeable)
+      const proxied = proxy(upgradeable, { noRedeploy: true })
       return proxied
     })
 
