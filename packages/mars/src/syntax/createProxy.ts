@@ -125,7 +125,7 @@ export function createProxy(...args: any[]): any {
 function parseProxyArgs(
   ...args: any[]
 ): [string, Contract<any>, ((contract: Contract<any>) => unknown) | undefined, boolean] {
-  const hasObjectParam = args.length == 2 && typeof args[1] !== 'function'
+  const hasObjectParam = args.length == 2 && typeof args[1] !== 'function' && typeof args[1] !== 'string'
   const objectParam = (hasObjectParam ? args[1] : {}) as ProxyOptionals<any, any>
   const withName = typeof args[0] === 'string'
   const name: string = withName ? args[0] : objectParam.name
