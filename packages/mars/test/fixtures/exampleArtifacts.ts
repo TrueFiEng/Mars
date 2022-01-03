@@ -11,7 +11,6 @@ const StorageSlot__JSON = require("./../build/StorageSlot.json");
 const UpgradeabilityProxy__JSON = require("./../build/UpgradeabilityProxy.json");
 const UpgradeableContract__JSON = require("./../build/UpgradeableContract.json");
 const UpgradeableContract2__JSON = require("./../build/UpgradeableContract2.json");
-const UpgradeableProxy__JSON = require("./../build/UpgradeableProxy.json");
 
 export const Address = Mars.createArtifact<{
   new(): void;
@@ -73,7 +72,3 @@ export const UpgradeableContract2 = Mars.createArtifact<{
   new(): void;
   x(): Mars.FutureNumber;
 }>("UpgradeableContract2", UpgradeableContract2__JSON);
-
-export const UpgradeableProxy = Mars.createArtifact<{
-  new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
-}>("UpgradeableProxy", UpgradeableProxy__JSON);
