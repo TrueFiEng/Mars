@@ -35,11 +35,16 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const { signer, networkName } = await getSigner(merged)
   const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
-  const multisig = ensureMultisigConfig({
-    networkChainId: (await signer.provider.getNetwork()).chainId,
-    gnosisSafeAddress: merged.multisigGnosisSafe,
-    gnosisServiceUri: merged.multisigGnosisServiceUri,
-  })
+  const multisig = ensureMultisigConfig(
+    // multisig not supported in dry run scenario
+    merged.dryRun
+      ? {}
+      : {
+          networkChainId: (await signer.provider.getNetwork()).chainId,
+          gnosisSafeAddress: merged.multisigGnosisSafe,
+          gnosisServiceUri: merged.multisigGnosisServiceUri,
+        }
+  )
 
   logConfig.mode.file = !!merged.logFile
   logConfig.filepath = merged.logFile ?? ''
