@@ -5,8 +5,16 @@ import { contract, createProxy, FutureNumber } from '../../src'
 import SimpleContractJSON from '../build/SimpleContract.json'
 import ComplexContractJSON from '../build/ComplexContract.json'
 import { Address } from '../../src/symbols'
-import { ComplexContract, SimpleContract, UpgradeabilityProxy, UpgradeableContract } from '../fixtures/exampleArtifacts'
+import {
+  ComplexContract,
+  OpenZeppelinProxy,
+  SimpleContract,
+  UpgradeabilityProxy,
+  UpgradeableContract,
+  UpgradeableContract2,
+} from '../fixtures/exampleArtifacts'
 import { BigNumber } from 'ethers'
+import { Contract, NoParams } from '../../src/syntax/contract'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
@@ -173,6 +181,26 @@ describe('Contract', () => {
     expectFuture(xAfterInit, BigNumber.from(1000))
   })
 
+  it('deploys using an upgradeability proxy without "implementation" method', async () => {
+    let xAfterInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
+    const { result: proxyDeploymentCall } = await testDeploy(() => {
+      const upgradeable = contract('upgradeable', UpgradeableContract)
+      // Will call initialize(10000)
+      const proxy = createProxy(
+        OpenZeppelinProxy,
+        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
+        'upgradeTo'
+      )
+      const proxied = proxy(upgradeable)
+      xAfterInit = proxied.x()
+      return proxied
+    })
+
+    const proxyAddress = proxyDeploymentCall[Address].resolve()
+    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
+    expectFuture(xAfterInit, BigNumber.from(10000))
+  })
+
   it('deploys using an upgradeability proxy without running init function', async () => {
     let xAfterNoInit: FutureNumber = new FutureNumber(() => BigNumber.from(0))
     const { result: proxyDeploymentCall } = await testDeploy(() => {
@@ -201,6 +229,55 @@ describe('Contract', () => {
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
     expectFuture(xAfterNoInit, BigNumber.from(1))
+  })
+
+  it('upgrades proxy without "implementation" method', async () => {
+    let xAfterUpdate: FutureNumber = new FutureNumber(() => BigNumber.from(0))
+    const { result: proxyDeploymentCall } = await testDeploy(() => {
+      const upgradeable = contract('upgradeable', UpgradeableContract)
+      // Will call initialize(10000)
+      const proxy = createProxy(
+        OpenZeppelinProxy,
+        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
+        'upgradeTo'
+      )
+      proxy(upgradeable)
+      const newVersion = contract('upgradeable', UpgradeableContract2)
+      const proxied = proxy(newVersion)
+      xAfterUpdate = proxied.x()
+      return proxied
+    })
+
+    const proxyAddress = proxyDeploymentCall[Address].resolve()
+    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
+    expectFuture(xAfterUpdate, BigNumber.from(420))
+  })
+
+  it('does not redeploy existing proxy when intentionally configured not to', async () => {
+    const { result: proxyDeploymentCall } = await testDeploy(() => {
+      // First iteration of proxy creation
+      let upgradeable = contract('upgradeable', UpgradeableContract) as Contract<NoParams>
+      let proxy = createProxy(
+        OpenZeppelinProxy,
+        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
+        'upgradeTo'
+      )
+      proxy(upgradeable, { noRedeploy: true })
+
+      // Second iteration of proxy creation
+      upgradeable = contract('upgradeable', UpgradeableContract2)
+      proxy = createProxy(
+        OpenZeppelinProxy,
+        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
+        'upgradeTo'
+      )
+
+      const proxied = proxy(upgradeable, { noRedeploy: true })
+      return proxied
+    })
+
+    const proxyAddress = proxyDeploymentCall[Address].resolve()
+    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
   })
 
   afterEach(() => {
