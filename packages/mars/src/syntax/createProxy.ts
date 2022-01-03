@@ -4,7 +4,6 @@ import { Future } from '../values'
 import { constants, utils } from 'ethers'
 import { ArtifactFrom } from './artifact'
 import { runIf } from './conditionals'
-import { context } from '../context'
 
 type Params<T> = T extends (...args: infer A) => any ? A : never
 
@@ -29,6 +28,12 @@ type ProxyOptionals<T, U extends keyof T> = {
    * implementation address changes.
    */
   noRedeploy?: boolean
+  /**
+   * If set to true, it prevents implementation upgrade in proxy contracts. Useful in multisig scenario where proxy
+   * does not exist and there is no possibility to check existing implementation behind proxy in order to reason about
+   * implementation upgrading.
+   */
+  noImplUpgrade?: boolean
 }
 
 /**
@@ -101,32 +106,29 @@ export function createProxy(...args: any[]): any {
   const onUpgrade: any = args[onUpgradeIndex] ?? 'upgradeTo'
 
   return (...args: any[]) => {
-    const [name, implementation, onInitialize, noRedeploy] = parseProxyArgs(...args)
+    const [name, implementation, onInitialize, noRedeploy, noImplUpgrade] = parseProxyArgs(...args)
     const proxy = contract<{
       new (...args: any): void
       implementation(): Future<string>
     }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params, { skipUpgrade: noRedeploy })
-    let currentImplementation: Future<string>
-    try {
+    let currentImplementation: Future<string> | undefined
+    if (!noImplUpgrade) {
       currentImplementation = getImplementation(proxy)
-    } catch (e) {
-      // TODO: refactoring candidate, in multisig scenarios we can't know the current impl before the proxy is created
-      if (context.multisig?.isActive()) {
-        currentImplementation = new Future<string>(() => constants.AddressZero)
-      } else {
-        throw e
-      }
+      const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
+      runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
     }
-
-    const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
-    runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
 
     const contractBehindProxy = makeContractInstance(
       implementation[Name],
       implementation[ArtifactSymbol],
       proxy[Address]
     )
-    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize && onInitialize(contractBehindProxy))
+
+    if (!noImplUpgrade && currentImplementation)
+      runIf(
+        currentImplementation.equals(constants.AddressZero),
+        () => onInitialize && onInitialize(contractBehindProxy)
+      )
 
     return contractBehindProxy
   }
@@ -135,7 +137,7 @@ export function createProxy(...args: any[]): any {
 // refactoring: provide a proxy instance with params convergence function
 function parseProxyArgs(
   ...args: any[]
-): [string, Contract<any>, ((contract: Contract<any>) => unknown) | undefined, boolean] {
+): [string, Contract<any>, ((contract: Contract<any>) => unknown) | undefined, boolean, boolean] {
   const hasObjectParam = args.length == 2 && typeof args[1] !== 'function' && typeof args[1] !== 'string'
   const objectParam = (hasObjectParam ? args[1] : {}) as ProxyOptionals<any, any>
   const withName = typeof args[0] === 'string'
@@ -145,7 +147,8 @@ function parseProxyArgs(
   const onInitializeParams = (hasObjectParam ? objectParam.params : args[withName ? 3 : 2]) ?? []
   const onInitializeNormalized = onInitialize ? normalizeCall(contract, onInitialize, onInitializeParams) : undefined
   const noRedeploy = objectParam.noRedeploy ?? false
-  return [name, contract, onInitializeNormalized, noRedeploy]
+  const noImplUpgrade = objectParam.noImplUpgrade ?? false
+  return [name, contract, onInitializeNormalized, noRedeploy, noImplUpgrade]
 }
 
 function normalizeCall<T>(

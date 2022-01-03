@@ -24,12 +24,18 @@ describe('Multisig', () => {
       debug(`Deployer is ${deployer}`)
 
       const useMultisig = config.networkName === 'rinkeby'
+      // this is no beauty and indicates our definition and execution pipelines lack information passing, to be improv.
+      const proxyCreationPhase = true
 
       // CREATION Multisig
       const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
       const proxy = createProxy(UpgradeabilityProxy)
       const impl = contract('impl', UpgradeableContract)
-      const proxied = proxy(impl, 'initialize', [112233])
+      const proxied = proxy(impl, {
+        onInitialize: 'initialize',
+        params: [112233],
+        noImplUpgrade: proxyCreationPhase,
+      })
       creationMultisig?.propose()
 
       // CONDITIONAL INIT Multisig
@@ -43,7 +49,7 @@ describe('Multisig', () => {
   })
 
   it('Approves off-chain a proposed Safe transaction', async () => {
-    const safeTxHashToApprove = '0xa65f4a142f38ade16d6e6a5d51be0542ed5c990f8ab5d983cadbb317ba6f94cb'
+    const safeTxHashToApprove = '0x85eeadd56b7893766c68c699dfe1649c03bff90c3a43630f5918e331e559ce43'
 
     const safeServiceClient = new SafeServiceClient(options.multisigGnosisServiceUri!)
     const web3Provider = new providers.InfuraProvider(options.network!.toString(), options!.infuraApiKey)

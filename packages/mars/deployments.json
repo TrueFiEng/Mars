@@ -1,24 +1,4 @@
 {
   "rinkeby": {
-    "impl": {
-      "address": "0xe4940a3eb8e3c4c0e52d91e83983d06929be8712",
-      "multisig": true
-    },
-    "impl_proxy": {
-      "txHash": "0x7520c616ea2375fa4f17301699ac7f2a90f842201ff6a67c1976e96f053dc758",
-      "address": "0x0FfB2B02e60812B9039A9aF52f143f7eaCbCFBC0",
-      "multisig": false
-    },
-    "_multisig": {
-      "Contract creation, proxying and initialization": {
-        "id": "0x958728543a3547e9b83196d944b3eaf185433eb4e19cc246d18b2cacf1d15f6f",
-        "state": "EXECUTED",
-        "txHash": "0x0c79b7d1b9e654cbb053dcdf649c1ca382281b694752663a122b78bf752f6913"
-      },
-      "Conditional init": {
-        "id": "0xa60219ff36ec5f2f44329d49d562ab6118dba2a05fb42823eada7793932c9c2f",
-        "state": "PROPOSED"
-      }
-    }
   }
 }
