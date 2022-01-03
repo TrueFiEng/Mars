@@ -1,11 +1,6 @@
 import fs from 'fs'
 import { providers } from 'ethers'
 
-// TODO: poor-man logging, think about using a lib
-export interface ILogger {
-  log(entry: string): void
-}
-
 export type LogMode = {
   console: boolean
   file: boolean
