@@ -24,7 +24,7 @@ export async function withGas(
 
 export async function sendTransaction(
   name: string,
-  { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, logFile }: TransactionOptions,
+  { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
   const txWithGas = await withGas(transaction, overwrittenGasLimit, gasPrice, signer)
