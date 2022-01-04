@@ -7,6 +7,8 @@ import { getCommandLineOptions } from './cli'
 import { getDefaultOptions } from './defaults'
 import { getEnvironmentOptions } from './environment'
 import { Options } from './Options'
+import { ensureMultisigConfig } from '../multisig/multisigConfig'
+import { logConfig } from '../logging'
 
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
@@ -33,6 +35,20 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const { signer, networkName } = await getSigner(merged)
   const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
+  const multisig = ensureMultisigConfig(
+    // multisig not supported in dry run scenario
+    merged.dryRun
+      ? {}
+      : {
+          networkChainId: (await signer.provider.getNetwork()).chainId,
+          gnosisSafeAddress: merged.multisigGnosisSafe,
+          gnosisServiceUri: merged.multisigGnosisServiceUri,
+        }
+  )
+
+  logConfig.mode.file = !!merged.logFile
+  logConfig.filepath = merged.logFile ?? ''
+
   return {
     gasPrice,
     noConfirm: !!merged.noConfirm,
@@ -42,6 +58,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     logFile: merged.logFile ?? '',
     deploymentsFile: merged.outputFile,
     verification,
+    multisig,
   }
 }
 
@@ -57,6 +74,8 @@ async function getSigner(options: Options) {
   let rpcUrl: string | undefined
   let provider: providers.JsonRpcProvider
   if (isNetworkProvider(network)) {
+    // this causes 'MaxListenersExceededWarning: Possible EventEmitter memory leak detected.' when many contracts in use
+    // details at https://github.com/ChainSafe/web3.js/issues/1648
     provider = new providers.Web3Provider(network as any)
   } else if (network.startsWith('http')) {
     rpcUrl = network

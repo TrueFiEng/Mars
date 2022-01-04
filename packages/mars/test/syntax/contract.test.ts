@@ -221,7 +221,7 @@ describe('Contract', () => {
     const { result: proxyDeploymentCall } = await testDeploy(() => {
       const upgradeable = contract('upgradeable', UpgradeableContract)
       const proxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
-      const proxied = proxy(upgradeable, 'initializeOne')
+      const proxied = proxy(upgradeable, 'reInitializeOne')
       xAfterNoInit = proxied.x()
       return proxied
     })

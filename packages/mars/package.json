@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@openzeppelin/contracts": "^4.4.0",
     "@types/argparse": "^2.0.4",
     "@types/chai": "^4.2.14",
     "@types/minimist": "^1.2.0",

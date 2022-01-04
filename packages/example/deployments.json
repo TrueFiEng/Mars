@@ -5,11 +5,13 @@
       "address": "0x0a3BDD55AbA03BE21365A164bac541845f2412AF"
     },
     "btc": {
-      "txHash": "0x795a6145e6f2fd8574cd0c56fc4f514b826cf61b467abb4c5ee805f1849edd7e",
+      "multisig": true,
+      "txHash": "0x1234abcd....",
       "address": "0x28562C8c670BdA5AA186156Fff49F07C2Ff0124F"
     },
     "market": {
-      "txHash": "0xe8bf839c398e01d19b366bf9ac2fbd07c9c142fd2b8de4ca65218c4e4604dfb4",
+      "multisig": true,
+      "txHash": "0x1234abcd....",
       "address": "0x51Ef1C90C02bE44d8609EAc9A3Fe30b7B907fB9c"
     },
     "dai_proxy": {
@@ -19,6 +21,26 @@
     "btc_proxy": {
       "txHash": "0x28e6d21a3e8f224967ba3a7d09c9a1298f81f8cad450085949530826399727a9",
       "address": "0x92146cB5fCC0fCA0d1A0E24f28Ebc447D73983E1"
+    }
+  },
+  "multisig": {
+    "Contract creation, proxying and initialization": {
+      "id": "0x1234abcd....",
+      "status": "executed"
+    },
+    "Conditional initialization": {
+      "id": "0x5678abcd....",
+      "status": "proposed"
+    }
+  },
+  "rinkeby": {
+    "preProxied": {
+      "address": "0x263c3a8f5ce2535ce544c9115e5d67260887f2fe",
+      "multisig": true
+    },
+    "preProxied_proxy": {
+      "address": "0x67c7e426eae6d35e118168805403879efadf7102",
+      "multisig": true
     }
   }
 }

@@ -1,15 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.8;
+pragma solidity ^0.8.10;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Token is ERC20 {
-    uint public foo;
+    bool private isInit;
+    uint public val;
 
-    constructor() public ERC20("Token", "Tkn") {}
+    constructor() ERC20("Token", "Tkn") {}
 
-    function initialize(uint _foo) public {
-        foo = _foo * 2;
-        _mint(msg.sender, 2000);
+    function initialize(uint _val) public {
+        isInit = true;
+        val = _val;
+        _mint(msg.sender, 100000);
+    }
+
+    function isInitialized() public view returns (bool) {
+        return isInit;
     }
 }

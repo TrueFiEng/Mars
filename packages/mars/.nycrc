@@ -8,8 +8,8 @@
     "**/*.d.ts"
   ],
   "check-coverage": true,
-  "branches": 65,
-  "lines": 75,
-  "functions": 65,
-  "statements": 74
+  "branches": 63,
+  "lines": 70,
+  "functions": 59,
+  "statements": 69
 }

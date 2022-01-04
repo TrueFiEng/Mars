@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.8;
+pragma solidity ^0.8.10;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -9,7 +9,7 @@ contract Market {
 
     event Supply(uint256, uint256);
 
-    constructor(IERC20 _xToken, IERC20 _yToken) public {
+    constructor(IERC20 _xToken, IERC20 _yToken) {
         xToken = _xToken;
         yToken = _yToken;
     }

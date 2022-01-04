@@ -13,11 +13,13 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { AbiSymbol, Address, ArtifactSymbol, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
-import { sendTransaction, TransactionOptions } from './sendTransaction'
-import { save, read } from './save'
+import { sendTransaction, TransactionOptions, withGas } from './sendTransaction'
+import { read, save, SaveEntry } from './save'
 import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
+import { MultisigConfig } from '../multisig/multisigConfig'
+import { log } from '../logging'
 
 export type TransactionOverrides = Partial<TransactionOptions> & {
   skipUpgrade?: boolean
@@ -34,12 +36,23 @@ export interface ExecuteOptions extends TransactionOptions {
     waffleConfig: string
     flattenScript?: (name: string) => Promise<string>
   }
+  multisig?: MultisigConfig
 }
 
 export async function execute(actions: Action[], options: ExecuteOptions) {
   for (const action of actions) {
-    await executeAction(action, options)
+    // TODO: improve action logging details
+    log('⚙️ EXE ' + action.type)
+    const result = await executeAction(action, options)
+    if (result && !result.continue) break
   }
+}
+
+interface ActionResult {
+  /**
+   * Whether to continue the pipeline. If false, then all consequent actions are not going to be executed in this run.
+   */
+  continue: boolean
 }
 
 async function executeGetStorageAt(
@@ -51,7 +64,7 @@ async function executeGetStorageAt(
   resolve(storageValue ?? '0x')
 }
 
-async function executeAction(action: Action, options: ExecuteOptions) {
+async function executeAction(action: Action, options: ExecuteOptions): Promise<ActionResult | void> {
   if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
       context.conditionalDepth++
@@ -74,6 +87,10 @@ async function executeAction(action: Action, options: ExecuteOptions) {
       return executeConditionalStart(action)
     case 'DEBUG':
       return executeDebug(action)
+    case 'MULTISIG_START':
+      return context.multisig!.executeStart()
+    case 'MULTISIG_END':
+      return context.multisig!.executeEnd(options)
     case 'GET_STORAGE_AT':
       return executeGetStorageAt(action, options)
   }
@@ -91,8 +108,13 @@ export async function getExistingDeployment(
   shouldSkipUpgrade: boolean,
   options: ExecuteOptions
 ): Promise<string | undefined> {
-  const existing = read(options.deploymentsFile, options.networkName, name)
-  if (existing) {
+  const existing = read<SaveEntry>(options.deploymentsFile, options.networkName, name)
+  if (!existing) return
+
+  if (existing.multisig) {
+    // TODO: multisig improvement candidate; for now we do not look for internal ex contract deployment data
+    return existing.address
+  } else if (existing.txHash) {
     const [existingTx, receipt] = await Promise.all([
       // TODO: support abstract signers where no provider exists
       options.signer.provider!.getTransaction(existing.txHash),
@@ -118,15 +140,20 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
   const params = action.params.map((param) => resolveValue(param))
   const tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
   const existingAddress = await getExistingDeployment(tx, action.name, action.skipUpgrade, options)
-  let address: string, txHash: string
+  let address: string, txHash: string | undefined
   if (existingAddress) {
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
     address = existingAddress
   } else {
-    // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
-    ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
+    if (action.multisig) {
+      address = await action.multisig.addContractDeployment(tx, action.artifact[Bytecode])
+    } else {
+      // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
+      ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
+    }
     if (!options.dryRun) {
-      save(options.deploymentsFile, options.networkName, action.name, { txHash, address })
+      const multisig = !!action.multisig
+      save(options.deploymentsFile, options.networkName, action.name, { txHash, address, multisig })
     }
   }
   if (options.verification) {
@@ -166,15 +193,27 @@ async function executeRead(action: ReadAction, options: ExecuteOptions) {
 async function executeTransaction(action: TransactionAction, globalOptions: ExecuteOptions) {
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
-  const { txHash } = await sendTransaction(
-    `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
-    options,
-    {
-      to: resolveValue(action.address),
-      data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
+  const transaction = {
+    to: resolveValue(action.address),
+    data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
+  }
+
+  if (action.multisig) {
+    let txToAdd: providers.TransactionRequest
+    try {
+      txToAdd = await withGas(transaction, options.gasLimit, options.gasPrice, options.signer)
+    } catch (e) {
+      txToAdd = transaction
     }
-  )
-  action.resolve(resolveBytesLike(txHash))
+    await action.multisig.addContractInteraction(txToAdd)
+  } else {
+    const { txHash } = await sendTransaction(
+      `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
+      options,
+      transaction
+    )
+    action.resolve(resolveBytesLike(txHash))
+  }
 }
 
 function printableTransactionParams(params: unknown[]) {

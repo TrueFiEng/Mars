@@ -22,7 +22,7 @@ export interface Options {
   alchemyApiKey?: string
   outputFile?: string
   gasPrice?: BigNumber
-  /***
+  /**
    * If true then it forks an existing chain locally and executes the deployment on such.
    * Equivalent to Ganache's 'fork' option.
    */
@@ -40,7 +40,17 @@ export interface Options {
   sources?: string
   waffleConfig?: string
   dataPrintMode?: boolean
-  /***
+  /**
+   * Gnosis Safe contract address to be used in multisig deployments.
+   * See: https://gnosis-safe.io/
+   */
+  multisigGnosisSafe?: string
+  /**
+   * Gnosis Transaction Service uri. Off-chain service that servers HTTP requests.
+   * See: https://safe-transaction.gnosis.io/
+   */
+  multisigGnosisServiceUri?: string
+  /**
    * Disables collecting options from the command line program invocation. Useful in running end-2-end tests with mocha.
    */
   disableCommandLineOptions?: boolean
