@@ -27,8 +27,11 @@ function getImplementation(
   if (proxy.implementation) {
     return proxy.implementation()
   }
-  // TODO: Ivan - could we add a line of doc why -40? Is it for normalization? What about ICAP support?
-  return proxy.getStorageAt(IMPLEMENTATION_SLOT).map((slot) => utils.getAddress(`0x${slot.slice(-40)}`))
+
+  const stored64Bytes = proxy.getStorageAt(IMPLEMENTATION_SLOT)
+  const extractAddress = (slot: string) => utils.getAddress(`0x${slot.slice(-40)}`)
+
+  return stored64Bytes.map(extractAddress)
 }
 
 export function createProxy<T extends NoParams>(artifact: ArtifactFrom<T>, onUpgrade?: MethodCall<T>): Proxy
