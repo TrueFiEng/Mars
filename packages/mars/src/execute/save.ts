@@ -1,11 +1,12 @@
 import fs from 'fs'
 
 export interface SaveEntry {
-  txHash: string
+  txHash?: string
   address: string
+  multisig: boolean
 }
 
-export function save(fileName: string, network: string, key: string, value: SaveEntry) {
+export function save<T>(fileName: string, network: string, key: string, value: T) {
   let contents: any = {}
   if (fs.existsSync(fileName)) {
     contents = JSON.parse(fs.readFileSync(fileName, 'utf-8'))
@@ -15,7 +16,7 @@ export function save(fileName: string, network: string, key: string, value: Save
   fs.writeFileSync(fileName, JSON.stringify(contents, null, 2) + '\n')
 }
 
-export function read(fileName: string, network: string, key: string): SaveEntry | undefined {
+export function read<T>(fileName: string, network: string, key: string): T | undefined {
   let contents: any = {}
   if (fs.existsSync(fileName)) {
     contents = JSON.parse(fs.readFileSync(fileName, 'utf-8'))

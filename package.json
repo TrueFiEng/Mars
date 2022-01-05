@@ -6,16 +6,22 @@
     "yarn": "^1.17.3"
   },
   "workspaces": {
-    "packages": ["packages/*"],
-    "nohoist": ["**/prettier-plugin-solidity"]
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/prettier-plugin-solidity"
+    ]
   },
   "scripts": {
     "lint": "wsrun -c lint",
     "build": "wsrun -te -c build",
     "test": "wsrun -te -c test",
-    "cover": "wsrun -te -c cover"
+    "cover": "wsrun -te -c cover",
+    "release": "yarn build && yarn changeset publish"
   },
   "dependencies": {
+    "@changesets/cli": "^2.19.0",
     "wsrun": "^5.2.1"
   }
 }

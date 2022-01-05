@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.8;
+pragma solidity ^0.8.10;
 
 contract UpgradeabilityProxy {
-    function upgradeTo(address implementation) public virtual {
+    function upgradeTo(address _implementation) public virtual {
         address currentImplementation;
         bytes32 position = implementationPosition;
         assembly {
             currentImplementation := sload(position)
         }
-        require(currentImplementation != implementation);
+        require(currentImplementation != _implementation);
         assembly {
-            sstore(position, implementation)
+            sstore(position, _implementation)
         }
     }
 

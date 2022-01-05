@@ -2,6 +2,7 @@ import { BigNumber } from 'ethers'
 import { MockProvider } from 'ethereum-waffle'
 import { context } from '../../src/context'
 import { execute, ExecuteOptions } from '../../src/execute/execute'
+import { logConfig } from '../../src/logging'
 
 export async function testDeploy<T>(
   callback: () => T,
@@ -13,6 +14,11 @@ export async function testDeploy<T>(
     saveDeploy: true,
   }
 ) {
+  if (options.logFile) {
+    logConfig.mode = { file: true, console: false }
+    logConfig.filepath = options.logFile
+  }
+
   const provider = options.injectProvider ?? new MockProvider()
   const config: ExecuteOptions = {
     networkName: 'test',

@@ -7,11 +7,74 @@ import { runIf } from './conditionals'
 
 type Params<T> = T extends (...args: infer A) => any ? A : never
 
+/**
+ * Optional arguments for proxy instance creation
+ */
+type ProxyOptionals<T, U extends keyof T> = {
+  /**
+   * Custom name for the proxied contract
+   */
+  name?: string
+  /**
+   * Routine to be executed at first deployment
+   */
+  onInitialize?: U
+  /**
+   * Params for the initialization routine
+   */
+  params?: Params<T[U]>
+  /**
+   * If set to true, it prevents proxied contract from being redeployed when e.g. ctor argument containing initial
+   * implementation address changes.
+   */
+  noRedeploy?: boolean
+  /**
+   * If set to true, it prevents implementation upgrade in proxy contracts. Useful in multisig scenario where proxy
+   * does not exist and there is no possibility to check existing implementation behind proxy in order to reason about
+   * implementation upgrading.
+   */
+  noImplUpgrade?: boolean
+}
+
+/**
+ * Proxy that wraps contract implementations. Exposes factory methods that create wrapped instances of contracts.
+ * Such proxy instances take care of specific contract proxies deployment, initialization and upgrades if underlying
+ * implementation changes.
+ */
 export interface Proxy {
-  <T, U extends keyof T>(name: string, contract: Contract<T>, onInitialize?: U, params?: Params<T[U]>): Contract<T>
-  <T, U extends keyof T>(contract: Contract<T>, onInitialize?: U, params?: Params<T[U]>): Contract<T>
-  <T>(name: string, contract: Contract<T>, onInitialize?: (contract: Contract<T>) => unknown): Contract<T>
-  <T>(contract: Contract<T>, onInitialize?: (contract: Contract<T>) => unknown): Contract<T>
+  /**
+   * Creates a proxied implementation for a contract with optional initialization routine.
+   * @param contract logic contract
+   * @param onInitialize initialization routine to be performed once at the first deployment
+   */ <T>(contract: Contract<T>, onInitialize?: (contract: Contract<T>) => unknown): Contract<T>
+
+  /**
+   * Creates a proxied implementation for a contract with optional initialization routine and its params.
+   * @param contract logic contract
+   * @param onInitialize initialization routine to be performed once at the first deployment
+   * @param params parameters to the initialization routine
+   */ <T, U extends keyof T>(contract: Contract<T>, onInitialize?: U, params?: Params<T[U]>): Contract<T>
+
+  /**
+   * Creates a named proxied implementation for a contract with optional initialization routine.
+   * @param name custom name of the proxied contract
+   * @param contract logic contract
+   * @param onInitialize initialization routine to be performed once at the first deployment
+   */ <T>(name: string, contract: Contract<T>, onInitialize?: (contract: Contract<T>) => unknown): Contract<T>
+
+  /**
+   * Creates a named proxied implementation for a contract with optional initialization routine and its params.
+   * @param name custom name of the proxied contract
+   * @param contract logic contract
+   * @param onInitialize initialization routine to be performed once at the first deployment
+   * @param params parameters to the initialization routine
+   */ <T, U extends keyof T>(name: string, contract: Contract<T>, onInitialize?: U, params?: Params<T[U]>): Contract<T>
+
+  /**
+   * Creates a proxied implementation for a contract with a set of optional arguments.
+   * @param contract logic contract
+   * @param optionals set of optional parameters
+   */ <T, U extends keyof T>(contract: Contract<T>, optionals: ProxyOptionals<T, U>): Contract<T>
 }
 
 type MethodCall<T> = keyof T | ((contract: Contract<T>) => unknown)
@@ -47,35 +110,49 @@ export function createProxy(...args: any[]): any {
   const onUpgrade: any = args[onUpgradeIndex] ?? 'upgradeTo'
 
   return (...args: any[]) => {
-    const [name, implementation, onInitialize] = parseProxyArgs(...args)
+    const [name, implementation, onInitialize, noRedeploy, noImplUpgrade] = parseProxyArgs(...args)
     const proxy = contract<{
       new (...args: any): void
       implementation(): Future<string>
-    }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params)
-    const currentImplementation = getImplementation(proxy)
-
-    const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
-    runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
+    }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params, { skipUpgrade: noRedeploy })
+    let currentImplementation: Future<string> | undefined
+    if (!noImplUpgrade) {
+      currentImplementation = getImplementation(proxy)
+      const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
+      runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
+    }
 
     const contractBehindProxy = makeContractInstance(
       implementation[Name],
       implementation[ArtifactSymbol],
       proxy[Address]
     )
-    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize && onInitialize(contractBehindProxy))
+
+    if (!noImplUpgrade && currentImplementation)
+      runIf(
+        currentImplementation.equals(constants.AddressZero),
+        () => onInitialize && onInitialize(contractBehindProxy)
+      )
 
     return contractBehindProxy
   }
 }
 
-function parseProxyArgs(...args: any[]): [string, Contract<any>, ((contract: Contract<any>) => unknown) | undefined] {
+// refactoring: provide a proxy instance with params convergence function
+function parseProxyArgs(
+  ...args: any[]
+): [string, Contract<any>, ((contract: Contract<any>) => unknown) | undefined, boolean, boolean] {
+  const hasObjectParam = args.length == 2 && typeof args[1] !== 'function' && typeof args[1] !== 'string'
+  const objectParam = (hasObjectParam ? args[1] : {}) as ProxyOptionals<any, any>
   const withName = typeof args[0] === 'string'
-  const name: string = withName ? args[0] : undefined
+  const name: string = withName ? args[0] : objectParam.name
   const contract: Contract<any> = args[withName ? 1 : 0]
-  const params = args[withName ? 3 : 2] ?? []
-  const onInitializeArg = args[withName ? 2 : 1]
-  const onInitialize = onInitializeArg ? normalizeCall(contract, onInitializeArg, params) : undefined
-  return [name, contract, onInitialize]
+  const onInitialize = hasObjectParam ? objectParam.onInitialize : args[withName ? 2 : 1]
+  const onInitializeParams = (hasObjectParam ? objectParam.params : args[withName ? 3 : 2]) ?? []
+  const onInitializeNormalized = onInitialize ? normalizeCall(contract, onInitialize, onInitializeParams) : undefined
+  const noRedeploy = objectParam.noRedeploy ?? false
+  const noImplUpgrade = objectParam.noImplUpgrade ?? false
+  return [name, contract, onInitializeNormalized, noRedeploy, noImplUpgrade]
 }
 
 function normalizeCall<T>(

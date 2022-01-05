@@ -5,7 +5,7 @@ import { SafeTransaction, SafeTransactionDataPartial } from '@gnosis.pm/safe-cor
 import { getDeployTx } from '../../src/execute/getDeployTx'
 import { UpgradeableContract } from '../fixtures/exampleArtifacts'
 import { AbiSymbol, Bytecode } from '../../src/symbols'
-import { ContractDeployer } from '../../src/gnosis/contractDeployer'
+import { ContractDeployer } from '../../src/multisig/gnosis/contractDeployer'
 import { expect } from 'chai'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -40,19 +40,17 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
   beforeEach(async () => {
     safeServiceClient = new SafeServiceClient(config.txServiceUri)
     const web3Provider = new providers.InfuraProvider(config.ethNetworkName, config.infuraApiKey)
-    deployer = new ContractDeployer(web3Provider)
+    deployer = new ContractDeployer(web3Provider.network.chainId)
     owner = new ethers.Wallet(config.owner.privateKey, web3Provider)
     delegate = new ethers.Wallet(config.delegate.privateKey, web3Provider)
     safeByOwner = await Safe.create({
       ethAdapter: new EthersAdapter({ ethers, signer: owner }),
       safeAddress: config.ttSafe,
     })
-    await safeByOwner.connect({})
     safeByDelegate = await Safe.create({
       ethAdapter: new EthersAdapter({ ethers, signer: delegate }),
       safeAddress: config.ttSafe,
     })
-    await safeByDelegate.connect({})
   })
 
   it('Prints Safe address and its owners', async () => {
