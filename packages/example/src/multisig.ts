@@ -31,6 +31,7 @@ deploy(options, (deployer, config) => {
 
   const isRinkeby = config.networkName === 'rinkeby'
   const useMultisig = isRinkeby
+  const proxyCreationPhase = false
 
   const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
 
@@ -38,15 +39,19 @@ deploy(options, (deployer, config) => {
 
   // existing contracts, already deployed
   const wellKnown = isRinkeby ? '0x124BCA8F86a1eC3b84d68BEDB0Cc640D301C3eEF' : contract('wellKnown', Token)
-  const preProxied = proxy(contract('preProxied', Token))
+  const preProxied = proxy(contract('preProxied', Token), { noImplUpgrade: proxyCreationPhase })
 
   // new contract implementations
   const firstImpl = contract('firstImpl', Token)
   const secondImpl = contract('secondImpl', Token)
 
   // new contract proxies
-  const firstProxied = proxy(firstImpl, 'initialize', [112233])
-  const secondProxied = proxy(secondImpl)
+  const firstProxied = proxy(firstImpl, {
+    onInitialize: 'initialize',
+    params: [112233],
+    noImplUpgrade: proxyCreationPhase,
+  })
+  const secondProxied = proxy(secondImpl, { noImplUpgrade: proxyCreationPhase })
 
   // new bare contracts
   const firstBare = contract('firstBare', Token)

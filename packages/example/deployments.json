@@ -23,24 +23,58 @@
       "address": "0x92146cB5fCC0fCA0d1A0E24f28Ebc447D73983E1"
     }
   },
-  "multisig": {
-    "Contract creation, proxying and initialization": {
-      "id": "0x1234abcd....",
-      "status": "executed"
-    },
-    "Conditional initialization": {
-      "id": "0x5678abcd....",
-      "status": "proposed"
-    }
-  },
   "rinkeby": {
     "preProxied": {
-      "address": "0x263c3a8f5ce2535ce544c9115e5d67260887f2fe",
+      "address": "0xfaeb2f3f0be2f53bfed3c4395d1bd443947d78c0",
       "multisig": true
     },
     "preProxied_proxy": {
-      "address": "0x67c7e426eae6d35e118168805403879efadf7102",
+      "address": "0x3a83bb4c355261527d42a804c6300dd7c70aa8c8",
       "multisig": true
+    },
+    "firstImpl": {
+      "address": "0xb9d02ce980972adcfd4497a497615b00415bc45c",
+      "multisig": true
+    },
+    "secondImpl": {
+      "address": "0xb8eca4a01a88518f7b661b1cf1128a3ae70eab0f",
+      "multisig": true
+    },
+    "firstImpl_proxy": {
+      "address": "0x07e06ca21913baeaffc2c08bfa8ae9252f2d72f5",
+      "multisig": true
+    },
+    "secondImpl_proxy": {
+      "address": "0xf5e9c6a7490c8d02e0f8ef8d5e69a78fdcc0bd19",
+      "multisig": true
+    },
+    "firstBare": {
+      "address": "0xda014c55a1e4674396db1c42076b1e5755bf6236",
+      "multisig": true
+    },
+    "secondBare": {
+      "address": "0x6fa5a20e2213c1545f794d130cefe0fe128f5ff6",
+      "multisig": true
+    },
+    "firstMarket": {
+      "address": "0xbf9a2eedac36a1ba06704cc785f1e4072b828365",
+      "multisig": true
+    },
+    "secondMarket": {
+      "address": "0x7991247c58ce35cdcd97882e4d458d449949d5b4",
+      "multisig": true
+    },
+    "_multisig": {
+      "Contract creation, proxying and initialization": {
+        "id": "0x098f039d5ed3b6905d630d0569bcf87163e4c77e36610149588a077de2d4341d",
+        "state": "EXECUTED",
+        "txHash": "0x1ab3a4630cefa8612e2e16103f340f8493cdfe39f498d7381235de9601cbdd70"
+      },
+      "Conditional initialization": {
+        "id": "0x7cb820d1f3ff6e687b09d0605d46530688d303a19570804af230f0f6de8b90e6",
+        "state": "EXECUTED",
+        "txHash": "0x391f89b5fc3ce1dcf2a4df7cdb14cbb9fddb63d54a53614149bbe3d7437c3f4a"
+      }
     }
   }
 }
