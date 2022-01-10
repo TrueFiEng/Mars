@@ -40,7 +40,7 @@ export class MultisigBuilder {
    *  is finalized and unchanged after that.
    */
   public async addContractDeployment(tx: providers.TransactionRequest, bytecode: string): Promise<string> {
-    const { transaction: wrappedTx, address } = await this._contractDeployer.createDeploymentTx(tx, bytecode)
+    const { transaction: wrappedTx, address } = await this._contractDeployer.createDeploymentTx(tx)
     this.txBatch.push(wrappedTx)
 
     return address

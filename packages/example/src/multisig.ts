@@ -31,7 +31,7 @@ deploy(options, (deployer, config) => {
 
   const isRinkeby = config.networkName === 'rinkeby'
   const useMultisig = isRinkeby
-  const proxyCreationPhase = false
+  const proxyCreationPhase = true
 
   const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
 

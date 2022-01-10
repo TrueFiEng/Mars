@@ -85,7 +85,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
     // Contract deployment using multisig workflow
     const bytecode = UpgradeableContract[Bytecode]
     const directDeploymentTx = getDeployTx(UpgradeableContract[AbiSymbol], bytecode, [])
-    const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
+    const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx)
     console.log(`Pre-computed address of the contract to be deployed: ${address}`)
 
     const { safeMultisigTx: safeDeploymentTx, safeMultisigTxHash: safeDeploymentTxHash } = await proposeInSafe(
@@ -111,7 +111,7 @@ describe('Gnosis Safe as multisig contract deployment and interaction service in
   it('Multisig batched transactions to do as much work in a single shot of approvals and execution', async () => {
     const bytecode = UpgradeableContract[Bytecode]
     const directDeploymentTx = getDeployTx(UpgradeableContract[AbiSymbol], bytecode, [])
-    const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx, bytecode)
+    const { transaction: deploymentTx, address } = await deployer.createDeploymentTx(directDeploymentTx)
     console.log(`Pre-computed address of the contract to be deployed: ${address}`)
     const contract = new Contract(address, Contract__JSON.abi, delegate)
     const interactionTx = await contract.populateTransaction.initialize(11223344)
