@@ -146,7 +146,7 @@ async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions
     address = existingAddress
   } else {
     if (action.multisig) {
-      address = await action.multisig.addContractDeployment(tx, action.artifact[Bytecode])
+      address = await action.multisig.addContractDeployment(tx)
     } else {
       // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
       ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))

@@ -1,6 +1,5 @@
-import { Contract, providers } from 'ethers'
-import { randomBytes } from 'ethers/lib/utils'
-import { computeCreate2Address } from '../../create2Address'
+import { Contract, providers, utils } from 'ethers'
+import { keccak256, randomBytes } from 'ethers/lib/utils'
 
 export interface DeterministicDeployment {
   address: string
@@ -17,18 +16,18 @@ export class ContractDeployer {
   /**
    * Creates a new contract deployment transactions and precomputes its deterministic creation address.
    * @param unwrappedDeploymentTx a raw deployment transaction
-   * @param contractBytecode contract bytecode
    * @returns wrapped contract deployment transaction and contract deployment address
    */
   public async createDeploymentTx(
-    unwrappedDeploymentTx: providers.TransactionRequest,
-    contractBytecode: string
+    unwrappedDeploymentTx: providers.TransactionRequest
   ): Promise<DeterministicDeployment> {
     const deployerContract = this.getDeployerContract()
     const salt = randomBytes(32)
 
+    if (!unwrappedDeploymentTx.data) throw new Error('Deployment transaction data is empty.')
+
     const transaction = await deployerContract.populateTransaction.performCreate2(0, unwrappedDeploymentTx.data, salt)
-    const address = computeCreate2Address(deployerContract.address, salt, contractBytecode)
+    const address = utils.getCreate2Address(deployerContract.address, salt, keccak256(unwrappedDeploymentTx.data))
 
     return { address, transaction }
   }

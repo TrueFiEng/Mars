@@ -49,7 +49,7 @@ describe('Multisig', () => {
   })
 
   it('Approves off-chain a proposed Safe transaction', async () => {
-    const safeTxHashToApprove = '0x85eeadd56b7893766c68c699dfe1649c03bff90c3a43630f5918e331e559ce43'
+    const safeTxHashToApprove = '0xca09e75db41176d9e5795c1b3a85b5e848ccfbc9294d93a8495ef72270d6f9cf'
 
     const safeServiceClient = new SafeServiceClient(options.multisigGnosisServiceUri!)
     const web3Provider = new providers.InfuraProvider(options.network!.toString(), options!.infuraApiKey)

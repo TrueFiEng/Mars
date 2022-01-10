@@ -35,12 +35,11 @@ export class MultisigBuilder {
    * Adds a contract deployment transaction as a multisig batch part.
    *
    * @param tx contract deployment transaction
-   * @param bytecode contract bytecode
    * @returns the address of the contract to be deployed to. Deterministic, i.e. known before deployment transaction
    *  is finalized and unchanged after that.
    */
-  public async addContractDeployment(tx: providers.TransactionRequest, bytecode: string): Promise<string> {
-    const { transaction: wrappedTx, address } = await this._contractDeployer.createDeploymentTx(tx, bytecode)
+  public async addContractDeployment(tx: providers.TransactionRequest): Promise<string> {
+    const { transaction: wrappedTx, address } = await this._contractDeployer.createDeploymentTx(tx)
     this.txBatch.push(wrappedTx)
 
     return address
