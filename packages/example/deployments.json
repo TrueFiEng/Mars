@@ -25,36 +25,60 @@
   },
   "rinkeby": {
     "preProxied": {
-      "address": "0x0ad59ff389609661ce611d9373612d8385f0f629",
+      "address": "0x4e2A5FBcc6F4D9084078DD22572F68508db58cde",
       "multisig": true
     },
     "preProxied_proxy": {
-      "address": "0xa2fb6633aa24320b8246bd90fce96b337ed367d9",
+      "address": "0x6477449B2DEe45061A07f50D1ADf4F14745250e2",
       "multisig": true
     },
     "firstImpl": {
-      "address": "0xd15b986cefefa9d9009dcf164ec32ecee7521bac",
+      "address": "0x1f9b25e82411d6833258E12299D415E30070349b",
       "multisig": true
     },
     "secondImpl": {
-      "address": "0xeb320016d0ad2d64cce6d2ba5f0f464117a22f1c",
+      "address": "0x2dAF1283F1fec9430c7B2BE3aC6de91316e2c13F",
       "multisig": true
     },
     "firstImpl_proxy": {
-      "address": "0x15c2a38a8a7eff66382277e33436325cfa64bf09",
+      "address": "0xD16e947D18aa823891c364Ca6C3859dcB810F94f",
       "multisig": true
     },
     "secondImpl_proxy": {
-      "address": "0x09b4904565e3caa669140b7956617d8dc2e3ae57",
+      "address": "0xd5BfA8d7aE023c7a400c75F438C44CD0298E1B66",
       "multisig": true
     },
     "firstBare": {
-      "address": "0x74f8ae8feed18cd9b7cea29a1989ad73e79550e5",
+      "address": "0x7d78C83E8D44282644443585DF17777a897a1eCc",
       "multisig": true
     },
     "secondBare": {
-      "address": "0x11ae3c68401d93fc6ae5d49f6f397454e1130745",
+      "address": "0xd08E76c8bE999577af1a51DA63D7c5be1407038f",
       "multisig": true
+    },
+    "firstMarket": {
+      "address": "0x2AD49DfB0F0F2Eb12722cc9F4De662bDE1720fA7",
+      "multisig": true
+    },
+    "secondMarket": {
+      "address": "0x1D68D6dBf3e1905c5e60cFe75EEb372349425ca2",
+      "multisig": true
+    },
+    "_multisig": {
+      "Contract creation, proxying and initialization": {
+        "id": "0xa3347af848a3ba5824a3b22fd9d57c64787999091c77a4b7b7cf2e0fc933a2dd",
+        "state": "EXECUTED",
+        "txHash": "0xde1973d64ea04fd7047c9801cc18e19fd97bf7e6f05e49251878053eacdd88b8"
+      },
+      "Conditional initialization": {
+        "id": "0x99f9ab9fe81f6e1d2a2ac124597dce3a2feed808a78d00e945af8a5a8181c522",
+        "state": "EXECUTED",
+        "txHash": "0x8abc9b1742e9315965bbde886a9e6920dea9fd1026b17a0efac2ca65a70bdd23"
+      },
+      "Cross-dependant initialization multisig": {
+        "id": "0xca09e75db41176d9e5795c1b3a85b5e848ccfbc9294d93a8495ef72270d6f9cf",
+        "state": "PROPOSED"
+      }
     }
   }
 }
