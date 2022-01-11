@@ -127,6 +127,17 @@ export class MultisigExecutable {
   }
 
   /**
+   * Adds one more approval for a given multisig tx by the current signer. The signer must be authorized to approve.
+   * @param id identifies the multisig transaction to approve
+   */
+  public async approve(id: string): Promise<void> {
+    const safe = await this.ensureSafe()
+    const confirmationSignature = await safe.signTransactionHash(id)
+    await this._safeServiceClient.confirmTransaction(id, confirmationSignature.data)
+    log(`[MULTISIG] Approved ${id} by ${await this._signer.getAddress()}`)
+  }
+
+  /**
    * Returns info about the state of the multisig.
    * @param id multisig identifier
    */

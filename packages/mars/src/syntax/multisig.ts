@@ -93,8 +93,9 @@ export class MultisigContext {
         log(`Skipping multisig '${executable.name}' due to empty tx set.'`)
         return { continue: true }
       }
-      // TODO: propose and confirm to appear in the queue, see: https://github.com/gnosis/safe-core-sdk/issues/130
+      // two separate calls - not perfect, in order to optimize see: https://github.com/gnosis/safe-core-sdk/issues/130
       const multisigId = await executable.propose(this._current!.txBatch)
+      await executable.approve(multisigId)
       state = {
         id: multisigId,
         state: 'PROPOSED',
