@@ -85,16 +85,17 @@ export class MultisigContext {
 
   // TODO: refactor -> decouple state management from this
   public async executeEnd(options: ExecuteOptions): Promise<{ continue: boolean }> {
-    const executable = this._current!.buildExecutable(options.signer, this._config)
+    const current = this.ensureCurrent()
+    const executable = current.buildExecutable(options.signer, this._config)
     const multisigData = readSavedMultisig(options.deploymentsFile, options.networkName, executable.name)
     let state: SavedMultisigEntry
     if (!multisigData || multisigData.state == 'UNKNOWN') {
-      if (this._current!.txBatch.length == 0) {
+      if (current.txBatch.length == 0) {
         log(`Skipping multisig '${executable.name}' due to empty tx set.'`)
         return { continue: true }
       }
       // two separate calls - not perfect, in order to optimize see: https://github.com/gnosis/safe-core-sdk/issues/130
-      const multisigId = await executable.propose(this._current!.txBatch)
+      const multisigId = await executable.propose(current.txBatch)
       await executable.approve(multisigId)
       state = {
         id: multisigId,
@@ -130,5 +131,11 @@ export class MultisigContext {
 
   private contains(name: string) {
     return this._all.map((m) => m.name).indexOf(name) >= 0
+  }
+
+  private ensureCurrent(): MultisigBuilder {
+    if (!this._current)
+      throw new Error('Current builder is undefined. You are outside the multisig block trying to do multisig')
+    return this._current
   }
 }
