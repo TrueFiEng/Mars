@@ -3,10 +3,21 @@ import type { FutureBoolean } from './boolean'
 export type MaybeFuture<T> = T | Future<T>
 type UnpackFuture<T> = T extends Future<infer U> ? U : T
 export class Future<T> {
+  private _resolved = false
+  public isResolved(): boolean {
+    return this._resolved
+  }
+
   constructor(public resolve: () => T) {}
 
   static resolve<T>(value: MaybeFuture<T>) {
-    return value instanceof Future ? value.resolve() : value
+    if (value instanceof Future) {
+      const resolvedValue = value.resolve()
+      value._resolved = true
+      return resolvedValue
+    } else {
+      return value
+    }
   }
 
   static create<T>(message = 'Trying to get value from unresolved future.') {
@@ -22,9 +33,31 @@ export class Future<T> {
       future,
       (result: T) => {
         resolved = true
+        future._resolved = true
         value = result
       },
     ] as const
+  }
+
+  static either<T>(...args: MaybeFuture<T>[]): Future<T> {
+    let value: T | undefined
+
+    return new Future<T>(() => {
+      for (const futureOrValue of args) {
+        if (futureOrValue instanceof Future && futureOrValue.isResolved()) {
+          value = futureOrValue.resolve()
+          break
+        } else if (!(futureOrValue instanceof Future)) {
+          value = futureOrValue
+          break
+        }
+      }
+
+      if (value === undefined)
+        throw new Error('Either future cannot be resolved as no compounding parts has been resolved.')
+
+      return value
+    })
   }
 
   map<U>(fn: (value: T) => MaybeFuture<U>): Future<U> {

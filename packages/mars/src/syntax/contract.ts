@@ -73,6 +73,18 @@ export function contract(...args: any[]): any {
   return makeContractInstance(name, artifact, address)
 }
 
+export function getCode(address: Future<string>): Future<string> {
+  const [code, resolveCode] = Future.create<string>()
+
+  context.actions.push({
+    type: 'GET_CODE',
+    address,
+    resolve: resolveCode,
+  })
+
+  return code
+}
+
 function unCapitalize(value: string) {
   return value !== '' ? `${value[0].toLowerCase()}${value.substring(1)}` : ''
 }

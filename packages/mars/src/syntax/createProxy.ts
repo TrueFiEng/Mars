@@ -1,4 +1,4 @@
-import { ConstructorParams, contract, Contract, makeContractInstance, NoParams, WithParams } from './contract'
+import { ConstructorParams, contract, Contract, getCode, makeContractInstance, NoParams, WithParams } from './contract'
 import { Address, ArtifactSymbol, Name } from '../symbols'
 import { Future } from '../values'
 import { constants, utils } from 'ethers'
@@ -85,16 +85,24 @@ function getImplementation(
     implementation(): Future<string>
   }>
 ): Future<string> {
-  // Storage slot defined in EIP-1967 https://eips.ethereum.org/EIPS/eip-1967
-  const IMPLEMENTATION_SLOT = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc'
-  if (proxy.implementation) {
-    return proxy.implementation()
-  }
+  let implementationFromProperty: Future<string> = new Future<string>(() => '')
+  let implementationFromStorage: Future<string> = new Future<string>(() => '')
+  const defaultZeroAddress = constants.AddressZero
 
-  const stored64Bytes = proxy.getStorageAt(IMPLEMENTATION_SLOT)
-  const extractAddress = (slot: string) => utils.getAddress(`0x${slot.slice(-40)}`)
+  runIf(getCode(proxy[Address]).equals('0x').not(), () => {
+    if (proxy.implementation) {
+      implementationFromProperty = proxy.implementation()
+    } else {
+      // Storage slot defined in EIP-1967 https://eips.ethereum.org/EIPS/eip-1967
+      const IMPLEMENTATION_SLOT = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc'
+      const stored64Bytes = proxy.getStorageAt(IMPLEMENTATION_SLOT)
+      const extractAddress = (slot: string) => utils.getAddress(`0x${slot.slice(-40)}`)
 
-  return stored64Bytes.map(extractAddress)
+      implementationFromStorage = stored64Bytes.map(extractAddress)
+    }
+  })
+
+  return Future.either<string>(implementationFromProperty, implementationFromStorage, defaultZeroAddress)
 }
 
 export function createProxy<T extends NoParams>(artifact: ArtifactFrom<T>, onUpgrade?: MethodCall<T>): Proxy
@@ -110,17 +118,15 @@ export function createProxy(...args: any[]): any {
   const onUpgrade: any = args[onUpgradeIndex] ?? 'upgradeTo'
 
   return (...args: any[]) => {
-    const [name, implementation, onInitialize, noRedeploy, noImplUpgrade] = parseProxyArgs(...args)
+    const [name, implementation, onInitialize, noRedeploy] = parseProxyArgs(...args)
     const proxy = contract<{
       new (...args: any): void
       implementation(): Future<string>
     }>(name ?? `${implementation[Name]}_proxy`, artifact as any, params, { skipUpgrade: noRedeploy })
-    let currentImplementation: Future<string> | undefined
-    if (!noImplUpgrade) {
-      currentImplementation = getImplementation(proxy)
-      const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
-      runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
-    }
+    const currentImplementation = getImplementation(proxy)
+
+    const normalizedOnUpgrade = normalizeCall(proxy, onUpgrade, [implementation])
+    runIf(currentImplementation.equals(implementation[Address]).not(), () => normalizedOnUpgrade(proxy))
 
     const contractBehindProxy = makeContractInstance(
       implementation[Name],
@@ -128,11 +134,7 @@ export function createProxy(...args: any[]): any {
       proxy[Address]
     )
 
-    if (!noImplUpgrade && currentImplementation)
-      runIf(
-        currentImplementation.equals(constants.AddressZero),
-        () => onInitialize && onInitialize(contractBehindProxy)
-      )
+    runIf(currentImplementation.equals(constants.AddressZero), () => onInitialize && onInitialize(contractBehindProxy))
 
     return contractBehindProxy
   }

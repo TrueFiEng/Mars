@@ -21,5 +21,5 @@ export class FutureBoolean extends Future<boolean> {
 }
 
 Future.prototype.equals = function (other: MaybeFuture<unknown>): FutureBoolean {
-  return new FutureBoolean(() => this.resolve() === Future.resolve(other))
+  return new FutureBoolean(() => Future.resolve(this) === Future.resolve(other))
 }

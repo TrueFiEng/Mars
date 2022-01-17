@@ -15,6 +15,7 @@ export type Action =
   | MultisigActionStart
   | MultisigActionEnd
   | GetStorageAction
+  | GetCodeAction
 
 export interface DeployAction {
   type: 'DEPLOY'
@@ -80,5 +81,11 @@ export interface GetStorageAction {
   type: 'GET_STORAGE_AT'
   address: Future<string>
   storageAddress: string
+  resolve: (value: any) => void
+}
+
+export interface GetCodeAction {
+  type: 'GET_CODE'
+  address: Future<string>
   resolve: (value: any) => void
 }

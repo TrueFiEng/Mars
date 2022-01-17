@@ -24,8 +24,6 @@ describe('Multisig', () => {
       debug(`Deployer is ${deployer}`)
 
       const useMultisig = config.networkName === 'rinkeby'
-      // this is no beauty and indicates our definition and execution pipelines lack information passing, to be improv.
-      const proxyCreationPhase = true
 
       // CREATION Multisig
       const creationMultisig = useMultisig ? multisig('Contract creation, proxying and initialization') : undefined
@@ -34,7 +32,6 @@ describe('Multisig', () => {
       const proxied = proxy(impl, {
         onInitialize: 'initialize',
         params: [112233],
-        noImplUpgrade: proxyCreationPhase,
       })
       creationMultisig?.propose()
 

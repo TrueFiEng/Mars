@@ -4,6 +4,7 @@ import {
   DebugAction,
   DeployAction,
   EncodeAction,
+  GetCodeAction,
   GetStorageAction,
   ReadAction,
   StartConditionalAction,
@@ -64,6 +65,12 @@ async function executeGetStorageAt(
   resolve(storageValue ?? '0x')
 }
 
+async function executeGetCode({ address: futureAddress, resolve }: GetCodeAction, options: ExecuteOptions) {
+  const address = resolveValue(futureAddress)
+  const code = await options.signer.provider?.getCode(address)
+  resolve(code ?? '0x')
+}
+
 async function executeAction(action: Action, options: ExecuteOptions): Promise<ActionResult | void> {
   if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
@@ -93,6 +100,8 @@ async function executeAction(action: Action, options: ExecuteOptions): Promise<A
       return context.multisig!.executeEnd(options)
     case 'GET_STORAGE_AT':
       return executeGetStorageAt(action, options)
+    case 'GET_CODE':
+      return executeGetCode(action, options)
   }
 }
 
