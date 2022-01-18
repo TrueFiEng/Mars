@@ -58,19 +58,38 @@ Currently, all the syntax like `contract(...)`, `createProxy(...)`, `proxy(...)`
 
 [Sequence diagram](./uml/2022-01%20Building%20vs%20executing.iuml)
 
+There are 2 significant parts:
+
+1. Queueing actions and their execution are separated. This allows for complete build up of actions to be instantiated.
+2. This requires introducing structs of values that we can declare in build-up time and evaluate later (Futures).
+
+In the above diagram aqua boxes describes creation of such structs (Futures), specifically `(future A) => future B`
+tells that the given step depends on availability of value A in the future and resolves the value of B when the step
+is completed successfully.
+
+If we remove actions queue and execution engine then are left with direct calls to the network which is very simple
+However, during script execution not every action path would be built.
+
 ### Proxies
 
 If a proxy detects its underlying implementation contract got changed, it tries to upgrade to the address of the new
 implementation. There is a known issue (especially complex in multisig mode) when a proxy needs to know its current
 implementation contract address and queues a read operation and eventually subsequent upgrade operation. In multisig
+if the proxy we cannot read from non-existing proxy (imagine queuing such a read just after proxy creation landed
+in multisig batch and not yet in the network). We need to read if the proxy has been created and only then read
+the current implementation. This adds conditional complexity to the proxy handling which is especially entangled
+combining with Future structures.
 
-Another all known proxy variants (EIP1967 or custom with parameterless constructor) are hardcoded into the proxy
-whereas there should be composable/pluggable means to provide user defined proxy behavior (e.g. the strategy of
-getting an underlying implementation).
+Another problem stems from the fact that all the known proxy variants (EIP1967 or custom) are hardcoded into the proxy
+whereas proxying in Mars should offer also:
+- replacing the way the current implementation contract address is obtained
+- providing an easy way to specify ctor param values (EIP1967) for a specific implementation contract
+- constructing a user defined proxy built with some behaviors of Mars default proxy but adding also more (e.g. automatic
+ownership transferring or interacting with the old version of the proxy/logic just before upgrade to the new one)
 
-Below there is a lifecycle of proxy contract handling in Mars:
+Below there is a lifecycle of proxy contracts handling in Mars:
 
-TODO: diagram of proxy lifecycle (EIP and custom)
+[Activity diagram](./uml/2022-01%20Proxies.iuml)
 
 ### Futures
 
@@ -88,10 +107,6 @@ and
 > smart contract interaction, throwing an error early and saving us money.
 
 The main principle is to provide ability to build a structure of steps completely and only later execute in the network.
-Compare:
-
-TODO: diagram showing Queue or AST vs sequential run
-
 There is a cost though -> it increases the complexity and reasoning about the flow of program execution. This pertains
 to 2 development workflows: building the script and debugging its execution.
 
@@ -119,14 +134,16 @@ Then the expression system does not mix with JS/TS language constructs and is ve
 We then loose though the full structure of queue (or AST) containing all the steps that could be potentially applied to
 the network.
 
+### Improving modularity
+
+### Solution 'Modular step by step'
+
+
+
 ### Solution 'Simple'
 
 Abandoning futures, generating bindings and providing the bare utility: deployment, proxies, diffs, verification
 in a pluggable/extendable/composable fashion.
-
-Modularity as follows:
-
-TODO: diagram
 
 Pros:
 - very simple code structure and intuitive debugging -> nicer learning curve for newcomers
@@ -140,7 +157,7 @@ Cons:
 2. Extraction of static utility functions (when no state) or classes (when state is natural) for deployment, diffs, verification etc.
 3. Abstracting away cross-cutting concerns like logging, console interaction or saving into files
 4. Creating a new execution pipeline with extensions points (abstract strategies to plugged in like transaction dispatcher etc.)
-5. Mirroring existing syntax (`contract`, `createProxy` etc.) (except `runIf`` conditionals as not needed) that
+5. Mirroring existing syntax (`contract`, `createProxy` etc.) (except `runIf` conditionals as not needed) that
 redirects to the new execution pipeline
 
 CLI should not be changed at first as we change only the underlying implementation.
