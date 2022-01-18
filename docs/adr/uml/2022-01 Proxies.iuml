@@ -1,0 +1,30 @@
+```plantuml
+@startuml
+partition "Proxy lifecycle" {
+start
+:Deploy logic contract: Token;
+note left
+const token = __**contract(Token)**__
+end note
+:Deploy proxy contract of Token logic: Token_proxy;
+note left
+const proxy = createProxy(MyProxyContract, 'upgradeTo')
+const proxiedToken = __**proxy(token**__, 'init', [123])
+end note
+:Upgrade to: Token;
+note left
+const proxy = createProxy(MyProxyContract, __**'upgradeTo'**__)
+const proxiedToken = proxy(__**token**__, 'init', [123])
+end note
+:Initialize: run only once 'init' with params '[123]';
+note left
+const proxy = createProxy(MyProxyContract, 'upgradeTo')
+const proxiedToken = proxy(token, __**'init', [123]**__)
+end note
+
+repeat :A developer changes implementation logic Token;
+  :Upgrade proxy implementation to new token address;
+repeat while (awaiting changes in implementation logic)
+
+@enduml
+```
