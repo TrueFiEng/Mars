@@ -56,7 +56,7 @@ Existence of `Future` construct is not mandatory for all the other functionality
 
 Currently, all the syntax like `contract(...)`, `createProxy(...)`, `proxy(...)`, `runIf(...)` works as follows:
 
-[Sequence diagram](./uml/2022-01%20Building%20vs%20executing.iuml)
+![Building vs executing](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01%20Building%20vs%20executing.iuml)
 
 There are 2 significant parts:
 
@@ -89,7 +89,7 @@ ownership transferring or interacting with the old version of the proxy/logic ju
 
 Below there is a lifecycle of proxy contracts handling in Mars:
 
-[Activity diagram](./uml/2022-01%20Proxies.iuml)
+![Proxies lifecycle](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01%20Proxies.iuml)
 
 ### Futures
 
