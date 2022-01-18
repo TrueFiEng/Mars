@@ -89,7 +89,7 @@ ownership transferring or interacting with the old version of the proxy/logic ju
 
 Below there is a lifecycle of proxy contracts handling in Mars:
 
-![Proxies lifecycle](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01%20Proxies.iuml)
+![Proxies lifecycle](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01-Proxies.iuml)
 
 ### Futures
 
