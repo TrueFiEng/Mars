@@ -56,7 +56,7 @@ Existence of `Future` construct is not mandatory for all the other functionality
 
 Currently, all the syntax like `contract(...)`, `createProxy(...)`, `proxy(...)`, `runIf(...)` works as follows:
 
-![Building vs executing](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01%20Building%20vs%20executing.iuml)
+![Building vs executing](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01-Building-vs-executing.iuml)
 
 There are 2 significant parts:
 
