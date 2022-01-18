@@ -6,7 +6,7 @@ Draft
 
 ## Context
 
-### Modularity and too many if conditionals
+### Modularity and too many `if` conditionals
 
 An attempt to introduce multisig (batched transactions) deployment into Mars uncovered areas of rigidity in its design.
 Plugging in such an extension or feature should not lead to violating open-closed principle from
@@ -17,9 +17,7 @@ started about an option to improve the design allowing for loose coupling and im
 The ultimate goal is to add functionality as follows:
 
 ```ts
-
 // old code
-
 deploy(() => {
   const plumToken = contract('plum', Token, ['Plum', 'PLM'])
   const tomatoToken = contract('tomato', Token, ['Tomato', 'TMT'])
@@ -27,7 +25,6 @@ deploy(() => {
 })
 
 // adding a new feature - multisig deployments
-
 deploy(() => {
   withMultisig(() => {
       const plumToken = contract('plum', Token, ['Plum', 'PLM'])
@@ -50,14 +47,16 @@ mars.txDispatcher = new MultisigTxDispatcher(config)
 1. Deployment of contracts from ABIs
 2. Handling of proxies (deployment, upgrades, initialization)
 3. Detecting diffs between developed in the repo contracts and those deployed previously to the network
-4. Existence of Future type allows to pre-build the queue of steps (building phase) to be executed (execution phase)
-5. Contract verification on Etherscan
+4. Contract verification on Etherscan
+5. Existence of Future type allows to pre-build the queue of steps (building phase) to be executed (execution phase) later
+
+Existence of `Future` construct is not mandatory for all the other functionality - it offers an added value though.
 
 ### Engine
 
 Currently, all the syntax like `contract(...)`, `createProxy(...)`, `proxy(...)`, `runIf(...)` works as follows:
 
-TODO: diagram showing 2 phases - building and executing -> with the queue and futures for completion of values
+[Sequence diagram](./uml/2022-01%20Building%20vs%20executing.iuml)
 
 ### Proxies
 

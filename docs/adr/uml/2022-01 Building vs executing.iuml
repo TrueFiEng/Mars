@@ -1,0 +1,101 @@
+```plantuml
+@startuml
+actor Developer as Dev
+participant "Contracts repo" as Repo
+participant "Mars" as Mars
+participant "Mars script" as Script
+queue "Actions queue" as Queue
+control "Execution engine" as Exe
+boundary "Network" as Network
+
+group Writing for the first deployment
+Dev -> Repo: Write Token.sol
+Dev -> Repo: Write MyProxy.sol (EIP1967)
+Dev -> Repo: Generate JSON ABIs
+Dev -> Mars: Generate artifacts
+note left
+Artifacts are Future-enabled
+version of ethers contracts
+end note
+Dev -> Script: Write deployment script
+note left
+// ...
+const token = contract(Token)
+const proxy = createProxy(MyProxy)
+runIf(token.getManager().equals(constants.AddressZero), () => {
+  proxy.setManager(myFirstManagerAddress)
+})
+// ...
+end note
+end group
+
+group Deploying the first time
+Dev -> Script: Run deployment providing all config
+autonumber
+note over Script, Queue: const token = contract(Token)
+Script -> Queue: DEPLOY of Token
+note right #aqua: ( ) => future Token address
+note over Script, Queue: const proxy = createProxy(MyProxy)
+Script -> Queue: DEPLOY of MyProxy
+note right #aqua: (future Token address) = > future MyProxy address
+Script -> Queue: READ MyProxy current impl
+note right #aqua: (future MyProxy address) => future MyProxy current impl
+Script -> Queue: CONDITION_START (run if impl changed)
+note right #aqua: (future MyProxy current impl) => future boolean
+Script -> Queue: TRANSACT Upgrade to new impl address
+note right #aqua: (future MyProxy address) => { }
+Script -> Queue: CONDITION_END
+note over Script, Queue
+runIf(token.getManager().equals(constants.AddressZero), () => {
+  proxy.setManager(myFirstManagerAddress)
+})
+end note
+Script -> Queue: READ Check manager address
+note right #aqua: (future MyProxy address) => future Manager address
+Script -> Queue: CONDITION_START (run if no manager)
+note right #aqua: (future Manager address) => future boolean
+Script -> Queue: TRANSACT Set manager to some address
+note right #aqua: (future Manager address) => { }
+Script -> Queue: CONDITION_END
+autonumber stop
+Script -> Exe: Run actions
+note over Queue, Exe: A primitive visitor pattern processing AST
+Exe -> Queue: Get actions for processing
+autonumber
+Queue -> Exe: DEPLOY of Token
+autonumber stop
+Exe -> Network: Deploy Token contract
+note left #lime: resolve future Token address
+autonumber resume
+Queue -> Exe: DEPLOY of MyProxy
+autonumber stop
+Exe -> Network: Deploy MyProxy contract with impl addr
+note left #lime: resolve future MyProxy address
+autonumber resume
+Queue -> Exe: READ MyProxy current impl
+autonumber stop
+Exe -> Network: Get impl address
+Network -> Exe: 0x13bff3... (= current impl)
+note left #lime: resolve future MyProxy current impl
+autonumber resume
+note over Queue, Exe: Skipping conditional block as no impl changed
+Queue -> Exe: CONDITION_START (run if impl changed)
+Queue -> Exe: TRANSACT Upgrade to new impl address
+Queue -> Exe: CONDITION_END
+note over Queue, Exe: Setting a new manager
+Queue -> Exe: READ Check manager address
+autonumber stop
+Exe -> Network: Get manager address
+Network -> Exe: 0x000... (= none)
+autonumber resume
+Queue -> Exe: CONDITION_START (run if no manager)
+Queue -> Exe: TRANSACT Set manager to some address
+autonumber stop
+Exe -> Network: Set manager to 0x24cba... (= current)
+autonumber resume
+Queue -> Exe: CONDITION_END
+autonumber stop
+end group
+
+@enduml
+```
