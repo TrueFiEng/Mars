@@ -80,6 +80,7 @@ note left #lime: resolve future MyProxy current impl
 autonumber resume
 note over Queue, Exe: Skipping conditional block as no impl changed
 Queue -> Exe: CONDITION_START (run if impl changed)
+note left #lime: resolve future boolean
 Queue -> Exe: TRANSACT Upgrade to new impl address
 Queue -> Exe: CONDITION_END
 note over Queue, Exe: Setting a new manager
@@ -87,8 +88,10 @@ Queue -> Exe: READ Check manager address
 autonumber stop
 Exe -> Network: Get manager address
 Network -> Exe: 0x000... (= none)
+note left #lime: resolve future Manager address
 autonumber resume
 Queue -> Exe: CONDITION_START (run if no manager)
+note left #lime: resolve future boolean
 Queue -> Exe: TRANSACT Set manager to some address
 autonumber stop
 Exe -> Network: Set manager to 0x24cba... (= current)
