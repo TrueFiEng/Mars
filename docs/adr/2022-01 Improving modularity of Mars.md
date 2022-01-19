@@ -136,9 +136,27 @@ the network.
 
 ### Improving modularity
 
+Regardless of keeping Futures or not, we want Mars be composable/extendable in 2 ways:
+
+1. It should offer basic utility building blocks (e.g. contract diff, deployments, proxies) to be used to construct custom
+pieces (custom proxies, deployment schemes etc.)
+2. It should offer extension points (e.g. plugging in a specific strategy e.g. multisig batching and execution)
+
+
+
 ### Solution 'Modular step by step'
 
+Note! This solution is orthogonal to other solutions below. It addresses modularity problem and other solutions address
+Future struct complexity. It is recommended to pick this solution + any of the solutions below.
 
+1. Extracting transaction dispatching and abstract away behind some gateway.
+2. Extract contract creation strategy (CREATE vs CREATE2) and make it configurable/replaceable.
+3. Extract deployments file reading/saving.
+4. Extract existing deployment information retrieval and provision it for actions building phase (now it is available
+only in the execution phase).
+5. **Implement multisig module as extension to the main process.**
+6. **Make sure multisig module abstracts away its particular implementation, e.g. Gnosis Safe**
+7. Extract verification and abstract away etherscan verification API behind a gateway
 
 ### Solution 'Simple'
 
@@ -164,7 +182,15 @@ CLI should not be changed at first as we change only the underlying implementati
 
 ### Solution 'AST'
 
+Replacing actions queue with Abstract Syntax Tree and executeX functions with composable visitors should improve
+the overall design by make it more loosely coupled, thus extendable without the risk of modification of existing parts.
+
 #### How to get there
+
+1. Improve modularity first, see Solution Modular
+2. Replace actions queue with AST where `createProxy` syntax node consists of smaller building blocks like DEPLOY, READ,
+UPGRADE_TO. This is useful to represent block wrappers like `runIf` or `withMultisig`.
+3. Replace `executeX` functions with composable visitors (each traversing the tree and doing one specific job).
 
 ### Solution 'Hybrid'
 
