@@ -73,7 +73,7 @@ describe('getCommandLineOptions', () => {
   checkParam('infuraApiKey', 'i', 'infura-key', 'boo', 'bam bam')
   checkParam('alchemyApiKey', 'a', 'alchemy-key', 'boo', 'bam bam')
   checkParam('outputFile', 'o', 'out-file', 'file.json', '123')
-  checkParam('gasPrice', 'g', 'gas-price', '2', 'foo', BigNumber.from(2))
+  checkParam('gasPrice', 'g', 'gas-price', '2', 'foo', BigNumber.from('2000000000'))
   checkParam('dryRun', 'd', 'dry-run', '', 'asd', true)
   checkParam('fromAddress', 'f', 'from', '0xAF98FD86fBe3e490417A95B4B6c1572bB227a7CC', 'asd')
   checkParam('logFile', 'l', 'log', 'mars.log', '123')
