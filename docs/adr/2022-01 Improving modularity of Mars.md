@@ -142,7 +142,7 @@ Regardless of keeping Futures or not, we want Mars be composable/extendable in 2
 pieces (custom proxies, deployment schemes etc.)
 2. It should offer extension points (e.g. plugging in a specific strategy e.g. multisig batching and execution)
 
-
+![Modularity](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/EthWorks/Mars/marcin/redesign-doc/docs/adr/uml/2022-01-Modularity.iuml)
 
 ### Solution 'Modular step by step'
 
