@@ -1,7 +1,10 @@
+import { Signer } from 'ethers'
+
 export interface MultisigConfig {
   networkChainId: number
   gnosisSafeAddress: string
   gnosisServiceUri: string
+  signer: Signer
 }
 
 /**
