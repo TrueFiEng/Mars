@@ -1,10 +1,6 @@
 import { UpgradeabilityProxy, UpgradeableContract } from '../fixtures/exampleArtifacts'
 import { logConfig } from '../../src/logging'
 import { contract, createProxy, debug, deploy, Options, runIf } from '../../src'
-import SafeServiceClient from '@gnosis.pm/safe-service-client'
-import { ethers, providers } from 'ethers'
-import Safe, { EthersAdapter } from '@gnosis.pm/safe-core-sdk'
-import { expect } from 'chai'
 
 const options = {
   network: 'rinkeby',
@@ -19,7 +15,7 @@ const options = {
 logConfig.mode.console = true
 
 describe('Multisig', () => {
-  it('Executes multisigs in separate runs', async () => {
+  it('Dry-runs transactions, collects them as multisig batch and proposes to Gnosis Safe', async () => {
     await deploy(options, (deployer, config) => {
       debug(`Deployer is ${deployer}`)
 
@@ -35,25 +31,5 @@ describe('Multisig', () => {
         proxied.resetTo(102030)
       })
     })
-  })
-
-  it('Approves off-chain a proposed Safe transaction', async () => {
-    const safeTxHashToApprove = '0xca09e75db41176d9e5795c1b3a85b5e848ccfbc9294d93a8495ef72270d6f9cf'
-
-    const safeServiceClient = new SafeServiceClient(options.multisigGnosisServiceUri!)
-    const web3Provider = new providers.InfuraProvider(options.network!.toString(), options!.infuraApiKey)
-    const signer = new ethers.Wallet(options.privateKey!, web3Provider)
-    const safe = await Safe.create({
-      ethAdapter: new EthersAdapter({ ethers, signer }),
-      safeAddress: options.multisigGnosisSafe!,
-    })
-
-    const confirmationSignature = await safe.signTransactionHash(safeTxHashToApprove)
-    const confirmationResponse = await safeServiceClient.confirmTransaction(
-      safeTxHashToApprove,
-      confirmationSignature.data
-    )
-
-    expect(confirmationResponse.signature).not.null
   })
 })
