@@ -1,7 +1,7 @@
 import { context } from './context'
 import { getConfig, Options } from './options'
 import { execute, ExecuteOptions } from './execute/execute'
-import { MultisigContext } from './syntax/multisig'
+import { MultisigTxDispatcher } from './multisig'
 
 export async function deploy<T>(
   options: Options,
@@ -11,9 +11,13 @@ export async function deploy<T>(
 
   context.enabled = true
   context.actions = []
-  context.multisig = config.multisig ? new MultisigContext(config.multisig) : undefined
+  context.multisig = config.multisig ? new MultisigTxDispatcher(config.multisig) : undefined
   const result = callback(await config.signer.getAddress(), config)
   context.enabled = false
   await execute(context.actions, config)
+  if (config.multisig && context.multisig) {
+    const multisigId = await context.multisig.propose()
+    await context.multisig.approve(multisigId)
+  }
   return { result, config }
 }

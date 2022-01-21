@@ -57,6 +57,7 @@ export async function sendTransaction(
   return {
     txHash: receipt.transactionHash,
     address: receipt.contractAddress || constants.AddressZero,
+    txWithGas,
   }
 }
 

@@ -1,4 +1,4 @@
-import { BigNumber, Signer } from 'ethers'
+import { BigNumber } from 'ethers'
 import type Ganache from 'ganache-core'
 
 export interface Options {
@@ -54,10 +54,6 @@ export interface Options {
    * See: https://safe-transaction.gnosis.io/
    */
   multisigGnosisServiceUri?: string
-  /**
-   * Special signer that interacts with the real network replying transactions collected in dry-run mode
-   */
-  multisigSigner: Signer
   /**
    * Disables collecting options from the command line program invocation. Useful in running end-2-end tests with mocha.
    */

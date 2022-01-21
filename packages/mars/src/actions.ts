@@ -2,7 +2,6 @@ import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
 import { ArtifactFrom } from './syntax/artifact'
 import { BooleanLike, Future } from './values'
 import { TransactionOptions } from './execute/sendTransaction'
-import { MultisigBuilder } from './multisig'
 
 export type Action =
   | DeployAction
@@ -12,8 +11,6 @@ export type Action =
   | StartConditionalAction
   | EndConditionalAction
   | DebugAction
-  | MultisigActionStart
-  | MultisigActionEnd
   | GetStorageAction
 
 export interface DeployAction {
@@ -25,7 +22,6 @@ export interface DeployAction {
   options: Partial<TransactionOptions>
   resolve: (address: string) => void
   skipUpgrade: boolean
-  multisig?: MultisigBuilder
 }
 
 export interface StartConditionalAction {
@@ -53,7 +49,6 @@ export interface TransactionAction {
   params: any[]
   options: Partial<TransactionOptions>
   resolve: (value: any) => void
-  multisig?: MultisigBuilder
 }
 
 export interface EncodeAction {
@@ -66,14 +61,6 @@ export interface EncodeAction {
 export interface DebugAction {
   type: 'DEBUG'
   messages: any[]
-}
-
-export interface MultisigActionStart {
-  type: 'MULTISIG_START'
-}
-
-export interface MultisigActionEnd {
-  type: 'MULTISIG_END'
 }
 
 export interface GetStorageAction {

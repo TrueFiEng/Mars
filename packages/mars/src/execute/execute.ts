@@ -13,7 +13,7 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { AbiSymbol, Address, ArtifactSymbol, Bytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
-import { sendTransaction, TransactionOptions, withGas } from './sendTransaction'
+import { sendTransaction, TransactionOptions } from './sendTransaction'
 import { read, save, SaveEntry } from './save'
 import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
@@ -87,10 +87,6 @@ async function executeAction(action: Action, options: ExecuteOptions): Promise<A
       return executeConditionalStart(action)
     case 'DEBUG':
       return executeDebug(action)
-    case 'MULTISIG_START':
-      return context.multisig!.executeStart()
-    case 'MULTISIG_END':
-      return context.multisig!.executeEnd(options)
     case 'GET_STORAGE_AT':
       return executeGetStorageAt(action, options)
   }
@@ -138,21 +134,24 @@ export async function getExistingDeployment(
 async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions) {
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
-  const tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
+  let tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
   const existingAddress = await getExistingDeployment(tx, action.name, action.skipUpgrade, options)
   let address: string, txHash: string | undefined
   if (existingAddress) {
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
     address = existingAddress
   } else {
-    if (action.multisig) {
-      address = await action.multisig.addContractDeployment(tx)
+    if (context.multisig) {
+      // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
+      ;({ transaction: tx, address } = await context.multisig.addContractDeployment(tx))
+      ;({ txHash } = await sendTransaction(`Deploy ${action.name}`, options, tx))
     } else {
       // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi
       ;({ txHash, address } = await sendTransaction(`Deploy ${action.name}`, options, tx))
     }
+
     if (!options.dryRun) {
-      const multisig = !!action.multisig
+      const multisig = !!context.multisig
       save(options.deploymentsFile, options.networkName, action.name, { txHash, address, multisig })
     }
   }
@@ -197,23 +196,13 @@ async function executeTransaction(action: TransactionAction, globalOptions: Exec
     to: resolveValue(action.address),
     data: new utils.Interface([action.method]).encodeFunctionData(action.method.name, params),
   }
-
-  if (action.multisig) {
-    let txToAdd: providers.TransactionRequest
-    try {
-      txToAdd = await withGas(transaction, options.gasLimit, options.gasPrice, options.signer)
-    } catch (e) {
-      txToAdd = transaction
-    }
-    await action.multisig.addContractInteraction(txToAdd)
-  } else {
-    const { txHash } = await sendTransaction(
-      `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
-      options,
-      transaction
-    )
-    action.resolve(resolveBytesLike(txHash))
-  }
+  const { txHash, txWithGas } = await sendTransaction(
+    `${action.name}.${action.method.name}(${printableTransactionParams(params)})`,
+    options,
+    transaction
+  )
+  context.multisig?.addContractInteraction(txWithGas)
+  action.resolve(resolveBytesLike(txHash))
 }
 
 function printableTransactionParams(params: unknown[]) {

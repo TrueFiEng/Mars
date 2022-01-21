@@ -4,7 +4,7 @@ export interface MultisigConfig {
   networkChainId: number
   gnosisSafeAddress: string
   gnosisServiceUri: string
-  signer: Signer
+  multisigSigner: Signer
 }
 
 /**

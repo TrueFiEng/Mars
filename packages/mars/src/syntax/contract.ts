@@ -67,7 +67,6 @@ export function contract(...args: any[]): any {
     options,
     resolve: resolveAddress,
     skipUpgrade: !!options.skipUpgrade,
-    multisig: context.multisig?.current(),
   })
 
   return makeContractInstance(name, artifact, address)
@@ -121,7 +120,6 @@ export function makeContractInstance<T>(name: string, artifact: ArtifactFrom<T>,
           params,
           options,
           resolve: resolveResult,
-          multisig: context.multisig?.current(),
         })
         const type = entry.outputs?.[0]?.type
         const length = entry.outputs?.length

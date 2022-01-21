@@ -32,15 +32,16 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     }
   }
 
-  const { signer, networkName } = await getSigner(merged)
-  const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
+  const { signer, networkName, multisigSigner } = await getSigner(merged)
+  const gasPrice =
+    merged.gasPrice ?? (merged.multisig ? await multisigSigner!.getGasPrice() : await signer.getGasPrice())
 
   const multisig = merged.multisig
     ? ensureMultisigConfig({
-        networkChainId: (await signer.provider!.getNetwork()).chainId,
+        networkChainId: (await multisigSigner!.provider!.getNetwork()).chainId,
         gnosisSafeAddress: merged.multisigGnosisSafe,
         gnosisServiceUri: merged.multisigGnosisServiceUri,
-        signer: signer,
+        multisigSigner: multisigSigner,
       })
     : undefined
 
@@ -92,11 +93,11 @@ async function getSigner(options: Options) {
     if (privateKey === undefined) {
       exit('No private key specified. In dry-run multisig a private key must be provided')
     }
-    const ganache = Ganache.provider({
-      fork: network ?? rpcUrl,
-    })
     const multisigProvider = provider ?? new providers.JsonRpcProvider(rpcUrl)
     multisigSigner = new Wallet(privateKey, multisigProvider)
+    const ganache = Ganache.provider({
+      fork: rpcUrl,
+    })
     provider = new providers.Web3Provider(ganache as any)
     signer = new Wallet(privateKey, provider)
   } else if (dryRun) {
