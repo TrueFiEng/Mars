@@ -16,7 +16,7 @@ logConfig.mode.console = true
 
 describe('Multisig', () => {
   it('Dry-runs transactions, collects them as multisig batch and proposes to Gnosis Safe', async () => {
-    await deploy(options, (deployer, config) => {
+    await deploy(options, (deployer) => {
       debug(`Deployer is ${deployer}`)
 
       const proxy = createProxy(UpgradeabilityProxy)

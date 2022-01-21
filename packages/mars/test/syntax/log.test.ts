@@ -16,7 +16,7 @@ describe('Log', () => {
     })
     const text = fs.readFileSync(logPath).toString()
     expect(text.split('\n').length).to.eq(1)
-    expect(text).to.match(/Transaction: (.*) Hash: (.*) From: (.*) To: (.*) Hex data: (.*)/)
+    expect(text).to.match(/Transaction: (.*) Hash: (.*) Hex data: (.*)/)
   })
 
   afterEach(async () => {

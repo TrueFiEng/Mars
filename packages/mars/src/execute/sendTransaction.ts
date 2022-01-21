@@ -2,6 +2,7 @@ import { BigNumber, constants, providers, Signer, utils } from 'ethers'
 import readline from 'readline'
 import { getEthPriceUsd } from './getEthPriceUsd'
 import chalk from 'chalk'
+import { log } from '../logging'
 
 export interface TransactionOptions {
   signer: Signer
@@ -36,7 +37,7 @@ export async function sendTransaction(
   const balance = utils.formatEther(await signer.getBalance())
   const balanceInUsd = (parseFloat(balance) * price).toFixed(2)
 
-  console.log(chalk.yellow('🚀 ' + (dryRun ? '[DRYRUN]' : '') + 'Transaction:'), name)
+  console.log(chalk.yellow('🚀 ' + (dryRun ? '[DRYRUN] ' : '') + 'Transaction:'), name)
   console.log(chalk.blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
   console.log(chalk.blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
   if (!noConfirm) {
@@ -51,6 +52,8 @@ export async function sendTransaction(
     console.log(chalk.blue('  Address:'), receipt.contractAddress)
   }
   console.log()
+
+  log(`🚀 Transaction: '${name}' Hash: ${tx.hash} Hex data: ${tx.data}`)
 
   return {
     txHash: receipt.transactionHash,
