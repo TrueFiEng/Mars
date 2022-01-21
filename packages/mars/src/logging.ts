@@ -10,15 +10,8 @@ export const logConfig = {
   filepath: '',
 }
 
-export interface TxLogData {
-  hash?: string
-  from: string
-  to: string
-  data: string
-}
-
 export function log(...args: string[]) {
-  const argsJoined = args.join('\n')
+  const argsJoined = args.join('\n') + '\n'
 
   if (logConfig.mode.console) {
     console.log(argsJoined)

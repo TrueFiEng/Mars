@@ -6,3 +6,4 @@ docs/source/_build
 .vscode
 cache
 .nyc_output
+tsconfig.tsbuildinfo
