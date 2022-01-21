@@ -2,7 +2,6 @@ import { BigNumber, constants, providers, Signer, utils } from 'ethers'
 import readline from 'readline'
 import { getEthPriceUsd } from './getEthPriceUsd'
 import chalk from 'chalk'
-import { logTx } from '../logging'
 
 export interface TransactionOptions {
   signer: Signer
@@ -10,6 +9,7 @@ export interface TransactionOptions {
   gasLimit?: number | BigNumber
   noConfirm: boolean
   logFile: string
+  dryRun: boolean
 }
 
 export async function withGas(
@@ -24,7 +24,7 @@ export async function withGas(
 
 export async function sendTransaction(
   name: string,
-  { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit }: TransactionOptions,
+  { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, dryRun }: TransactionOptions,
   transaction: providers.TransactionRequest
 ) {
   const txWithGas = await withGas(transaction, overwrittenGasLimit, gasPrice, signer)
@@ -36,7 +36,7 @@ export async function sendTransaction(
   const balance = utils.formatEther(await signer.getBalance())
   const balanceInUsd = (parseFloat(balance) * price).toFixed(2)
 
-  console.log(chalk.yellow('Transaction:'), name)
+  console.log(chalk.yellow('🚀 ' + (dryRun ? '[DRYRUN]' : '') + 'Transaction:'), name)
   console.log(chalk.blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
   console.log(chalk.blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
   if (!noConfirm) {
@@ -51,8 +51,6 @@ export async function sendTransaction(
     console.log(chalk.blue('  Address:'), receipt.contractAddress)
   }
   console.log()
-
-  logTx(name, tx)
 
   return {
     txHash: receipt.transactionHash,

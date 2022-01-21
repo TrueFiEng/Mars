@@ -29,7 +29,8 @@ describe('Multisig', () => {
         onInitialize: 'initialize',
         params: [112233],
       })
-      debug(`X value: ${proxied.x()}`)
+
+      debug('Proxied value:', proxied.x())
       runIf(proxied.x().equals(112233), () => {
         proxied.resetTo(102030)
       })

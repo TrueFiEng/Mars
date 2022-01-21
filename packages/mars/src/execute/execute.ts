@@ -19,7 +19,6 @@ import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
 import { MultisigConfig } from '../multisig/multisigConfig'
-import { log } from '../logging'
 
 export type TransactionOverrides = Partial<TransactionOptions> & {
   skipUpgrade?: boolean
@@ -41,18 +40,8 @@ export interface ExecuteOptions extends TransactionOptions {
 
 export async function execute(actions: Action[], options: ExecuteOptions) {
   for (const action of actions) {
-    // TODO: improve action logging details
-    log('⚙️ EXE ' + action.type)
-    const result = await executeAction(action, options)
-    if (result && !result.continue) break
+    await executeAction(action, options)
   }
-}
-
-interface ActionResult {
-  /**
-   * Whether to continue the pipeline. If false, then all consequent actions are not going to be executed in this run.
-   */
-  continue: boolean
 }
 
 async function executeGetStorageAt(
@@ -64,7 +53,7 @@ async function executeGetStorageAt(
   resolve(storageValue ?? '0x')
 }
 
-async function executeAction(action: Action, options: ExecuteOptions): Promise<ActionResult | void> {
+async function executeAction(action: Action, options: ExecuteOptions): Promise<void> {
   if (context.conditionalDepth > 0) {
     if (action.type === 'CONDITIONAL_START') {
       context.conditionalDepth++

@@ -4,7 +4,8 @@ import { MultisigConfig } from './multisigConfig'
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types'
 import Safe, { EthersAdapter } from '@gnosis.pm/safe-core-sdk'
 import SafeServiceClient from '@gnosis.pm/safe-service-client'
-import { log, logTx } from '../logging'
+import { log } from '../logging'
+import chalk from 'chalk'
 
 export class MultisigTxDispatcher {
   private _contractDeployer: ContractDeployer
@@ -57,19 +58,14 @@ export class MultisigTxDispatcher {
    */
   public async propose(): Promise<string> {
     const safe = await this.ensureSafe()
-    const safeMultisigParts: SafeTransactionDataPartial[] = this.txBatch.map((tx) => {
-      const part = {
-        to: tx.to,
-        data: tx.data,
-        value: tx.value?.toString() ?? '0',
-      } as SafeTransactionDataPartial
-      logTx(`[MULTISIG-PART]`, {
-        from: '',
-        to: tx.to,
-        data: tx.data,
-      })
-      return part
-    })
+    const safeMultisigParts: SafeTransactionDataPartial[] = this.txBatch.map(
+      (tx) =>
+        ({
+          to: tx.to,
+          data: tx.data,
+          value: tx.value?.toString() ?? '0',
+        } as SafeTransactionDataPartial)
+    )
     const safeMultisigTx = await safe.createTransaction(safeMultisigParts)
     const safeMultisigTxHash = await safe.getTransactionHash(safeMultisigTx)
     const senderAddress = await this._signer.getAddress()
@@ -79,7 +75,11 @@ export class MultisigTxDispatcher {
       safeTransaction: safeMultisigTx,
       senderAddress,
     })
-    logTx(`[MULTISIG-BATCH]`, { hash: safeMultisigTxHash, from: senderAddress, to: safe.getAddress() })
+    log(
+      chalk.yellow(
+        `🤹 Multisig batch has been proposed (${safeMultisigParts.length} transactions) to the queue. Batch ID = ${safeMultisigTxHash}`
+      )
+    )
 
     return safeMultisigTxHash
   }
@@ -92,7 +92,7 @@ export class MultisigTxDispatcher {
     const safe = await this.ensureSafe()
     const confirmationSignature = await safe.signTransactionHash(id)
     await this._safeServiceClient.confirmTransaction(id, confirmationSignature.data)
-    log(`[MULTISIG] Approved ${id} by ${await this._signer.getAddress()}`)
+    log(chalk.yellow(`🎯 Multisig batch ${id} approved by ${await this._signer.getAddress()}`))
   }
 
   private async ensureSafe(): Promise<Safe> {
