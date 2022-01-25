@@ -124,14 +124,14 @@ describe('Contract', () => {
     expect(await provider.getBlockNumber()).to.equal(2)
   })
 
-  it('redeploys contract with different constructor args', async () => {
+  it('does not redeploy contract if different constructor args only', async () => {
     const { result: firstCall, provider } = await testDeploy(() => contract(ComplexContract, [10, 'test']))
     const { result: secondCall } = await testDeploy(() => contract(ComplexContract, [11, 'test']), {
       injectProvider: provider,
       saveDeploy: true,
     })
-    expect(firstCall[Address].resolve()).to.not.equal(secondCall[Address].resolve())
-    expect(await provider.getBlockNumber()).to.equal(2)
+    expect(firstCall[Address].resolve()).to.equal(secondCall[Address].resolve())
+    expect(await provider.getBlockNumber()).to.equal(1)
   })
 
   it('redeploys contract if bytecode has changed', async () => {

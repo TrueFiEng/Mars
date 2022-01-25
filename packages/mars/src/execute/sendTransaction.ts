@@ -6,6 +6,7 @@ import { log } from '../logging'
 
 export interface TransactionOptions {
   signer: Signer
+  provider: providers.Provider
   gasPrice: BigNumber
   gasLimit?: number | BigNumber
   noConfirm: boolean

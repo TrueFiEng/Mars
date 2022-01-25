@@ -10,7 +10,7 @@ import {
   TransactionAction,
 } from '../actions'
 import { BigNumber, Contract, providers, utils } from 'ethers'
-import { AbiSymbol, Address, ArtifactSymbol, Bytecode, Name } from '../symbols'
+import { AbiSymbol, Address, ArtifactSymbol, Bytecode, DeployedBytecode, Name } from '../symbols'
 import { Future, resolveBytesLike } from '../values'
 import { getDeployTx } from './getDeployTx'
 import { sendTransaction, TransactionOptions } from './sendTransaction'
@@ -87,48 +87,50 @@ function executeConditionalStart({ condition }: StartConditionalAction) {
   }
 }
 
-export async function getExistingDeployment(
-  tx: providers.TransactionRequest,
-  name: string,
-  shouldSkipUpgrade: boolean,
-  options: ExecuteOptions
-): Promise<string | undefined> {
-  const existing = read<SaveEntry>(options.deploymentsFile, options.networkName, name)
-  if (!existing) return
+function getDeployedAddress(fileName: string, networkName: string, localContractName: string): string | undefined {
+  const localEntry = read<SaveEntry>(fileName, networkName, localContractName)
+  return localEntry ? localEntry.address : undefined
+}
 
-  if (existing.multisig) {
-    // TODO: multisig improvement candidate; for now we do not look for internal ex contract deployment data
-    return existing.address
-  } else if (existing.txHash) {
-    const [existingTx, receipt] = await Promise.all([
-      // TODO: support abstract signers where no provider exists
-      options.signer.provider!.getTransaction(existing.txHash),
-      options.signer.provider!.getTransactionReceipt(existing.txHash),
-    ])
-    if (existingTx && receipt && shouldSkipUpgrade) {
-      return existing.address
-    }
-    if (existingTx && receipt) {
-      if (
-        tx.data &&
-        isBytecodeEqual(existingTx.data, tx.data.toString()) &&
-        receipt.contractAddress.toLowerCase() === existing.address.toLowerCase()
-      ) {
-        return existing.address
-      }
-    }
-  }
+async function isNetworkContractSameAsLocal(
+  provider: providers.Provider,
+  address: string,
+  localContractBytecode: string
+): Promise<boolean> {
+  const networkBytecode = await provider.getCode(address)
+  return networkBytecode !== undefined && isBytecodeEqual(networkBytecode, localContractBytecode)
+}
+
+async function isNewDeploymentNeeded(
+  localAddress: string | undefined,
+  provider: providers.Provider,
+  localBytecode: string,
+  skipEqualityCheck: boolean
+): Promise<boolean> {
+  if (!localAddress) return true
+
+  const contractsAreEqual =
+    skipEqualityCheck || (await isNetworkContractSameAsLocal(provider, localAddress, localBytecode))
+
+  return !contractsAreEqual
 }
 
 async function executeDeploy(action: DeployAction, globalOptions: ExecuteOptions) {
   const options = { ...globalOptions, ...action.options }
   const params = action.params.map((param) => resolveValue(param))
   let tx = getDeployTx(action.artifact[AbiSymbol], action.artifact[Bytecode], params)
-  const existingAddress = await getExistingDeployment(tx, action.name, action.skipUpgrade, options)
+  const existingAddress = getDeployedAddress(options.deploymentsFile, options.networkName, action.name)
   let address: string, txHash: string | undefined
-  if (existingAddress) {
+  if (
+    !(await isNewDeploymentNeeded(
+      existingAddress,
+      options.provider,
+      action.artifact[DeployedBytecode],
+      action.skipUpgrade
+    ))
+  ) {
     console.log(`Skipping deployment ${action.name} - ${existingAddress}`)
-    address = existingAddress
+    address = <string>existingAddress
   } else {
     if (context.multisig) {
       // eslint-disable-next-line no-extra-semi,@typescript-eslint/no-extra-semi

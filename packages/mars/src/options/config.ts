@@ -52,6 +52,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     gasPrice,
     noConfirm: !!merged.noConfirm,
     signer,
+    provider: <providers.Provider>signer.provider,
     networkName: networkName,
     dryRun: !!merged.dryRun,
     logFile: merged.logFile ?? '',
@@ -66,6 +67,7 @@ function isNetworkProvider(network: string | Ganache.Provider): network is Ganac
 }
 
 // Refactoring candidate - https://github.com/EthWorks/Mars/issues/50
+// signer returned here has non-empty provider
 async function getSigner(options: Options) {
   const { network, infuraApiKey, alchemyApiKey, dryRun, fromAddress, privateKey, multisig } = options
   if (network === undefined) {

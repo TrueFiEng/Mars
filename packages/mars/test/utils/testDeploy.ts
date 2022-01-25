@@ -27,6 +27,7 @@ export async function testDeploy<T>(
     logFile: options.logFile ?? '',
     deploymentsFile: './test/deployments.json',
     signer: provider.getSigner(0),
+    provider: provider,
     gasPrice: BigNumber.from(0),
   }
   context.enabled = true

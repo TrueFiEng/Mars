@@ -1,13 +1,13 @@
 {
   "rinkeby": {
     "impl_proxy": {
-      "txHash": "0x8cf8472a598c14003b4041eead569d4bf87296be62009f134e7c464ae80b2da0",
-      "address": "0x386E711923b284184660FCB8d521F5121E8A9E31",
+      "txHash": "0xccdb5085057d2c66c42d5c48ebe011149eeee1ed7ca06c4202fd9d58d88d01ee",
+      "address": "0xCBF89991D0FF2b4CfB971a1F2604143225068072",
       "multisig": true
     },
     "impl": {
-      "txHash": "0x45431d29fa9bb8bfb25c9646f27d0d4a990b9cade9ff0e6a87e3369d9b28c0a6",
-      "address": "0xdEb9b12a95A93863C107Fe884DdB9cfE7C0bC8F0",
+      "txHash": "0xd394543f4e0cb585ec7a0571b08ee87a2d331598565aeb3ed01b56f4b36a8e62",
+      "address": "0x030dA9f941AfB71646F25B3768DB3527cF1fCc9C",
       "multisig": true
     }
   }
