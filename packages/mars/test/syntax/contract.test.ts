@@ -14,7 +14,7 @@ import {
   UpgradeableContract2,
 } from '../fixtures/exampleArtifacts'
 import { BigNumber } from 'ethers'
-import { Contract, NoParams } from '../../src/syntax/contract'
+import { Contract } from '../../src/syntax/contract'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
@@ -251,33 +251,6 @@ describe('Contract', () => {
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
     expectFuture(xAfterUpdate, BigNumber.from(420))
-  })
-
-  it('does not redeploy existing proxy when intentionally configured not to', async () => {
-    const { result: proxyDeploymentCall } = await testDeploy(() => {
-      // First iteration of proxy creation
-      let upgradeable = contract('upgradeable', UpgradeableContract) as Contract<NoParams>
-      let proxy = createProxy(
-        OpenZeppelinProxy,
-        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
-        'upgradeTo'
-      )
-      proxy(upgradeable, { noRedeploy: true })
-
-      // Second iteration of proxy creation
-      upgradeable = contract('upgradeable', UpgradeableContract2)
-      proxy = createProxy(
-        OpenZeppelinProxy,
-        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
-        'upgradeTo'
-      )
-
-      const proxied = proxy(upgradeable, { noRedeploy: true })
-      return proxied
-    })
-
-    const proxyAddress = proxyDeploymentCall[Address].resolve()
-    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
   })
 
   afterEach(() => {
