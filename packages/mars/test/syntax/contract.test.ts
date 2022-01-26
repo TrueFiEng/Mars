@@ -14,7 +14,6 @@ import {
   UpgradeableContract2,
 } from '../fixtures/exampleArtifacts'
 import { BigNumber } from 'ethers'
-import { Contract, NoParams } from '../../src/syntax/contract'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())
@@ -124,14 +123,14 @@ describe('Contract', () => {
     expect(await provider.getBlockNumber()).to.equal(2)
   })
 
-  it('redeploys contract with different constructor args', async () => {
+  it('does not redeploy contract if different constructor args only', async () => {
     const { result: firstCall, provider } = await testDeploy(() => contract(ComplexContract, [10, 'test']))
     const { result: secondCall } = await testDeploy(() => contract(ComplexContract, [11, 'test']), {
       injectProvider: provider,
       saveDeploy: true,
     })
-    expect(firstCall[Address].resolve()).to.not.equal(secondCall[Address].resolve())
-    expect(await provider.getBlockNumber()).to.equal(2)
+    expect(firstCall[Address].resolve()).to.equal(secondCall[Address].resolve())
+    expect(await provider.getBlockNumber()).to.equal(1)
   })
 
   it('redeploys contract if bytecode has changed', async () => {
@@ -251,33 +250,6 @@ describe('Contract', () => {
     const proxyAddress = proxyDeploymentCall[Address].resolve()
     expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
     expectFuture(xAfterUpdate, BigNumber.from(420))
-  })
-
-  it('does not redeploy existing proxy when intentionally configured not to', async () => {
-    const { result: proxyDeploymentCall } = await testDeploy(() => {
-      // First iteration of proxy creation
-      let upgradeable = contract('upgradeable', UpgradeableContract) as Contract<NoParams>
-      let proxy = createProxy(
-        OpenZeppelinProxy,
-        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
-        'upgradeTo'
-      )
-      proxy(upgradeable, { noRedeploy: true })
-
-      // Second iteration of proxy creation
-      upgradeable = contract('upgradeable', UpgradeableContract2)
-      proxy = createProxy(
-        OpenZeppelinProxy,
-        [upgradeable, '0xfe4b84df0000000000000000000000000000000000000000000000000000000000002710'],
-        'upgradeTo'
-      )
-
-      const proxied = proxy(upgradeable, { noRedeploy: true })
-      return proxied
-    })
-
-    const proxyAddress = proxyDeploymentCall[Address].resolve()
-    expect(getDeployResult().test.upgradeable_proxy.address).to.equal(proxyAddress)
   })
 
   afterEach(() => {

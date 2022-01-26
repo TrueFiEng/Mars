@@ -1,4 +1,7 @@
 export function isBytecodeEqual(a: string, b: string) {
+  if (a === undefined) throw new Error('left-side operand undefined')
+  if (b === undefined) throw new Error('right-side operand undefined')
+
   return removeHashes(normalize(a)) === removeHashes(normalize(b))
 }
 

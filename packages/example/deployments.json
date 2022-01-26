@@ -1,84 +1,39 @@
 {
-  "kovan": {
-    "dai": {
-      "txHash": "0x7c058a68e08739b173f5acace0e6fa29dd95aafc5601733fef46bfe4de37ca6f",
-      "address": "0x0a3BDD55AbA03BE21365A164bac541845f2412AF"
-    },
-    "btc": {
-      "multisig": true,
-      "txHash": "0x1234abcd....",
-      "address": "0x28562C8c670BdA5AA186156Fff49F07C2Ff0124F"
-    },
-    "market": {
-      "multisig": true,
-      "txHash": "0x1234abcd....",
-      "address": "0x51Ef1C90C02bE44d8609EAc9A3Fe30b7B907fB9c"
-    },
-    "dai_proxy": {
-      "txHash": "0xe2b80e23d3a90278e0f0e623d74802c00084872e15ad5950480d2f0004c4f6fc",
-      "address": "0xD6c9fb590c15EA0B8FF016934488459E1578C66c"
-    },
-    "btc_proxy": {
-      "txHash": "0x28e6d21a3e8f224967ba3a7d09c9a1298f81f8cad450085949530826399727a9",
-      "address": "0x92146cB5fCC0fCA0d1A0E24f28Ebc447D73983E1"
-    }
-  },
   "rinkeby": {
-    "preProxied": {
-      "address": "0x4e2A5FBcc6F4D9084078DD22572F68508db58cde",
-      "multisig": true
-    },
-    "preProxied_proxy": {
-      "address": "0x6477449B2DEe45061A07f50D1ADf4F14745250e2",
-      "multisig": true
-    },
-    "firstImpl": {
-      "address": "0x1f9b25e82411d6833258E12299D415E30070349b",
-      "multisig": true
-    },
-    "secondImpl": {
-      "address": "0x2dAF1283F1fec9430c7B2BE3aC6de91316e2c13F",
-      "multisig": true
-    },
     "firstImpl_proxy": {
-      "address": "0xD16e947D18aa823891c364Ca6C3859dcB810F94f",
+      "txHash": "0x1ea5d560f381f1e01dff325155a890028f3e78cc03eb8e17809abf924d9873ea",
+      "address": "0xf303e0312e5bC76B88CC4128768F0c7CdA9854c2",
       "multisig": true
     },
     "secondImpl_proxy": {
-      "address": "0xd5BfA8d7aE023c7a400c75F438C44CD0298E1B66",
+      "txHash": "0x719616a5ecbc1e25b1b9daaab17aaf888790d341125136fdd48e9c82e960b47b",
+      "address": "0x4D800bd33970537c6BE38267FAc39b30a49b3098",
       "multisig": true
     },
     "firstBare": {
-      "address": "0x7d78C83E8D44282644443585DF17777a897a1eCc",
+      "txHash": "0xb5280556a3364f0e0522684e090c5ce5df46f58547a907804df748ca39a47ece",
+      "address": "0x606726A56294a0f3b6dFDDaCA45F1bb2a0769449",
       "multisig": true
     },
     "secondBare": {
-      "address": "0xd08E76c8bE999577af1a51DA63D7c5be1407038f",
+      "txHash": "0xba6dfc4447d35eb2190aab14c0467609230bc61b32893d6cef760e98bccfe301",
+      "address": "0x5bE964d739e9934b7BdF76D00f6A28d491d8BEb1",
       "multisig": true
     },
-    "firstMarket": {
-      "address": "0x2AD49DfB0F0F2Eb12722cc9F4De662bDE1720fA7",
+    "market": {
+      "txHash": "0x43742bc4f33a033ef409bb498d83c4b6410f93dc4f62fc64acaf8d26019fbb3d",
+      "address": "0x2B39d9F9173A0BD90f4b91895140788d5789995F",
       "multisig": true
     },
-    "secondMarket": {
-      "address": "0x1D68D6dBf3e1905c5e60cFe75EEb372349425ca2",
+    "firstImpl": {
+      "txHash": "0x2ab7fe540a49d0fca122b80ad1243b8eae907e5b6e4aef2343cc1bc5f48b2471",
+      "address": "0x7E080543BBCBB2549CA9D8C3A7f8cec82D635D86",
       "multisig": true
     },
-    "_multisig": {
-      "Contract creation, proxying and initialization": {
-        "id": "0xa3347af848a3ba5824a3b22fd9d57c64787999091c77a4b7b7cf2e0fc933a2dd",
-        "state": "EXECUTED",
-        "txHash": "0xde1973d64ea04fd7047c9801cc18e19fd97bf7e6f05e49251878053eacdd88b8"
-      },
-      "Conditional initialization": {
-        "id": "0x99f9ab9fe81f6e1d2a2ac124597dce3a2feed808a78d00e945af8a5a8181c522",
-        "state": "EXECUTED",
-        "txHash": "0x8abc9b1742e9315965bbde886a9e6920dea9fd1026b17a0efac2ca65a70bdd23"
-      },
-      "Cross-dependant initialization multisig": {
-        "id": "0xca09e75db41176d9e5795c1b3a85b5e848ccfbc9294d93a8495ef72270d6f9cf",
-        "state": "PROPOSED"
-      }
+    "secondImpl": {
+      "txHash": "0xe6d469862e639df2e5d81546f86b3444a5a5e7f032c531ffa73adceaf134618a",
+      "address": "0x676DE87a94113a956bf4F08CCa1F430969B49e64",
+      "multisig": true
     }
   }
 }

@@ -11,11 +11,11 @@
     "lint:fix": "yarn lint:prettier --write && yarn lint:eslint --fix",
     "lint:eslint": "eslint './{src,test}/**/*.ts'",
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
-    "build": "yarn waffle && mars",
+    "build": "yarn waffle && mars && tsc",
     "deploy": "ts-node src/index.ts",
     "deploy:multisig": "ts-node src/multisig.ts",
-    "test": "echo tests",
-    "cover": "echo tests"
+    "test": "echo no tests here",
+    "cover": "echo no tests here"
   },
   "dependencies": {
     "ethereum-mars": "0.x"

@@ -41,6 +41,10 @@ export interface Options {
   waffleConfig?: string
   dataPrintMode?: boolean
   /**
+   * Enables multisig mode
+   */
+  multisig?: boolean
+  /**
    * Gnosis Safe contract address to be used in multisig deployments.
    * See: https://gnosis-safe.io/
    */

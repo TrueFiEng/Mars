@@ -1,3 +1,2 @@
-export { MultisigBuilder, MultisigExecutable } from './multisig'
+export { MultisigTxDispatcher } from './multisig'
 export { MultisigConfig } from './multisigConfig'
-export { MultisigState, Unknown, Proposed, Executed, readSavedMultisig } from './multisigState'

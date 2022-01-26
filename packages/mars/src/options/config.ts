@@ -1,4 +1,5 @@
-import { providers, Wallet } from 'ethers'
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { providers, Signer, Wallet } from 'ethers'
 import Ganache from 'ganache-core'
 import { ExecuteOptions } from '../execute/execute'
 import { createJsonInputs } from '../verification'
@@ -32,19 +33,18 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     }
   }
 
-  const { signer, networkName } = await getSigner(merged)
+  const { signer, networkName, multisigSigner } = await getSigner(merged)
   const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
-  const multisig = ensureMultisigConfig(
-    // multisig not supported in dry run scenario
-    merged.dryRun
-      ? {}
-      : {
-          networkChainId: (await signer.provider.getNetwork()).chainId,
-          gnosisSafeAddress: merged.multisigGnosisSafe,
-          gnosisServiceUri: merged.multisigGnosisServiceUri,
-        }
-  )
+  const multisig = merged.multisig
+    ? ensureMultisigConfig({
+        // @typescript-eslint/no-non-null-assertion
+        networkChainId: (await multisigSigner!.provider!.getNetwork()).chainId,
+        gnosisSafeAddress: merged.multisigGnosisSafe,
+        gnosisServiceUri: merged.multisigGnosisServiceUri,
+        multisigSigner: multisigSigner,
+      })
+    : undefined
 
   logConfig.mode.file = !!merged.logFile
   logConfig.filepath = merged.logFile ?? ''
@@ -53,6 +53,7 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
     gasPrice,
     noConfirm: !!merged.noConfirm,
     signer,
+    provider: <providers.Provider>signer.provider,
     networkName: networkName,
     dryRun: !!merged.dryRun,
     logFile: merged.logFile ?? '',
@@ -66,13 +67,15 @@ function isNetworkProvider(network: string | Ganache.Provider): network is Ganac
   return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
 }
 
+// Refactoring candidate - https://github.com/EthWorks/Mars/issues/50
+// signer returned here has non-empty provider
 async function getSigner(options: Options) {
-  const { network, infuraApiKey, alchemyApiKey, dryRun, fromAddress, privateKey } = options
+  const { network, infuraApiKey, alchemyApiKey, dryRun, fromAddress, privateKey, multisig } = options
   if (network === undefined) {
     throw new Error('No network specified. This should never happen.')
   }
   let rpcUrl: string | undefined
-  let provider: providers.JsonRpcProvider
+  let provider: providers.JsonRpcProvider | undefined
   if (isNetworkProvider(network)) {
     // this causes 'MaxListenersExceededWarning: Possible EventEmitter memory leak detected.' when many contracts in use
     // details at https://github.com/ChainSafe/web3.js/issues/1648
@@ -87,8 +90,20 @@ async function getSigner(options: Options) {
     throw new Error('Cannot construct rpc url. This should never happen.')
   }
 
-  let signer
-  if (dryRun) {
+  let signer: Signer
+  let multisigSigner: Signer | undefined
+  if (multisig) {
+    if (privateKey === undefined) {
+      exit('No private key specified. In dry-run multisig a private key must be provided')
+    }
+    const multisigProvider = provider ?? new providers.JsonRpcProvider(rpcUrl)
+    multisigSigner = new Wallet(privateKey, multisigProvider)
+    const ganache = Ganache.provider({
+      fork: rpcUrl,
+    })
+    provider = new providers.Web3Provider(ganache as any)
+    signer = new Wallet(privateKey, provider)
+  } else if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
       fork: network ?? rpcUrl,
@@ -106,6 +121,6 @@ async function getSigner(options: Options) {
   }
 
   const networkName =
-    isNetworkProvider(network) || network.startsWith('http') ? (await signer.provider.getNetwork()).name : network
-  return { signer: signer, networkName }
+    isNetworkProvider(network) || network.startsWith('http') ? (await provider.getNetwork()).name : network
+  return { signer, networkName, multisigSigner }
 }

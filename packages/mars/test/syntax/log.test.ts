@@ -7,20 +7,35 @@ import { SimpleContract } from '../fixtures/exampleArtifacts'
 describe('Log', () => {
   const logPath = 'test.log'
 
-  it('logs deployment', async () => {
-    expect(fs.existsSync(logPath)).to.be.false
+  it('logs deployment transaction', async () => {
+    await deploySomething()
+    const text = readLog()
+    expect(text).to.match(/Transaction: (.*) Hash: (.*) Hex data: (.*)/)
+  })
 
-    await testDeploy(() => contract(SimpleContract), {
-      saveDeploy: true,
-      logFile: 'test.log',
-    })
-    const text = fs.readFileSync(logPath).toString()
-    expect(text.split('\n').length).to.eq(1)
-    expect(text).to.match(/Transaction: (.*) Hash: (.*) From: (.*) To: (.*) Hex data: (.*)/)
+  it('separates log entries with new lines', async () => {
+    await deploySomething()
+    const text = readLog()
+    expect(text.split('\n').length).to.eq(2)
+  })
+
+  beforeEach(async () => {
+    expect(fs.existsSync(logPath)).to.be.false
   })
 
   afterEach(async () => {
     fs.unlinkSync(logPath)
     fs.unlinkSync('./test/deployments.json')
   })
+
+  async function deploySomething() {
+    await testDeploy(() => contract(SimpleContract), {
+      saveDeploy: true,
+      logFile: logPath,
+    })
+  }
+
+  function readLog(): string {
+    return fs.readFileSync(logPath).toString()
+  }
 })
