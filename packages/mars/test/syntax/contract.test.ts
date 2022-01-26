@@ -14,7 +14,6 @@ import {
   UpgradeableContract2,
 } from '../fixtures/exampleArtifacts'
 import { BigNumber } from 'ethers'
-import { Contract } from '../../src/syntax/contract'
 
 describe('Contract', () => {
   const getDeployResult = () => JSON.parse(fs.readFileSync('./test/deployments.json').toString())

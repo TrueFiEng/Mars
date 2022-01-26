@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { providers, Signer, Wallet } from 'ethers'
 import Ganache from 'ganache-core'
 import { ExecuteOptions } from '../execute/execute'
@@ -33,11 +34,11 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 
   const { signer, networkName, multisigSigner } = await getSigner(merged)
-  const gasPrice =
-    merged.gasPrice ?? (merged.multisig ? await multisigSigner!.getGasPrice() : await signer.getGasPrice())
+  const gasPrice = merged.gasPrice ?? (await signer.getGasPrice())
 
   const multisig = merged.multisig
     ? ensureMultisigConfig({
+        // @typescript-eslint/no-non-null-assertion
         networkChainId: (await multisigSigner!.provider!.getNetwork()).chainId,
         gnosisSafeAddress: merged.multisigGnosisSafe,
         gnosisServiceUri: merged.multisigGnosisServiceUri,
@@ -120,6 +121,6 @@ async function getSigner(options: Options) {
   }
 
   const networkName =
-    isNetworkProvider(network) || network.startsWith('http') ? (await signer.provider!.getNetwork()).name : network
+    isNetworkProvider(network) || network.startsWith('http') ? (await provider.getNetwork()).name : network
   return { signer, networkName, multisigSigner }
 }
