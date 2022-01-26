@@ -11,7 +11,7 @@ import {
   exit,
 } from './checks'
 import { Options } from './Options'
-import { usage, ALLOWED_OPTIONS } from './usage'
+import { ALLOWED_OPTIONS, usage } from './usage'
 import path from 'path'
 
 const STRING_ARGUMENTS = ['p', 'private-key', 'i', 'infura-key', 'a', 'alchemy-key', 'e', 'etherscan-key', 'f', 'from']
@@ -60,8 +60,8 @@ export function getCommandLineOptions(): Options {
 
   const gasPrice = get(parsed, 'g', 'gas-price')
   if (gasPrice) {
-    ensureNumber(gasPrice, 'Invalid gas price provided as argument')
-    result.gasPrice = BigNumber.from(gasPrice)
+    ensureNumber(gasPrice, 'Invalid gas price (gwei) provided as argument')
+    result.gasPrice = BigNumber.from(gasPrice).mul('1000000000')
   }
 
   const dryRun = get(parsed, 'd', 'dry-run')
