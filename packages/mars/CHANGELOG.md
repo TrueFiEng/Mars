@@ -1,5 +1,12 @@
 # ethereum-mars
 
+## 0.1.13
+
+### Patch Changes
+
+- 3d3797d: Rework multisig on dry-run foundation
+- e3fbe04: ⛽️ Gas price in GWEI from CLI param
+
 ## 0.1.12
 
 ### Patch Changes
