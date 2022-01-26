@@ -18,7 +18,7 @@ import { read, save, SaveEntry } from './save'
 import { isBytecodeEqual } from './bytecode'
 import { JsonInputs, verify, verifySingleFile } from '../verification'
 import { context } from '../context'
-import { MultisigConfig } from '../multisig/multisigConfig'
+import { MultisigConfig } from '../multisig'
 
 export type TransactionOverrides = Partial<TransactionOptions> & {
   skipUpgrade?: boolean
@@ -92,7 +92,7 @@ function getDeployedAddress(fileName: string, networkName: string, localContract
   return localEntry ? localEntry.address : undefined
 }
 
-async function isNetworkContractSameAsLocal(
+async function isDeployedContractSameAsLocal(
   provider: providers.Provider,
   address: string,
   localContractBytecode: string
@@ -110,7 +110,7 @@ async function isNewDeploymentNeeded(
   if (!localAddress) return true
 
   const contractsAreEqual =
-    skipEqualityCheck || (await isNetworkContractSameAsLocal(provider, localAddress, localBytecode))
+    skipEqualityCheck || (await isDeployedContractSameAsLocal(provider, localAddress, localBytecode))
 
   return !contractsAreEqual
 }
