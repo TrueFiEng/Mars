@@ -3,6 +3,7 @@ import readline from 'readline'
 import { getEthPriceUsd } from './getEthPriceUsd'
 import chalk from 'chalk'
 import { log } from '../logging'
+import { context } from '../context'
 
 export interface TransactionOptions {
   signer: Signer
@@ -24,6 +25,11 @@ export async function withGas(
   return { ...transaction, gasLimit: effectiveGasLimit, gasPrice }
 }
 
+function getLogTxTitle(name: string, dryRun: boolean) {
+  const isDryRunLike = dryRun || context.multisig
+  return (isDryRunLike ? '🧸 DRYRUN' : '🚀') + ' Transaction: ' + name
+}
+
 export async function sendTransaction(
   name: string,
   { signer, gasPrice, noConfirm, gasLimit: overwrittenGasLimit, dryRun }: TransactionOptions,
@@ -38,7 +44,7 @@ export async function sendTransaction(
   const balance = utils.formatEther(await signer.getBalance())
   const balanceInUsd = (parseFloat(balance) * price).toFixed(2)
 
-  console.log(chalk.yellow('🚀 ' + (dryRun ? '[DRYRUN] ' : '') + 'Transaction:'), name)
+  console.log(chalk.yellow(getLogTxTitle(name, dryRun)))
   console.log(chalk.blue('  Fee:'), `$${feeInUsd}, Ξ${fee}`)
   console.log(chalk.blue('  Balance:'), `$${balanceInUsd}, Ξ${balance}`)
   if (!noConfirm) {
@@ -54,7 +60,7 @@ export async function sendTransaction(
   }
   console.log()
 
-  log(`🚀 Transaction: '${name}' Hash: ${tx.hash} Hex data: ${tx.data}`)
+  log(`${getLogTxTitle(name, dryRun)}  Hash: ${tx.hash} Hex data: ${tx.data}`)
 
   return {
     txHash: receipt.transactionHash,

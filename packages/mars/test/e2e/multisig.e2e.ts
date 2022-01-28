@@ -12,7 +12,7 @@ const options = {
   disableCommandLineOptions: true,
   noConfirm: true,
 } as Options
-logConfig.mode.console = true
+logConfig.mode.console = false
 
 describe('Multisig', () => {
   it('Dry-runs transactions, collects them as multisig batch and proposes to Gnosis Safe', async () => {
