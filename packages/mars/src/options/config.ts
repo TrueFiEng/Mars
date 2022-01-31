@@ -10,7 +10,7 @@ import { getEnvironmentOptions } from './environment'
 import { Options } from './Options'
 import { ensureMultisigConfig } from '../multisig/multisigConfig'
 import { logConfig } from '../logging'
-import { getChainConfig } from './chain'
+import { NETWORKS } from './chain'
 
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
@@ -85,11 +85,11 @@ async function getSigner(options: Options) {
   } else if (network.startsWith('http')) {
     rpcUrl = network
   } else if (alchemyApiKey) {
-    rpcUrl = getChainConfig(network)?.getAlchemyRPC(alchemyApiKey)
+    rpcUrl = NETWORKS[network]?.getAlchemyRPC(alchemyApiKey)
   } else if (infuraApiKey) {
-    rpcUrl = getChainConfig(network)?.getInfuraRPC(infuraApiKey)
+    rpcUrl = NETWORKS[network]?.getInfuraRPC(infuraApiKey)
   } else {
-    rpcUrl = getChainConfig(network)?.getPublicRPC()
+    rpcUrl = NETWORKS[network]?.getPublicRPC()
   }
 
   let signer: Signer
