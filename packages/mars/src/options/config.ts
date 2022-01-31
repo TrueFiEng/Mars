@@ -10,6 +10,7 @@ import { getEnvironmentOptions } from './environment'
 import { Options } from './Options'
 import { ensureMultisigConfig } from '../multisig/multisigConfig'
 import { logConfig } from '../logging'
+import { getChainConfig } from './chain'
 
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
@@ -76,6 +77,7 @@ async function getSigner(options: Options) {
   }
   let rpcUrl: string | undefined
   let provider: providers.JsonRpcProvider | undefined
+
   if (isNetworkProvider(network)) {
     // this causes 'MaxListenersExceededWarning: Possible EventEmitter memory leak detected.' when many contracts in use
     // details at https://github.com/ChainSafe/web3.js/issues/1648
@@ -83,11 +85,11 @@ async function getSigner(options: Options) {
   } else if (network.startsWith('http')) {
     rpcUrl = network
   } else if (alchemyApiKey) {
-    rpcUrl = `https://eth-${network}.alchemyapi.io/v2/${alchemyApiKey}`
+    rpcUrl = getChainConfig(network)?.getAlchemyRPC(alchemyApiKey)
   } else if (infuraApiKey) {
-    rpcUrl = `https://${network}.infura.io/v3/${infuraApiKey}`
+    rpcUrl = getChainConfig(network)?.getInfuraRPC(infuraApiKey)
   } else {
-    throw new Error('Cannot construct rpc url. This should never happen.')
+    rpcUrl = getChainConfig(network)?.getPublicRPC()
   }
 
   let signer: Signer

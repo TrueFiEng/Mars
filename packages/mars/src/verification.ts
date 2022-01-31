@@ -4,6 +4,7 @@ import path from 'path'
 import chalk from 'chalk'
 import axios from 'axios'
 import querystring from 'querystring'
+import { getChainConfig } from './options/chain'
 
 const isDirectory = (directoryPath: string) =>
   fs.existsSync(path.resolve(directoryPath)) && fs.statSync(path.resolve(directoryPath)).isDirectory()
@@ -82,10 +83,15 @@ type Awaited<T> = T extends Promise<infer U> ? U : never
 export type JsonInputs = Awaited<ReturnType<typeof createJsonInputs>>
 
 const etherscanUrl = (network?: string) => {
-  if (!network || network === 'mainnet') {
-    return 'https://api.etherscan.io/api'
+  if (!network) {
+    return getChainConfig('mainnet')?.getEtherscanApi() as string
   }
-  return `https://api-${network}.etherscan.io/api`
+  const url = getChainConfig(network)?.getEtherscanApi()
+  if (url) {
+    return url as string
+  } else {
+    throw new Error('Block explorer not provided for requested network')
+  }
 }
 
 function getEtherscanContractAddress(address: string, network?: string) {

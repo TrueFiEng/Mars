@@ -31,7 +31,7 @@ export function ensureBoolean(value: unknown, message: string): asserts value is
   ensure((value) => typeof value === 'boolean', value, message)
 }
 
-const NETWORKS = ['development', 'kovan', 'ropsten', 'goerli', 'rinkeby', 'mainnet']
+const NETWORKS = ['development', 'kovan', 'ropsten', 'goerli', 'rinkeby', 'mainnet', 'arbitrum', 'arbitrum-rinkeby']
 const URL_REGEX = /^https?:\/\/[^\s]+$/
 function isProperNetwork(value: unknown) {
   return typeof value === 'string' && (NETWORKS.includes(value) || URL_REGEX.test(value))
