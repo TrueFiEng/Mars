@@ -1,6 +1,6 @@
 import { ChainSet } from './ChainSet'
 
-export const NETWORKS: ChainSet = {
+export const networks: ChainSet = {
   mainnet: {
     chainId: 1,
     chainName: 'Mainnet',

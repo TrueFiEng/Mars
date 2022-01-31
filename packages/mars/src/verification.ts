@@ -4,7 +4,7 @@ import path from 'path'
 import chalk from 'chalk'
 import axios from 'axios'
 import querystring from 'querystring'
-import { NETWORKS } from './options/chain'
+import { networks } from './options/chain'
 
 const isDirectory = (directoryPath: string) =>
   fs.existsSync(path.resolve(directoryPath)) && fs.statSync(path.resolve(directoryPath)).isDirectory()
@@ -84,9 +84,9 @@ export type JsonInputs = Awaited<ReturnType<typeof createJsonInputs>>
 
 const etherscanUrl = (network?: string) => {
   if (!network) {
-    return NETWORKS['mainnet']?.getEtherscanApi() as string
+    return networks['mainnet']?.getEtherscanApi() as string
   }
-  const url = NETWORKS[network]?.getEtherscanApi()
+  const url = networks[network]?.getEtherscanApi()
   if (url) {
     return url as string
   } else {
