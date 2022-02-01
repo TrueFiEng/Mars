@@ -90,7 +90,7 @@ const etherscanUrl = (network?: string) => {
   if (url) {
     return url as string
   } else {
-    throw new Error('Block explorer not provided for requested network')
+    throw new Error('Block explorer not supported for requested network')
   }
 }
 
