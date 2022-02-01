@@ -84,9 +84,9 @@ export type JsonInputs = Awaited<ReturnType<typeof createJsonInputs>>
 
 const etherscanUrl = (network?: string) => {
   if (!network) {
-    return chains.mainnet.getContractVerifierApi() as string
+    return chains.mainnet.getEtherscanVerifierApi() as string
   }
-  const url = chains[network].getContractVerifierApi()
+  const url = chains[network].getEtherscanVerifierApi()
   if (url) {
     return url as string
   } else {

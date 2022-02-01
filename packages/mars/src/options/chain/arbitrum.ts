@@ -7,7 +7,7 @@ export const arbitrum: Chain = {
   getInfuraRPC: (infuraApiKey) => `https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`,
   getAlchemyRPC: (alchemyApiKey) => `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
   getBlockExplorerContractAddress: (contractAddress) => `https://arbiscan.io/address/${contractAddress}`,
-  getContractVerifierApi: () => 'https://api.arbiscan.io/api',
+  getEtherscanVerifierApi: () => 'https://api.arbiscan.io/api',
 }
 
 export const arbitrum_rinkeby: Chain = {
@@ -17,5 +17,5 @@ export const arbitrum_rinkeby: Chain = {
   getInfuraRPC: (infuraApiKey) => `https://arbitrum-rinkeby.infura.io/v3/${infuraApiKey}`,
   getAlchemyRPC: (alchemyApiKey) => `https://arb-rinkeby.g.alchemy.com/v2/${alchemyApiKey}`,
   getBlockExplorerContractAddress: (contractAddress) => `https://testnet.arbiscan.io/address/${contractAddress}`,
-  getContractVerifierApi: () => 'https://api-testnet.arbiscan.io/api',
+  getEtherscanVerifierApi: () => 'https://api-testnet.arbiscan.io/api',
 }

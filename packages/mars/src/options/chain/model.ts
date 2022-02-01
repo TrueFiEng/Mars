@@ -5,7 +5,7 @@ export type Chain = {
   getInfuraRPC: (infuraApiKey: string) => string
   getAlchemyRPC: (alchemyApiKey: string) => string
   getBlockExplorerContractAddress: (contractAddress: string) => string
-  getContractVerifierApi: () => string
+  getEtherscanVerifierApi: () => string
 }
 
 export type ChainSet = {
