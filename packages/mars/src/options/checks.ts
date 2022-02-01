@@ -1,3 +1,4 @@
+import { chains } from './chain'
 import { usage } from './usage'
 
 const PRIVATE_KEY_REGEX = /^0x[a-f\d]{64}$/i
@@ -31,10 +32,9 @@ export function ensureBoolean(value: unknown, message: string): asserts value is
   ensure((value) => typeof value === 'boolean', value, message)
 }
 
-const NETWORKS = ['development', 'kovan', 'ropsten', 'goerli', 'rinkeby', 'mainnet']
 const URL_REGEX = /^https?:\/\/[^\s]+$/
 function isProperNetwork(value: unknown) {
-  return typeof value === 'string' && (NETWORKS.includes(value) || URL_REGEX.test(value))
+  return typeof value === 'string' && (value in chains || URL_REGEX.test(value))
 }
 export function ensureNetwork(value: unknown, message: string): asserts value is string {
   ensure(isProperNetwork, value, message)

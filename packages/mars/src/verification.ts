@@ -4,6 +4,7 @@ import path from 'path'
 import chalk from 'chalk'
 import axios from 'axios'
 import querystring from 'querystring'
+import { chains } from './options/chain'
 
 const isDirectory = (directoryPath: string) =>
   fs.existsSync(path.resolve(directoryPath)) && fs.statSync(path.resolve(directoryPath)).isDirectory()
@@ -82,17 +83,22 @@ type Awaited<T> = T extends Promise<infer U> ? U : never
 export type JsonInputs = Awaited<ReturnType<typeof createJsonInputs>>
 
 const etherscanUrl = (network?: string) => {
-  if (!network || network === 'mainnet') {
-    return 'https://api.etherscan.io/api'
+  if (!network) {
+    return chains.mainnet.getEtherscanVerifierApi() as string
   }
-  return `https://api-${network}.etherscan.io/api`
+  const url = chains[network].getEtherscanVerifierApi()
+  if (url) {
+    return url as string
+  } else {
+    throw new Error('Block explorer not supported for requested network')
+  }
 }
 
-function getEtherscanContractAddress(address: string, network?: string) {
+function getBlockExplorerContractAddress(address: string, network?: string) {
   if (!network || network === 'mainnet') {
-    return `https://etherscan.io/address/${address}`
+    return chains.mainnet.getBlockExplorerContractAddress(address)
   }
-  return `https://${network}.etherscan.io/address/${address}`
+  return chains[network].getBlockExplorerContractAddress(address)
 }
 
 async function getCompilerOptions(waffleConfigPath: string) {
@@ -265,7 +271,9 @@ export async function verifySingleFile(
       return
     }
     if (await waitForResult(etherscanApiKey, guid)) {
-      console.log(chalk.bold(chalk.green(`Contract verified at ${getEtherscanContractAddress(address, network)}\n`)))
+      console.log(
+        chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
+      )
     }
   } catch (err) {
     console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))
@@ -306,7 +314,9 @@ export async function verify(
       return
     }
     if (await waitForResult(etherscanApiKey, guid)) {
-      console.log(chalk.bold(chalk.green(`Contract verified at ${getEtherscanContractAddress(address, network)}\n`)))
+      console.log(
+        chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
+      )
     }
   } catch (err) {
     console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))
