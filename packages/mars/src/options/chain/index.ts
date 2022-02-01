@@ -1,2 +1,2 @@
 export { Chain } from './Chain'
-export { networks } from './ethereum'
+export { chains } from './ethereum'
