@@ -85,11 +85,11 @@ async function getSigner(options: Options) {
   } else if (network.startsWith('http')) {
     rpcUrl = network
   } else if (alchemyApiKey) {
-    rpcUrl = chains[network].getAlchemyRPC(alchemyApiKey)
+    rpcUrl = chains[network].getAlchemyRpc(alchemyApiKey)
   } else if (infuraApiKey) {
-    rpcUrl = chains[network].getInfuraRPC(infuraApiKey)
+    rpcUrl = chains[network].getInfuraRpc(infuraApiKey)
   } else {
-    rpcUrl = chains[network].getPublicRPC()
+    rpcUrl = chains[network].getPublicRpc()
   }
 
   let signer: Signer
