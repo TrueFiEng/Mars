@@ -84,9 +84,9 @@ export type JsonInputs = Awaited<ReturnType<typeof createJsonInputs>>
 
 const etherscanUrl = (network?: string) => {
   if (!network) {
-    return chains['mainnet']?.getEtherscanApi() as string
+    return chains.mainnet.getContractVerifierApi() as string
   }
-  const url = chains[network]?.getEtherscanApi()
+  const url = chains[network].getContractVerifierApi()
   if (url) {
     return url as string
   } else {
@@ -94,11 +94,11 @@ const etherscanUrl = (network?: string) => {
   }
 }
 
-function getEtherscanContractAddress(address: string, network?: string) {
+function getBlockExplorerContractAddress(address: string, network?: string) {
   if (!network || network === 'mainnet') {
-    return `https://etherscan.io/address/${address}`
+    return chains.mainnet.getBlockExplorerContractAddress(address)
   }
-  return `https://${network}.etherscan.io/address/${address}`
+  return chains[network].getBlockExplorerContractAddress(address)
 }
 
 async function getCompilerOptions(waffleConfigPath: string) {
@@ -271,7 +271,9 @@ export async function verifySingleFile(
       return
     }
     if (await waitForResult(etherscanApiKey, guid)) {
-      console.log(chalk.bold(chalk.green(`Contract verified at ${getEtherscanContractAddress(address, network)}\n`)))
+      console.log(
+        chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
+      )
     }
   } catch (err) {
     console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))
@@ -312,7 +314,9 @@ export async function verify(
       return
     }
     if (await waitForResult(etherscanApiKey, guid)) {
-      console.log(chalk.bold(chalk.green(`Contract verified at ${getEtherscanContractAddress(address, network)}\n`)))
+      console.log(
+        chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
+      )
     }
   } catch (err) {
     console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))

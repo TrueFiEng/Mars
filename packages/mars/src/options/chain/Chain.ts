@@ -4,5 +4,6 @@ export type Chain = {
   getPublicRPC: () => string
   getInfuraRPC: (infuraApiKey: string) => string
   getAlchemyRPC: (alchemyApiKey: string) => string
-  getEtherscanApi: () => string
+  getBlockExplorerContractAddress: (contractAddress: string) => string
+  getContractVerifierApi: () => string
 }

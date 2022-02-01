@@ -7,7 +7,8 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://main-light.eth.linkpool.io/',
     getInfuraRPC: (infuraApiKey) => `https://mainnet.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api.etherscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://etherscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api.etherscan.io/api',
   },
   ropsten: {
     chainId: 3,
@@ -15,7 +16,8 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
     getInfuraRPC: (infuraApiKey) => `https://ropsten.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://eth-ropsten.alchemyapi.io/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api-ropsten.etherscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://ropsten.etherscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api-ropsten.etherscan.io/api',
   },
   rinkeby: {
     chainId: 4,
@@ -23,7 +25,8 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://rinkeby-light.eth.linkpool.io/',
     getInfuraRPC: (infuraApiKey) => `https://rinkeby.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://eth-rinkeby.alchemyapi.io/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api-rinkeby.etherscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://rinkeby.etherscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api-rinkeby.etherscan.io/api',
   },
   goerli: {
     chainId: 5,
@@ -31,7 +34,8 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://goerli-light.eth.linkpool.io/',
     getInfuraRPC: (infuraApiKey) => `https://goerli.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://eth-goerli.alchemyapi.io/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api-goerli.etherscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://goerli.etherscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api-goerli.etherscan.io/api',
   },
   kovan: {
     chainId: 42,
@@ -39,7 +43,8 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
     getInfuraRPC: (infuraApiKey) => `https://kovan.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://eth-kovan.alchemyapi.io/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api-kovan.etherscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://kovan.etherscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api-kovan.etherscan.io/api',
   },
   arbitrum: {
     chainId: 42161,
@@ -47,7 +52,8 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://arb1.arbitrum.io/rpc',
     getInfuraRPC: (infuraApiKey) => `https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api.arbiscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://arbiscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api.arbiscan.io/api',
   },
   'arbitrum-rinkeby': {
     chainId: 421611,
@@ -55,6 +61,7 @@ export const chains: ChainSet = {
     getPublicRPC: () => 'https://rinkeby.arbitrum.io/rpc',
     getInfuraRPC: (infuraApiKey) => `https://arbitrum-rinkeby.infura.io/v3/${infuraApiKey}`,
     getAlchemyRPC: (alchemyApiKey) => `https://arb-rinkeby.g.alchemy.com/v2/${alchemyApiKey}`,
-    getEtherscanApi: () => 'https://api-testnet.arbiscan.io/api',
+    getBlockExplorerContractAddress: (contractAddress) => `https://testnet.arbiscan.io/address/${contractAddress}`,
+    getContractVerifierApi: () => 'https://api-testnet.arbiscan.io/api',
   },
 }
