@@ -1,4 +1,4 @@
-import { Chain } from './Chain'
+import { Chain } from './model'
 
 export const mainnet: Chain = {
   chainId: 1,

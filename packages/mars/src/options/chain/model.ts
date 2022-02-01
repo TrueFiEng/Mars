@@ -7,3 +7,7 @@ export type Chain = {
   getBlockExplorerContractAddress: (contractAddress: string) => string
   getContractVerifierApi: () => string
 }
+
+export type ChainSet = {
+  [chainName: string]: Chain
+}
