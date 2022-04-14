@@ -11,6 +11,7 @@ import { Options } from './Options'
 import { ensureMultisigConfig } from '../multisig/multisigConfig'
 import { logConfig } from '../logging'
 import { chains } from './chain'
+import { JsonRpcProvider } from '@ethersproject/providers'
 
 export async function getConfig(options: Options): Promise<ExecuteOptions> {
   const merged = {
@@ -64,7 +65,9 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 }
 
-function isNetworkProvider(network: string | Ganache.Provider): network is Ganache.Provider {
+function isNetworkProvider(
+  network: string | Ganache.Provider | providers.JsonRpcProvider
+): network is Ganache.Provider | providers.JsonRpcProvider {
   return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
 }
 
@@ -78,7 +81,9 @@ async function getSigner(options: Options) {
   let rpcUrl: string | undefined
   let provider: providers.JsonRpcProvider | undefined
 
-  if (isNetworkProvider(network)) {
+  if (JsonRpcProvider.isProvider(network)) {
+    provider = network
+  } else if (isNetworkProvider(network)) {
     // this causes 'MaxListenersExceededWarning: Possible EventEmitter memory leak detected.' when many contracts in use
     // details at https://github.com/ChainSafe/web3.js/issues/1648
     provider = new providers.Web3Provider(network as any)
