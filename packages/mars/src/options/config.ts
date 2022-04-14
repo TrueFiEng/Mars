@@ -65,7 +65,9 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
   }
 }
 
-function isNetworkProvider(network: string | Ganache.Provider | providers.JsonRpcProvider): network is Ganache.Provider | providers.JsonRpcProvider {
+function isNetworkProvider(
+  network: string | Ganache.Provider | providers.JsonRpcProvider
+): network is Ganache.Provider | providers.JsonRpcProvider {
   return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
 }
 
@@ -79,8 +81,8 @@ async function getSigner(options: Options) {
   let rpcUrl: string | undefined
   let provider: providers.JsonRpcProvider | undefined
 
-  if(JsonRpcProvider.isProvider(network)) {
-    provider = network;
+  if (JsonRpcProvider.isProvider(network)) {
+    provider = network
   } else if (isNetworkProvider(network)) {
     // this causes 'MaxListenersExceededWarning: Possible EventEmitter memory leak detected.' when many contracts in use
     // details at https://github.com/ChainSafe/web3.js/issues/1648

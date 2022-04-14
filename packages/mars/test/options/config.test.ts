@@ -47,25 +47,26 @@ describe('getConfig', () => {
   })
 
   it('can pass ganache as network', async () => {
-    const ganache = Ganache.provider({ networkId: 1337 });
-    const config = await getConfig({ ...defaults, network: ganache, privateKey: PRIVATE_KEY_1 });
+    const ganache = Ganache.provider({ networkId: 1337 })
+    const config = await getConfig({ ...defaults, network: ganache, privateKey: PRIVATE_KEY_1 })
 
     expect((config.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)
 
     const network = await config.provider.getNetwork()
-    expect(network.chainId).to.equal(1337);
+    expect(network.chainId).to.equal(1337)
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     ganache.close(() => {})
   })
 
   it('can pass Waffle MockProvider as network', async () => {
-    const waffle = new MockProvider({ ganacheOptions: { networkId: 1337 } });
-    const config = await getConfig({ ...defaults, network: waffle, privateKey: PRIVATE_KEY_1 });
+    const waffle = new MockProvider({ ganacheOptions: { networkId: 1337 } })
+    const config = await getConfig({ ...defaults, network: waffle, privateKey: PRIVATE_KEY_1 })
 
     expect((config.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)
 
     const network = await config.provider.getNetwork()
-    expect(network.chainId).to.equal(1337);
+    expect(network.chainId).to.equal(1337)
   })
 
   it('dry run implies noConfirm', async () => {
