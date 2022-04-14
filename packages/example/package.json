@@ -18,7 +18,7 @@
     "cover": "echo no tests here"
   },
   "dependencies": {
-    "ethereum-mars": "1.0.0"
+    "ethereum-mars": "0.2.0"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.4.0",
