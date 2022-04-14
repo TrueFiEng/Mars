@@ -1,8 +1,8 @@
 # ethereum-mars
 
-## 1.0.0
+## 0.2.0
 
-### Major Changes
+### Minor Changes
 
 - 91a85f0: This update extracts RPC setup to dedicated configuration files for every chain.
 
