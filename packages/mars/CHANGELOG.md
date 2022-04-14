@@ -1,5 +1,16 @@
 # ethereum-mars
 
+## 1.0.0
+
+### Major Changes
+
+- 91a85f0: This update extracts RPC setup to dedicated configuration files for every chain.
+
+### Patch Changes
+
+- 4f4e0fa: Allow to pass waffle and ganache providers in opts
+- 6457545: Improve log text of dryrun/multisig tx
+
 ## 0.1.13
 
 ### Patch Changes

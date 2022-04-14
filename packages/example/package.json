@@ -1,7 +1,7 @@
 {
   "name": "example",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "node": ">=10",
     "yarn": "^1.17.3"
@@ -18,7 +18,7 @@
     "cover": "echo no tests here"
   },
   "dependencies": {
-    "ethereum-mars": "0.x"
+    "ethereum-mars": "1.0.0"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.4.0",
