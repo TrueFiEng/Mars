@@ -1,5 +1,7 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import type Ganache from 'ganache-core'
+
+export type NetworkLike = string | Ganache.Provider | providers.JsonRpcProvider
 
 export interface Options {
   /**
@@ -11,7 +13,7 @@ export interface Options {
    * If this is a name, then it is used to locate an ethereum network in one of the services (Infura, Alchemy etc.)
    * If this is a URL or a provider instance, then it is used to construct an RPC provider to an existing network node.
    */
-  network?: string | Ganache.Provider
+  network?: NetworkLike
   /**
    * API key to Infura service. See: https://infura.io/
    */

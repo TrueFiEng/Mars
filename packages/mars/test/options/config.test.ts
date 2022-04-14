@@ -1,6 +1,8 @@
 import { expect } from 'chai'
 import { BigNumber, Wallet } from 'ethers'
+import Ganache from 'ganache-core'
 import { getConfig } from '../../src/options'
+import { MockProvider } from 'ethereum-waffle'
 
 const PRIVATE_KEY_1 = `0x${'1'.repeat(64)}`
 const PRIVATE_KEY_2 = `0x${'2'.repeat(64)}`
@@ -42,6 +44,28 @@ describe('getConfig', () => {
     setArgv(['-p', PRIVATE_KEY_3])
     const result3 = await getConfig({ privateKey: PRIVATE_KEY_1, ...defaults })
     expect((result3.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_3)
+  })
+
+  it('can pass ganache as network', async () => {
+    const ganache = Ganache.provider({ networkId: 1337 });
+    const config = await getConfig({ ...defaults, network: ganache, privateKey: PRIVATE_KEY_1 });
+
+    expect((config.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)
+
+    const network = await config.provider.getNetwork()
+    expect(network.chainId).to.equal(1337);
+
+    ganache.close(() => {})
+  })
+
+  it('can pass Waffle MockProvider as network', async () => {
+    const waffle = new MockProvider({ ganacheOptions: { networkId: 1337 } });
+    const config = await getConfig({ ...defaults, network: waffle, privateKey: PRIVATE_KEY_1 });
+
+    expect((config.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)
+
+    const network = await config.provider.getNetwork()
+    expect(network.chainId).to.equal(1337);
   })
 
   it('dry run implies noConfirm', async () => {
