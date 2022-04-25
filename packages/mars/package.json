@@ -52,11 +52,13 @@
     "@resolver-engine/imports-fs": "^0.3.3",
     "argparse": "^2.0.1",
     "axios": "^0.21.0",
-    "ethers": "^5.0.24",
-    "ganache-core": "^2.13.2",
+    "ethers": "^5.6.2",
+    "ganache": "7.0.3",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
+    "@ethersproject/abstract-provider": "^5.6.0",
+    "@ethersproject/providers": "^5.6.4",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@openzeppelin/contracts": "^4.4.0",
     "@types/argparse": "^2.0.4",
@@ -69,6 +71,7 @@
     "chai": "^4.2.0",
     "chalk": "^4.1.0",
     "eslint": "^7.15.0",
+    "ethereum-waffle": "3.4.0",
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
