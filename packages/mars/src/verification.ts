@@ -275,7 +275,7 @@ export async function verifySingleFile(
         chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
       )
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))
   }
 }
@@ -318,7 +318,7 @@ export async function verify(
         chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
       )
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log(chalk.bold(chalk.yellow(`Error during verification: ${err.message ?? err}. Skipping\n`)))
   }
 }

@@ -21,6 +21,7 @@
     "ethereum-mars": "0.2.0"
   },
   "devDependencies": {
+    "@ethereum-waffle/compiler": "^3.4.4",
     "@openzeppelin/contracts": "^4.4.0",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",

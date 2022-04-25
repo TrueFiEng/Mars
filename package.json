@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "pnpm run -r lint",
     "build": "pnpm run -r build",
-    "test": "pnpm run -rtest",
+    "test": "pnpm run -r test",
     "cover": "pnpm run -rcover",
     "release": "pnpm run build &&  changeset publish"
   },

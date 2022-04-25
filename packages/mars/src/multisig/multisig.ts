@@ -19,7 +19,7 @@ export class MultisigTxDispatcher {
   constructor(config: MultisigConfig) {
     this._config = config
     this._signer = config.multisigSigner
-    this._safeServiceClient = new SafeServiceClient({ txServiceUrl: config.gnosisServiceUri });
+    this._safeServiceClient = new SafeServiceClient(config.gnosisServiceUri);
     this._config = config
     this.txBatch = []
     this._contractDeployer = new ContractDeployer(config.networkChainId)
