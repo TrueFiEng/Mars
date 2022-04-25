@@ -14,7 +14,7 @@ logConfig.mode.console = false
 
 // based upon https://github.com/trusttoken/smart-contracts/blob/main/deploy/truefi2.ts
 // to reproduce complexity level of the standard deployment script
-deploy(options, (deployer) => {
+void deploy(options, (deployer) => {
   debug(`Deployer is ${deployer}`)
 
   const proxy = createProxy(UpgradeabilityProxy)
