@@ -2,7 +2,7 @@ import { contract, createProxy, deploy, runIf, debug, reduce } from 'ethereum-ma
 import { Market, Token, UpgradeabilityProxy } from '../build/artifacts'
 import { Address } from 'ethereum-mars/build/src/symbols'
 
-deploy({}, (deployer) => {
+void deploy({}, (deployer) => {
   const appleImplementation = contract('apple', Token)
   const orangeImplementation = contract('orange', Token, { gasLimit: 1000000 })
   const deployBehindProxy = createProxy(UpgradeabilityProxy, 'upgradeTo')
