@@ -51,7 +51,7 @@ describe('Deploying', () => {
           },
           () => contract(SimpleContract)
         )
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message)
           .to.be.a('string')
           .and.match(/^sender doesn't have enough funds to send tx/)

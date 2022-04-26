@@ -12,8 +12,8 @@ export type Contract<T> = {
 } & {
   [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (...args: A) => R : never
 } & {
-    getStorageAt: (address: string) => Future<string>
-  }
+  getStorageAt: (address: string) => Future<string>
+}
 
 export type ConstructorParams<T> = T extends { new (...args: infer A): any } ? A : any
 
@@ -76,9 +76,7 @@ function unCapitalize(value: string) {
   return value !== '' ? `${value[0].toLowerCase()}${value.substring(1)}` : ''
 }
 
-function parseContractArgs(
-  ...args: any[]
-): {
+function parseContractArgs(...args: any[]): {
   name: string
   artifact: ArtifactFrom<any>
   params: ConstructorParams<any>

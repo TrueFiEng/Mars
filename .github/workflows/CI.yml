@@ -22,7 +22,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node }}
-    - run: yarn install --frozen-lockfile
-    - run: yarn lint
-    - run: yarn build
-    - run: yarn cover
+    - name: Use pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 6.32.4
+        run_install: false
+    - run: pnpm i
+    - run: pnpm run lint
+    - run: pnpm run build
+    - run: pnpm run cover
