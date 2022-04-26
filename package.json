@@ -17,7 +17,7 @@
     "lint": "pnpm run -r lint",
     "build": "pnpm run -r build",
     "test": "pnpm run -r test",
-    "cover": "pnpm run -rcover",
+    "cover": "pnpm run -r cover",
     "release": "pnpm run build && pnpm changeset publish"
   },
   "devDependencies": {
