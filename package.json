@@ -18,7 +18,7 @@
     "build": "pnpm run -r build",
     "test": "pnpm run -r test",
     "cover": "pnpm run -rcover",
-    "release": "pnpm run build &&  changeset publish"
+    "release": "pnpm run build && pnpm changeset publish"
   },
   "devDependencies": {
     "eslint-plugin-no-only-tests": "^2.6.0",

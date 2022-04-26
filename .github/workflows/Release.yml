@@ -20,16 +20,22 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: 16.x
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 6.32.4
+          run_install: false
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm i
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: yarn release
+          publish: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
