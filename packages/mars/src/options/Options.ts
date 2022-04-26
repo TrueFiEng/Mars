@@ -1,7 +1,7 @@
 import { BigNumber, providers } from 'ethers'
-import type Ganache from 'ganache-core'
+import type { Provider } from 'ganache'
 
-export type NetworkLike = string | Ganache.Provider | providers.JsonRpcProvider
+export type NetworkLike = string | Provider | providers.JsonRpcProvider
 
 export interface Options {
   /**

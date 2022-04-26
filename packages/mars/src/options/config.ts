@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { providers, Signer, Wallet } from 'ethers'
-import Ganache from 'ganache-core'
+import { BigNumber, providers, Signer, Wallet } from 'ethers'
+import Ganache, { EthereumProvider, Provider } from 'ganache'
 import { ExecuteOptions } from '../execute/execute'
 import { createJsonInputs } from '../verification'
 import { exit } from './checks'
@@ -66,9 +66,9 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
 }
 
 function isNetworkProvider(
-  network: string | Ganache.Provider | providers.JsonRpcProvider
-): network is Ganache.Provider | providers.JsonRpcProvider {
-  return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
+  network: string | Provider | providers.JsonRpcProvider
+): network is Provider | providers.JsonRpcProvider {
+  return !!network && typeof network === 'object' && (network as Provider).send !== undefined
 }
 
 // Refactoring candidate - https://github.com/EthWorks/Mars/issues/50
@@ -106,7 +106,7 @@ async function getSigner(options: Options) {
     const multisigProvider = provider ?? new providers.JsonRpcProvider(rpcUrl)
     multisigSigner = new Wallet(privateKey, multisigProvider)
     const ganache = Ganache.provider({
-      fork: rpcUrl,
+      fork: rpcUrl
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = new Wallet(privateKey, provider)
@@ -115,7 +115,7 @@ async function getSigner(options: Options) {
     const ganache = Ganache.provider({
       fork: network ?? rpcUrl,
       unlocked_accounts: fromAddress ? [fromAddress] : [],
-      accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
+      accounts: [{ balance: BigNumber.from('10000000000000000000000000000000000').toHexString(), secretKey: randomWallet.privateKey }],
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = fromAddress ? provider.getSigner(fromAddress) : new Wallet(privateKey ?? randomWallet, provider)

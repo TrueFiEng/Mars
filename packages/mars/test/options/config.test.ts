@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { BigNumber, Wallet } from 'ethers'
-import Ganache from 'ganache-core'
+import Ganache from 'ganache'
 import { getConfig } from '../../src/options'
 import { MockProvider } from 'ethereum-waffle'
 
@@ -56,11 +56,11 @@ describe('getConfig', () => {
     expect(network.chainId).to.equal(1337)
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    ganache.close(() => {})
+    ganache.on('disconnect', () => {})
   })
 
   it('can pass Waffle MockProvider as network', async () => {
-    const waffle = new MockProvider({ ganacheOptions: { networkId: 1337 } })
+    const waffle = new MockProvider({ ganacheOptions: { chain: { chainId: 1337 } } })
     const config = await getConfig({ ...defaults, network: waffle, privateKey: PRIVATE_KEY_1 })
 
     expect((config.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)
