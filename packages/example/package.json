@@ -18,7 +18,7 @@
     "cover": "echo no tests here"
   },
   "dependencies": {
-    "ethereum-mars": "0.2.0"
+    "ethereum-mars": "workspace:*"
   },
   "devDependencies": {
     "@ethereum-waffle/compiler": "^3.4.4",

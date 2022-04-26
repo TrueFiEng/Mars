@@ -20,7 +20,7 @@ importers:
       '@typescript-eslint/parser': ^4.10.0
       chai: ^4.2.0
       eslint: ^7.15.0
-      ethereum-mars: 0.2.0
+      ethereum-mars: workspace:*
       ethereum-waffle: 3.4.0
       mocha: ^8.2.1
       prettier: ^2.2.1
