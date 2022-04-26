@@ -5,14 +5,6 @@
     "node": ">=10",
     "yarn": "^1.17.3"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
-    "nohoist": [
-      "**/prettier-plugin-solidity"
-    ]
-  },
   "scripts": {
     "lint": "pnpm run -r lint",
     "build": "pnpm run -r build",
