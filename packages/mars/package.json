@@ -71,7 +71,7 @@
     "chai": "^4.2.0",
     "chalk": "^4.1.0",
     "eslint": "^7.15.0",
-    "ethereum-waffle": "4.0.0-alpha.22",
+    "ethereum-waffle": "4.0.0-dev.498bffb",
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
