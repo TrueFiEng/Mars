@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { BigNumber, providers, Signer, Wallet } from 'ethers'
-import Ganache, { EthereumProvider, Provider } from 'ganache'
+import Ganache, { Provider } from 'ganache'
 import { ExecuteOptions } from '../execute/execute'
 import { createJsonInputs } from '../verification'
 import { exit } from './checks'
@@ -106,14 +106,31 @@ async function getSigner(options: Options) {
     const multisigProvider = provider ?? new providers.JsonRpcProvider(rpcUrl)
     multisigSigner = new Wallet(privateKey, multisigProvider)
     const ganache = Ganache.provider({
-      fork: rpcUrl
+      fork: {
+        url: rpcUrl
+      }
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = new Wallet(privateKey, provider)
   } else if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
-      fork: network ?? rpcUrl,
+      fork: typeof network === 'string' ?
+      {
+        url: network
+      }
+      :
+      { 
+        provider: {
+          request: async ({
+            method,
+            params
+          }) => {
+            const res = await network.send(method as any, params as any);
+            return res;
+          }
+        }
+      },
       unlocked_accounts: fromAddress ? [fromAddress] : [],
       accounts: [{ balance: BigNumber.from('10000000000000000000000000000000000').toHexString(), secretKey: randomWallet.privateKey }],
     })

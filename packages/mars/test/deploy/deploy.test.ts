@@ -11,7 +11,6 @@ describe('Deploying', () => {
       const alice = Wallet.createRandom()
 
       const ganacheProvider = ganache.provider({
-        locked: true,
         gasPrice: BigNumber.from('0').toHexString(),
         accounts: [{ secretKey: alice.privateKey, balance: BigNumber.from('10000000000000000').toHexString() }],
       })
@@ -36,7 +35,6 @@ describe('Deploying', () => {
       const alice = Wallet.createRandom()
 
       const ganacheProvider = ganache.provider({
-        locked: true,
         gasPrice: BigNumber.from('0').toHexString(),
         accounts: [{ secretKey: alice.privateKey, balance: BigNumber.from('0').toHexString() }],
       })

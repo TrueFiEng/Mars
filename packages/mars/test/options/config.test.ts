@@ -47,7 +47,7 @@ describe('getConfig', () => {
   })
 
   it('can pass ganache as network', async () => {
-    const ganache = Ganache.provider({ networkId: 1337 })
+    const ganache = Ganache.provider({ chain: { chainId: 1337 } })
     const config = await getConfig({ ...defaults, network: ganache, privateKey: PRIVATE_KEY_1 })
 
     expect((config.signer as Wallet).privateKey).to.equal(PRIVATE_KEY_1)

@@ -40,7 +40,7 @@
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
     "build": "yarn build:test:contracts && tsc",
     "build:test:contracts": "waffle ./test/waffle.json",
-    "test": "mocha",
+    "test": "mocha --exit",
     "test:e2e": "mocha --timeout 0 './**/*.e2e.ts' --exclude './**/*.test.ts'",
     "cover": "nyc mocha",
     "prepublishOnly": "rm -rf build && yarn build"
@@ -54,7 +54,6 @@
     "axios": "^0.21.0",
     "ethers": "^5.6.2",
     "ganache": "7.0.3",
-    "ganache-core": "^2.13.2",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
