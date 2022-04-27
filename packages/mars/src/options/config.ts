@@ -107,32 +107,34 @@ async function getSigner(options: Options) {
     multisigSigner = new Wallet(privateKey, multisigProvider)
     const ganache = Ganache.provider({
       fork: {
-        url: rpcUrl
-      }
+        url: rpcUrl,
+      },
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = new Wallet(privateKey, provider)
   } else if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
-      fork: typeof network === 'string' ?
-      {
-        url: network
-      }
-      :
-      { 
-        provider: {
-          request: async ({
-            method,
-            params
-          }) => {
-            const res = await network.send(method as any, params as any);
-            return res;
-          }
-        }
-      },
+      fork:
+        typeof network === 'string'
+          ? {
+              url: network,
+            }
+          : {
+              provider: {
+                request: async ({ method, params }) => {
+                  const res = await network.send(method as any, params as any)
+                  return res
+                },
+              },
+            },
       unlocked_accounts: fromAddress ? [fromAddress] : [],
-      accounts: [{ balance: BigNumber.from('10000000000000000000000000000000000').toHexString(), secretKey: randomWallet.privateKey }],
+      accounts: [
+        {
+          balance: BigNumber.from('10000000000000000000000000000000000').toHexString(),
+          secretKey: randomWallet.privateKey,
+        },
+      ],
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = fromAddress ? provider.getSigner(fromAddress) : new Wallet(privateKey ?? randomWallet, provider)
