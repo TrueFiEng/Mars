@@ -12,7 +12,7 @@ importers:
 
   packages/example:
     specifiers:
-      '@ethereum-waffle/compiler': 4.0.0-dev.498bffb
+      '@ethereum-waffle/compiler': 4.0.0-alpha.21
       '@openzeppelin/contracts': ^4.4.0
       '@types/chai': ^4.2.14
       '@types/mocha': ^8.2.0
@@ -21,7 +21,7 @@ importers:
       chai: ^4.2.0
       eslint: ^7.15.0
       ethereum-mars: workspace:*
-      ethereum-waffle: 4.0.0-dev.498bffb
+      ethereum-waffle: 4.0.0-alpha.23
       mocha: ^8.2.1
       prettier: ^2.2.1
       prettier-plugin-solidity: ^1.0.0-beta.2
@@ -30,7 +30,7 @@ importers:
     dependencies:
       ethereum-mars: link:../mars
     devDependencies:
-      '@ethereum-waffle/compiler': 4.0.0-dev.498bffb_typescript@4.6.3
+      '@ethereum-waffle/compiler': 4.0.0-alpha.21_typescript@4.6.3
       '@openzeppelin/contracts': 4.5.0
       '@types/chai': 4.3.1
       '@types/mocha': 8.2.3
@@ -38,7 +38,7 @@ importers:
       '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.6.3
       chai: 4.3.6
       eslint: 7.32.0
-      ethereum-waffle: 4.0.0-dev.498bffb_typescript@4.6.3
+      ethereum-waffle: 4.0.0-alpha.23_typescript@4.6.3
       mocha: 8.4.0
       prettier: 2.6.2
       prettier-plugin-solidity: 1.0.0-beta.19_prettier@2.6.2
@@ -67,7 +67,7 @@ importers:
       chai: ^4.2.0
       chalk: ^4.1.0
       eslint: ^7.15.0
-      ethereum-waffle: 4.0.0-dev.498bffb
+      ethereum-waffle: 4.0.0-alpha.23
       ethers: ^5.6.2
       ganache: 7.0.3
       minimist: ^1.2.5
@@ -103,7 +103,7 @@ importers:
       chai: 4.3.6
       chalk: 4.1.2
       eslint: 7.32.0
-      ethereum-waffle: 4.0.0-dev.498bffb_typescript@4.6.3
+      ethereum-waffle: 4.0.0-alpha.23_typescript@4.6.3
       mocha: 8.4.0
       nyc: 15.1.0
       prettier: 2.6.2
@@ -536,11 +536,11 @@ packages:
       - supports-color
     dev: true
 
-  /@ethereum-waffle/chai/4.0.0-dev.498bffb:
-    resolution: {integrity: sha512-WtCdvMAEG59RwJsfLT968ulC6IKqeayIILOTEHQmfuws9upQ8+aBQfAR5u3j45i5XMxq2neiJvOjlE98MOz/qw==}
+  /@ethereum-waffle/chai/4.0.0-alpha.23:
+    resolution: {integrity: sha512-/0nDXn+GF7nnAQ4lH27JDWoA0RfuV7kRmh04TIc1ENym2V/LxGEpw3GNwBhtg1lBVG5A7joOmFkYrnJJE4oKfQ==}
     engines: {node: '>=10.0'}
     dependencies:
-      '@ethereum-waffle/provider': 4.0.0-dev.498bffb
+      '@ethereum-waffle/provider': 4.0.0-alpha.22
       debug: 4.3.4
       ethers: 5.6.2
     transitivePeerDependencies:
@@ -549,8 +549,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@ethereum-waffle/compiler/4.0.0-dev.498bffb_d8c760dc6c7897e43e2bf407c9934fca:
-    resolution: {integrity: sha512-gjWkVuSXagQlZzDaVMDPzL9yf5eKZe3RTeayWunEBlnGU4vFNb1eFoICHldCU1l0o5Hy+abn3e2qyin9mhVs+g==}
+  /@ethereum-waffle/compiler/4.0.0-alpha.21_d8c760dc6c7897e43e2bf407c9934fca:
+    resolution: {integrity: sha512-1+9S72b17cPVoiJ1+d2rwH4fLM0O5KMKGpKRZW0bIeMMw8+s4Y0e52NagAs3/3HSgjK3hSzsZcW9+Lnz4E/pnQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       ethers: 5.6.2
@@ -577,8 +577,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@ethereum-waffle/compiler/4.0.0-dev.498bffb_typescript@4.6.3:
-    resolution: {integrity: sha512-gjWkVuSXagQlZzDaVMDPzL9yf5eKZe3RTeayWunEBlnGU4vFNb1eFoICHldCU1l0o5Hy+abn3e2qyin9mhVs+g==}
+  /@ethereum-waffle/compiler/4.0.0-alpha.21_typescript@4.6.3:
+    resolution: {integrity: sha512-1+9S72b17cPVoiJ1+d2rwH4fLM0O5KMKGpKRZW0bIeMMw8+s4Y0e52NagAs3/3HSgjK3hSzsZcW9+Lnz4E/pnQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       ethers: 5.6.2
@@ -602,8 +602,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@ethereum-waffle/ens/4.0.0-dev.498bffb:
-    resolution: {integrity: sha512-xIfTxExWrwQs20YPwRoNFviDlp9QjfiQ8NWIdcF6kYU9053HLaj7ESULxvhEcdexKsSAixhZ30BXUHrpQgV34g==}
+  /@ethereum-waffle/ens/4.0.0-alpha.21:
+    resolution: {integrity: sha512-DHmiyI+2zwwsOjzbCdR1l45tP+FhB5QC0EVNNR+fRDg29NVObKvynfM9FFVAUx6eOnR6cwVUpUuB0KKVPdrgUg==}
     engines: {node: '>=10.0'}
     dependencies:
       '@ensdomains/ens': 0.4.5
@@ -614,8 +614,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@ethereum-waffle/mock-contract/4.0.0-dev.498bffb:
-    resolution: {integrity: sha512-I0y4XPl5FCrbsWWaDP9+nzSOqn6El8+rU064SuM9Jqqmvp11SWpzNg7Q6AHFBWrhLqLjX9vMlmHjBSnzj7v3eQ==}
+  /@ethereum-waffle/mock-contract/4.0.0-alpha.21:
+    resolution: {integrity: sha512-7St9+K+dYlIwagZlkE7ry4Au9wuEh9AH/tpMQ6wfy92lpyBUsrzG1rft+lD/6oUJ7MpN8VI/xYAoU8tdjPkWJw==}
     engines: {node: '>=10.0'}
     dependencies:
       '@ethersproject/abi': 5.6.1
@@ -625,11 +625,11 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@ethereum-waffle/provider/4.0.0-dev.498bffb:
-    resolution: {integrity: sha512-+bK6+K44I6goVuw8NvGDzJoYy6p4Dv9INvXE1UPRDk6v2CJWC24qUShIN3t9iZ992N2K9J7nDcoRFEt2K2bA4w==}
+  /@ethereum-waffle/provider/4.0.0-alpha.22:
+    resolution: {integrity: sha512-bKv0W0KO/UcItfa5l6e3YYfiDEdgBQvtj0yCQz/vCLkjqSE+ImlsYByHFWlXHe5tmN6V5XXvR3ri7SM1ku4wtA==}
     engines: {node: '>=10.0'}
     dependencies:
-      '@ethereum-waffle/ens': 4.0.0-dev.498bffb
+      '@ethereum-waffle/ens': 4.0.0-alpha.21
       '@ganache/ethereum-options': 0.1.4
       debug: 4.3.4
       ethers: 5.6.2
@@ -2586,15 +2586,15 @@ packages:
       secp256k1: 4.0.3
       setimmediate: 1.0.5
 
-  /ethereum-waffle/4.0.0-dev.498bffb_typescript@4.6.3:
-    resolution: {integrity: sha512-K3llbaqY6KStPRRH2EaiGiLy+bh22jP+816vrUrea/Qf/jrokkcO9JsAUq0ZeJ6h3sM2m8FMRDJAhWu17pdafQ==}
+  /ethereum-waffle/4.0.0-alpha.23_typescript@4.6.3:
+    resolution: {integrity: sha512-XUXOOj8p0e+TLnH0fTfQAYhk0JiJWBL1ka03yu/8XqEKdRlXJlDwigxzEqD7ZhfjFOsz/j6loE9z0T204OLJTw==}
     engines: {node: '>=10.0'}
     hasBin: true
     dependencies:
-      '@ethereum-waffle/chai': 4.0.0-dev.498bffb
-      '@ethereum-waffle/compiler': 4.0.0-dev.498bffb_d8c760dc6c7897e43e2bf407c9934fca
-      '@ethereum-waffle/mock-contract': 4.0.0-dev.498bffb
-      '@ethereum-waffle/provider': 4.0.0-dev.498bffb
+      '@ethereum-waffle/chai': 4.0.0-alpha.23
+      '@ethereum-waffle/compiler': 4.0.0-alpha.21_d8c760dc6c7897e43e2bf407c9934fca
+      '@ethereum-waffle/mock-contract': 4.0.0-alpha.21
+      '@ethereum-waffle/provider': 4.0.0-alpha.22
       ethers: 5.6.2
       solc: 0.6.12
       typechain: 8.0.0_typescript@4.6.3

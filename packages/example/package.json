@@ -21,7 +21,7 @@
     "ethereum-mars": "workspace:*"
   },
   "devDependencies": {
-    "@ethereum-waffle/compiler": "4.0.0-dev.498bffb",
+    "@ethereum-waffle/compiler": "4.0.0-alpha.21",
     "@openzeppelin/contracts": "^4.4.0",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
@@ -29,7 +29,7 @@
     "@typescript-eslint/parser": "^4.10.0",
     "chai": "^4.2.0",
     "eslint": "^7.15.0",
-    "ethereum-waffle": "4.0.0-dev.498bffb",
+    "ethereum-waffle": "4.0.0-alpha.23",
     "mocha": "^8.2.1",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.2",
