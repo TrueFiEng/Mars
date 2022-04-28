@@ -1,5 +1,5 @@
-import { Wallet } from 'ethers'
-import ganache from 'ganache-core'
+import { BigNumber, Wallet } from 'ethers'
+import ganache from 'ganache'
 import { contract, deploy } from '../../src'
 import { SimpleContract } from '../fixtures/exampleArtifacts'
 import { expectFuture } from '../utils'
@@ -11,9 +11,8 @@ describe('Deploying', () => {
       const alice = Wallet.createRandom()
 
       const ganacheProvider = ganache.provider({
-        locked: true,
-        gasPrice: '0',
-        accounts: [{ secretKey: alice.privateKey, balance: '10000000000000000' }],
+        gasPrice: BigNumber.from('0').toHexString(),
+        accounts: [{ secretKey: alice.privateKey, balance: BigNumber.from('10000000000000000').toHexString() }],
       })
 
       const { result } = await deploy(
@@ -36,9 +35,8 @@ describe('Deploying', () => {
       const alice = Wallet.createRandom()
 
       const ganacheProvider = ganache.provider({
-        locked: true,
-        gasPrice: '0',
-        accounts: [{ secretKey: alice.privateKey, balance: '0' }],
+        gasPrice: BigNumber.from('0').toHexString(),
+        accounts: [{ secretKey: alice.privateKey, balance: BigNumber.from('0').toHexString() }],
       })
 
       try {
@@ -54,7 +52,7 @@ describe('Deploying', () => {
       } catch (e: any) {
         expect(e.message)
           .to.be.a('string')
-          .and.match(/^sender doesn't have enough funds to send tx/)
+          .and.match(/insufficient funds for intrinsic transaction/)
       }
     })
   })

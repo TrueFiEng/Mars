@@ -40,9 +40,9 @@
     "lint:prettier": "prettier './{src,test}/**/*.ts'",
     "build": "yarn build:test:contracts && tsc",
     "build:test:contracts": "waffle ./test/waffle.json",
-    "test": "mocha",
+    "test": "mocha --exit",
     "test:e2e": "mocha --timeout 0 './**/*.e2e.ts' --exclude './**/*.test.ts'",
-    "cover": "nyc mocha",
+    "cover": "nyc pnpm run test",
     "prepublishOnly": "rm -rf build && yarn build"
   },
   "dependencies": {
@@ -53,7 +53,7 @@
     "argparse": "^2.0.1",
     "axios": "^0.21.0",
     "ethers": "^5.6.2",
-    "ganache-core": "^2.13.2",
+    "ganache": "7.0.3",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
@@ -71,7 +71,7 @@
     "chai": "^4.2.0",
     "chalk": "^4.1.0",
     "eslint": "^7.15.0",
-    "ethereum-waffle": "3.4.0",
+    "ethereum-waffle": "4.0.0-alpha.23",
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",

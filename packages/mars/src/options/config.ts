@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { providers, Signer, Wallet } from 'ethers'
-import Ganache from 'ganache-core'
+import { BigNumber, providers, Signer, Wallet } from 'ethers'
+import Ganache, { Provider } from 'ganache'
 import { ExecuteOptions } from '../execute/execute'
 import { createJsonInputs } from '../verification'
 import { exit } from './checks'
@@ -66,9 +66,9 @@ export async function getConfig(options: Options): Promise<ExecuteOptions> {
 }
 
 function isNetworkProvider(
-  network: string | Ganache.Provider | providers.JsonRpcProvider
-): network is Ganache.Provider | providers.JsonRpcProvider {
-  return !!network && typeof network === 'object' && (network as Ganache.Provider).send !== undefined
+  network: string | Provider | providers.JsonRpcProvider
+): network is Provider | providers.JsonRpcProvider {
+  return !!network && typeof network === 'object' && (network as Provider).send !== undefined
 }
 
 // Refactoring candidate - https://github.com/EthWorks/Mars/issues/50
@@ -106,16 +106,35 @@ async function getSigner(options: Options) {
     const multisigProvider = provider ?? new providers.JsonRpcProvider(rpcUrl)
     multisigSigner = new Wallet(privateKey, multisigProvider)
     const ganache = Ganache.provider({
-      fork: rpcUrl,
+      fork: {
+        url: rpcUrl,
+      },
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = new Wallet(privateKey, provider)
   } else if (dryRun) {
     const randomWallet = Wallet.createRandom()
     const ganache = Ganache.provider({
-      fork: network ?? rpcUrl,
+      fork:
+        typeof network === 'string'
+          ? {
+              url: network,
+            }
+          : {
+              provider: {
+                request: async ({ method, params }) => {
+                  const res = await network.send(method as any, params as any)
+                  return res
+                },
+              },
+            },
       unlocked_accounts: fromAddress ? [fromAddress] : [],
-      accounts: [{ balance: '10000000000000000000000000000000000', secretKey: randomWallet.privateKey }],
+      accounts: [
+        {
+          balance: BigNumber.from('10000000000000000000000000000000000').toHexString(),
+          secretKey: randomWallet.privateKey,
+        },
+      ],
     })
     provider = new providers.Web3Provider(ganache as any)
     signer = fromAddress ? provider.getSigner(fromAddress) : new Wallet(privateKey ?? randomWallet, provider)
