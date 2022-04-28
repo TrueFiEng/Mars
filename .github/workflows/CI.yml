@@ -31,4 +31,4 @@ jobs:
     - run: pnpm i
     - run: pnpm run lint
     - run: pnpm run build
-    - run: pnpm -r --filter "./packages/**" exec ${PWD}/scripts/dev-version.sh
+    - run: pnpm run cover

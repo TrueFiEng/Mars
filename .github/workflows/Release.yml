@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - yivlad/publish-dev-on-merge-to-master
 
 jobs:
   release:
@@ -30,19 +31,19 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: pnpm run release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Create Release Pull Request or Publish to npm
+      #   id: changesets
+      #   uses: changesets/action@v1
+      #   with:
+      #     # This expects you to have a script called release which does a build for your packages and calls changeset publish
+      #     publish: pnpm run release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish dev version to npm
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          pnpm -r --filter "./packages/**" exec ${PWD}/scripts/dev-version.sh
+          pnpm -r --filter ./packages exec ${PWD}/scripts/dev-version.sh
           pnpm run build
           pnpm -r publish --no-git-checks
