@@ -16,6 +16,7 @@ export const optimism_kovan: Chain = {
   getPublicRpc: () => 'https://kovan.optimism.io/',
   getInfuraRpc: (infuraApiKey) => `https://optimism-kovan.infura.io/v3/${infuraApiKey}`,
   getAlchemyRpc: (alchemyApiKey) => `https://opt-kovan.g.alchemy.com/v2/${alchemyApiKey}`,
-  getBlockExplorerContractAddress: (contractAddress) => `https://kovan-optimistic.etherscan.io/address/${contractAddress}`,
+  getBlockExplorerContractAddress: (contractAddress) =>
+    `https://kovan-optimistic.etherscan.io/address/${contractAddress}`,
   getEtherscanVerifierApi: () => 'https://api-kovan-optimistic.etherscan.io/api',
 }
