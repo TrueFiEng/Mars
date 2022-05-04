@@ -61,7 +61,8 @@ CLI flags
 | --network       | -n    | Str  | No             | mainnet            | Network name. Should be one of:                                 |
 |                 |       |      |                |                    |                                                                 |
 |                 |       |      |                |                    | mainnet, development, kovan, ropsten, goerli, rinkeby,          |
-|                 |       |      |                |                    | arbitrum, arbitrum_rinkeby                                      |
+|                 |       |      |                |                    | arbitrum, arbitrum_rinkeby,                                     |
+|                 |       |      |                |                    | optimism, optimism_kovan                                        |
 |                 |       |      |                |                    |                                                                 |
 |                 |       |      |                |                    | or RPC URL e.g. ``https://infura.io/...``                       |
 +-----------------+-------+------+----------------+--------------------+-----------------------------------------------------------------+
