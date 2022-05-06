@@ -3,11 +3,14 @@ import { context } from '../context'
 import { AbiSymbol, Bytecode, DeployedBytecode, Name, Type } from '../symbols'
 import { Future } from '../values'
 
-export interface ArtifactJSON {
+interface CommonFields {
   abi: Abi
   bytecode: string
-  evm: { deployedBytecode: { object: string } }
 }
+
+type DeployedBytecodeField = { evm: { deployedBytecode: { object: string } } } | { deployedBytecode: string }
+
+export type ArtifactJSON = CommonFields & DeployedBytecodeField
 
 export type ArtifactFrom<T> = {
   [Name]: string
@@ -20,11 +23,18 @@ export type ArtifactFrom<T> = {
 }
 
 export function createArtifact<T>(name: string, json: ArtifactJSON): ArtifactFrom<T> {
+  let deployedBytecode = ''
+  if ('evm' in json) {
+    deployedBytecode = json.evm.deployedBytecode.object
+  } else {
+    deployedBytecode = json.deployedBytecode
+  }
+
   const artifact: any = {
     [Name]: name,
     [AbiSymbol]: json.abi,
     [Bytecode]: json.bytecode,
-    [DeployedBytecode]: json.evm.deployedBytecode.object,
+    [DeployedBytecode]: deployedBytecode,
   }
   for (const entry of json.abi) {
     if (entry.type === 'function') {
