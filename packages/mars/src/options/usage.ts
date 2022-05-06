@@ -10,7 +10,8 @@ Options:
   -n, --network [string]      The network to run the deployment against. Can be
                               either an Ethereum JSON-RPC url or one of:
                               development, kovan, ropsten, goerli, rinkeby,
-                              mainnet, arbitrum or arbitrum_rinkeby. Default: mainnet.
+                              mainnet, arbitrum, arbitrum_rinkeby,
+                              optimism or optimism_kovan. Default: mainnet.
   -i, --infura-key [key]      The Infura api key to use for JSON-RPC. You can
                               also use the env variable INFURA_KEY.
   -a, --alchemy-key [key]     The Alchemy api key to use for JSON-RPC. You can
