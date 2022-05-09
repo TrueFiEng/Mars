@@ -1,5 +1,11 @@
 # ethereum-mars
 
+## 0.2.1
+
+### Patch Changes
+
+- d0403a7: 📪 Add support for Optimism
+
 ## 0.2.0
 
 ### Minor Changes
