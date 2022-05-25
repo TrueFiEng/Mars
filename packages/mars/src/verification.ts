@@ -270,7 +270,7 @@ export async function verifySingleFile(
     if (!guid) {
       return
     }
-    if (await waitForResult(etherscanApiKey, guid)) {
+    if (await waitForResult(etherscanApiKey, guid, network)) {
       console.log(
         chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
       )
@@ -313,7 +313,7 @@ export async function verify(
     if (!guid) {
       return
     }
-    if (await waitForResult(etherscanApiKey, guid)) {
+    if (await waitForResult(etherscanApiKey, guid, network)) {
       console.log(
         chalk.bold(chalk.green(`Contract verified at ${getBlockExplorerContractAddress(address, network)}\n`))
       )
