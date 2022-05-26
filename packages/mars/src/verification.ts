@@ -234,7 +234,7 @@ async function waitForResult(etherscanApiKey: string, guid: string, network?: st
       console.log(chalk.bold(chalk.yellow(`Verification of failed: ${res.result}`)))
       return false
     }
-    if (res.result.startsWith('Pass') || res.result.includes("Already Verified")) {
+    if (res.result.startsWith('Pass') || res.result.includes('Already Verified')) {
       clearLine()
       return true
     }
