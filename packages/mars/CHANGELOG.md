@@ -1,5 +1,11 @@
 # ethereum-mars
 
+## 0.2.2
+
+### Patch Changes
+
+- d708075: 🪲 Handle already verified contracts
+
 ## 0.2.1
 
 ### Patch Changes
