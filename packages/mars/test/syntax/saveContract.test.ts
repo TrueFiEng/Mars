@@ -9,7 +9,7 @@ describe('SaveContract', () => {
   it('adds address to the deployments file', async () => {
     await testDeploy(() => saveContract('name', '0x123'))
     const result = getDeployResult()
-    expect(result.name).to.equal('0x123')
+    expect(result.test.name.address).to.equal('0x123')
     fs.unlinkSync('./test/deployments.json')
   })
 })
