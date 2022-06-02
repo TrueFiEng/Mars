@@ -1,5 +1,11 @@
 # ethereum-mars
 
+## 0.2.3
+
+### Patch Changes
+
+- 06f72db: Add save contract function
+
 ## 0.2.2
 
 ### Patch Changes

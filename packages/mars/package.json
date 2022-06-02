@@ -1,6 +1,6 @@
 {
   "name": "ethereum-mars",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "The amazing smart contract deployment tool",
   "license": "MIT",
   "publishConfig": {
