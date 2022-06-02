@@ -1,6 +1,6 @@
 import { AbiConstructorEntry, AbiFunctionEntry } from './abi'
 import { ArtifactFrom } from './syntax/artifact'
-import { BooleanLike, Future } from './values'
+import { BooleanLike, Future, MaybeFuture } from './values'
 import { TransactionOptions } from './execute/sendTransaction'
 
 export type Action =
@@ -12,6 +12,7 @@ export type Action =
   | EndConditionalAction
   | DebugAction
   | GetStorageAction
+  | SaveContractAction
 
 export interface DeployAction {
   type: 'DEPLOY'
@@ -61,6 +62,12 @@ export interface EncodeAction {
 export interface DebugAction {
   type: 'DEBUG'
   messages: any[]
+}
+
+export interface SaveContractAction {
+  type: 'SAVE_CONTRACT'
+  address: MaybeFuture<string>
+  name: string
 }
 
 export interface GetStorageAction {

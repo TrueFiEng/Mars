@@ -6,6 +6,7 @@ import {
   EncodeAction,
   GetStorageAction,
   ReadAction,
+  SaveContractAction,
   StartConditionalAction,
   TransactionAction,
 } from '../actions'
@@ -78,6 +79,8 @@ async function executeAction(action: Action, options: ExecuteOptions): Promise<v
       return executeDebug(action)
     case 'GET_STORAGE_AT':
       return executeGetStorageAt(action, options)
+    case 'SAVE_CONTRACT':
+      return executeContractSave(action, options)
   }
 }
 
@@ -217,6 +220,10 @@ function resolveValue(value: unknown) {
 
 function executeDebug({ messages }: DebugAction) {
   console.log(chalk.yellow('🛠', ...messages.map(printableToString)))
+}
+
+function executeContractSave({ address, name }: SaveContractAction, globalOptions: ExecuteOptions) {
+  save(globalOptions.deploymentsFile, globalOptions.networkName, name, { address })
 }
 
 export function printableToString(data: unknown): string | number | boolean | null | undefined {
