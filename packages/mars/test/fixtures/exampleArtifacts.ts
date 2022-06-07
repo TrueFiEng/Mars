@@ -4,6 +4,7 @@ import * as Mars from "../../src";
 const Address__JSON = require("./../build/Address.json");
 const ComplexContract__JSON = require("./../build/ComplexContract.json");
 const ERC1967Proxy__JSON = require("./../build/ERC1967Proxy.json");
+const ImmutableContract__JSON = require("./../build/ImmutableContract.json");
 const OpenZeppelinProxy__JSON = require("./../build/OpenZeppelinProxy.json");
 const ReservedContract__JSON = require("./../build/ReservedContract.json");
 const SimpleContract__JSON = require("./../build/SimpleContract.json");
@@ -11,7 +12,6 @@ const StorageSlot__JSON = require("./../build/StorageSlot.json");
 const UpgradeabilityProxy__JSON = require("./../build/UpgradeabilityProxy.json");
 const UpgradeableContract__JSON = require("./../build/UpgradeableContract.json");
 const UpgradeableContract2__JSON = require("./../build/UpgradeableContract2.json");
-const ImmutableContractJson = require("./../build/ImmutableContract.json");
 
 export const Address = Mars.createArtifact<{
   new(): void;
@@ -35,6 +35,11 @@ export const ComplexContract = Mars.createArtifact<{
 export const ERC1967Proxy = Mars.createArtifact<{
   new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
 }>("ERC1967Proxy", ERC1967Proxy__JSON);
+
+export const ImmutableContract = Mars.createArtifact<{
+  new(): void;
+  _self(): Mars.Future<string>;
+}>("ImmutableContract", ImmutableContract__JSON);
 
 export const OpenZeppelinProxy = Mars.createArtifact<{
   new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
@@ -60,10 +65,6 @@ export const UpgradeabilityProxy = Mars.createArtifact<{
   implementation(): Mars.Future<string>;
   upgradeTo(impl: Mars.AddressLike, options?: Mars.TransactionOverrides): Mars.Transaction;
 }>("UpgradeabilityProxy", UpgradeabilityProxy__JSON);
-
-export const ImmutableContract = Mars.createArtifact<{
-  new(): void;
-}>("ImmutableContract", ImmutableContractJson);
 
 export const UpgradeableContract = Mars.createArtifact<{
   new(): void;
