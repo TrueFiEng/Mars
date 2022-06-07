@@ -11,6 +11,7 @@ const StorageSlot__JSON = require("./../build/StorageSlot.json");
 const UpgradeabilityProxy__JSON = require("./../build/UpgradeabilityProxy.json");
 const UpgradeableContract__JSON = require("./../build/UpgradeableContract.json");
 const UpgradeableContract2__JSON = require("./../build/UpgradeableContract2.json");
+const ImmutableContractJson = require("./../build/ImmutableContract.json");
 
 export const Address = Mars.createArtifact<{
   new(): void;
@@ -59,6 +60,10 @@ export const UpgradeabilityProxy = Mars.createArtifact<{
   implementation(): Mars.Future<string>;
   upgradeTo(impl: Mars.AddressLike, options?: Mars.TransactionOverrides): Mars.Transaction;
 }>("UpgradeabilityProxy", UpgradeabilityProxy__JSON);
+
+export const ImmutableContract = Mars.createArtifact<{
+  new(): void;
+}>("ImmutableContract", ImmutableContractJson);
 
 export const UpgradeableContract = Mars.createArtifact<{
   new(): void;

@@ -9,6 +9,11 @@
       "txHash": "0xd394543f4e0cb585ec7a0571b08ee87a2d331598565aeb3ed01b56f4b36a8e62",
       "address": "0x030dA9f941AfB71646F25B3768DB3527cF1fCc9C",
       "multisig": true
+    },
+    "immutableContract": {
+      "txHash": "0x4697b69ab95ef08f9f8a19329ac9d8177c31e6872390ecc22a892888766e4cdd",
+      "address": "0xacc88A9af42414575DBDC3de4CEc7a9a7B4e4bCE",
+      "multisig": false
     }
   }
 }
