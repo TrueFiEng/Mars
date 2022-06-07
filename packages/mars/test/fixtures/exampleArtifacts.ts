@@ -4,6 +4,7 @@ import * as Mars from "../../src";
 const Address__JSON = require("./../build/Address.json");
 const ComplexContract__JSON = require("./../build/ComplexContract.json");
 const ERC1967Proxy__JSON = require("./../build/ERC1967Proxy.json");
+const ImmutableContract__JSON = require("./../build/ImmutableContract.json");
 const OpenZeppelinProxy__JSON = require("./../build/OpenZeppelinProxy.json");
 const ReservedContract__JSON = require("./../build/ReservedContract.json");
 const SimpleContract__JSON = require("./../build/SimpleContract.json");
@@ -34,6 +35,11 @@ export const ComplexContract = Mars.createArtifact<{
 export const ERC1967Proxy = Mars.createArtifact<{
   new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
 }>("ERC1967Proxy", ERC1967Proxy__JSON);
+
+export const ImmutableContract = Mars.createArtifact<{
+  new(): void;
+  _self(): Mars.Future<string>;
+}>("ImmutableContract", ImmutableContract__JSON);
 
 export const OpenZeppelinProxy = Mars.createArtifact<{
   new(_logic: Mars.AddressLike, _data: Mars.BytesLike): void;
