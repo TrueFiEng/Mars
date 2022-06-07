@@ -104,7 +104,10 @@ async function isDeployedContractSameAsLocal(
   const addressWithoutPrefix = address.startsWith('0x') ? address.substring(2) : address
   if (networkBytecode.includes(addressWithoutPrefix.toLowerCase())) {
     // Replace inlined fields like: `address public immutable _self = address(this)`
-    networkBytecode = networkBytecode.replace(addressWithoutPrefix.toLowerCase(), '0'.repeat(addressWithoutPrefix.length))
+    networkBytecode = networkBytecode.replace(
+      addressWithoutPrefix.toLowerCase(),
+      '0'.repeat(addressWithoutPrefix.length)
+    )
   }
   return networkBytecode !== undefined && isBytecodeEqual(networkBytecode, localContractBytecode)
 }
