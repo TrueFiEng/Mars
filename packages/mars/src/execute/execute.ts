@@ -105,7 +105,7 @@ async function isDeployedContractSameAsLocal(
   if (networkBytecode.includes(addressWithoutPrefix.toLowerCase())) {
     // Replace inlined fields like: `address public immutable _self = address(this)`
     networkBytecode = networkBytecode.replace(
-      addressWithoutPrefix.toLowerCase(),
+      new RegExp(addressWithoutPrefix.toLowerCase(), 'g'),
       '0'.repeat(addressWithoutPrefix.length)
     )
   }
