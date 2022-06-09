@@ -231,7 +231,7 @@ function executeDebug({ messages }: DebugAction) {
 }
 
 function executeContractSave({ address, name }: SaveContractAction, globalOptions: ExecuteOptions) {
-  save(globalOptions.deploymentsFile, globalOptions.networkName, name, { address })
+  save(globalOptions.deploymentsFile, globalOptions.networkName, name, { address: resolveValue(address) })
 }
 
 export function printableToString(data: unknown): string | number | boolean | null | undefined {
