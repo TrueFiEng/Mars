@@ -30,12 +30,20 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
+      - name: Set git user
+        run: |
+          git config user.name truefibot
+          git config user.email truebot.github@trusttoken.com
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm run release
+          commit: "🎉 Release new version"
+          title: "🎉 Release new version"
+          setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
