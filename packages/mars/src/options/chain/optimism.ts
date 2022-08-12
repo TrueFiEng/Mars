@@ -20,3 +20,14 @@ export const optimism_kovan: Chain = {
     `https://kovan-optimistic.etherscan.io/address/${contractAddress}`,
   getEtherscanVerifierApi: () => 'https://api-kovan-optimistic.etherscan.io/api',
 }
+
+export const optimism_goerli: Chain = {
+  chainId: 420,
+  chainName: 'Optimism Goerli',
+  getPublicRpc: () => 'https://goerli.optimism.io/',
+  getInfuraRpc: (infuraApiKey) => `https://optimism-goerli.infura.io/v3/${infuraApiKey}`,
+  getAlchemyRpc: (alchemyApiKey) => `https://opt-goerli.g.alchemy.com/v2/${alchemyApiKey}`,
+  getBlockExplorerContractAddress: (contractAddress) =>
+    `https://blockscout.com/optimism/goerli/address/${contractAddress}`,
+  getEtherscanVerifierApi: () => 'https://blockscout.com/optimism/goerli/api',
+}
