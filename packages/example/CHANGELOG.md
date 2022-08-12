@@ -1,5 +1,12 @@
 # example
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [f3f4ce2]
+  - ethereum-mars@0.2.5
+
 ## 0.1.5
 
 ### Patch Changes
