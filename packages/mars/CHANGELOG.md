@@ -1,5 +1,12 @@
 # ethereum-mars
 
+## 0.2.5
+
+### Patch Changes
+
+- f3f4ce2: Resolve value passed to saveContract
+- 6316bfd: 🍭 Add Optimism Goerli chain
+
 ## 0.2.4
 
 ### Patch Changes
