@@ -1,7 +1,7 @@
 {
   "name": "example",
   "private": true,
-  "version": "0.1.5",
+  "version": "0.1.6",
   "engines": {
     "node": ">=10",
     "yarn": "^1.17.3"
