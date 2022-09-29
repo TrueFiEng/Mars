@@ -1,0 +1,35 @@
+@startuml
+class Mars
+Mars : new (behaviors: MarsBehaviors)
+interface MarsBehaviors
+MarsBehaviors : networkState: NetworkState
+MarsBehaviors : contractCreator: ContractCreator
+MarsBehaviors : transactionDispatcher: TransactionDispatcher
+MarsBehaviors : ...
+
+abstract NetworkState
+class FileNetworkState
+NetworkState <|-- FileNetworkState
+
+abstract ContractVerifier
+class EtherscanContractVerifier
+ContractVerifier <|-- EtherscanContractVerifier
+
+abstract ContractCreator
+class BasicContractCreator
+class Create2ContractCreator
+ContractCreator <|-- BasicContractCreator
+ContractCreator <|-- Create2ContractCreator
+
+abstract TransactionDispatcher
+class InstantTransactionDispatcher
+class MultisigTransactionDispatcher
+TransactionDispatcher <|-- InstantTransactionDispatcher
+TransactionDispatcher <|-- MultisigTransactionDispatcher
+
+interface Proxy
+class CustomProxy
+class Eip1967Proxy
+Proxy <|-- CustomProxy
+Proxy <|-- Eip1967Proxy
+@enduml
