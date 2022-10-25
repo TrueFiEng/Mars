@@ -104,7 +104,7 @@ function getBlockExplorerContractAddress(address: string, network?: string) {
 async function getCompilerOptions(waffleConfigPath: string) {
   const config = JSON.parse(fs.readFileSync(waffleConfigPath).toString())
   const compilerVersion = config.compilerVersion
-  const isOptimized = config.compilerOptions?.optimizer?.enabled ?? true
+  const isOptimized = config.compilerOptions?.optimizer?.enabled ?? false
   const optimizerRuns = !isOptimized ? 0 : config.compilerOptions?.optimizer?.runs ?? 200
   return {
     compilerVersion,
