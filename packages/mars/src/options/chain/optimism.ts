@@ -31,3 +31,14 @@ export const optimism_goerli: Chain = {
     `https://goerli-optimism.etherscan.io/address/${contractAddress}`,
   getEtherscanVerifierApi: () => 'https://api-goerli-optimism.etherscan.io/api',
 }
+
+export const optimism_sepolia: Chain = {
+  chainId: 11155420,
+  chainName: 'Optimism Sepolia',
+  getPublicRpc: () => 'https://sepolia.optimism.io',
+  getInfuraRpc: (infuraApiKey) => `https://optimism-sepolia.infura.io/v3/${infuraApiKey}`,
+  getAlchemyRpc: (alchemyApiKey) => `https://opt-sepolia.g.alchemy.com/v2/${alchemyApiKey}`,
+  getBlockExplorerContractAddress: (contractAddress) =>
+    `https://sepolia-optimism.etherscan.io/address/${contractAddress}`,
+  getEtherscanVerifierApi: () => 'https://api-sepolia-optimistic.etherscan.io/api',
+}

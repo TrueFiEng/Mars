@@ -62,7 +62,7 @@ CLI flags
 |                 |       |      |                |                    |                                                                 |
 |                 |       |      |                |                    | mainnet, development, kovan, ropsten, goerli, rinkeby,          |
 |                 |       |      |                |                    | arbitrum, arbitrum_rinkeby,                                     |
-|                 |       |      |                |                    | optimism, optimism_kovan                                        |
+|                 |       |      |                |                    | optimism, optimism_kovan, sepolia, optimism_sepolia,            |
 |                 |       |      |                |                    |                                                                 |
 |                 |       |      |                |                    | or RPC URL e.g. ``https://infura.io/...``                       |
 +-----------------+-------+------+----------------+--------------------+-----------------------------------------------------------------+
