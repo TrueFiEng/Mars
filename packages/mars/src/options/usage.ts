@@ -11,7 +11,8 @@ Options:
                               either an Ethereum JSON-RPC url or one of:
                               development, kovan, ropsten, goerli, rinkeby,
                               mainnet, arbitrum, arbitrum_rinkeby,
-                              optimism or optimism_kovan. Default: mainnet.
+                              sepolia, optimism, optimism_sepolia, optimism_kovan
+                              base or sepolia_base. Default: mainnet.
   -i, --infura-key [key]      The Infura api key to use for JSON-RPC. You can
                               also use the env variable INFURA_KEY.
   -a, --alchemy-key [key]     The Alchemy api key to use for JSON-RPC. You can
