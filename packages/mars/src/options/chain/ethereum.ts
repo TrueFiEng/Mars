@@ -49,3 +49,13 @@ export const kovan: Chain = {
   getBlockExplorerContractAddress: (contractAddress) => `https://kovan.etherscan.io/address/${contractAddress}`,
   getEtherscanVerifierApi: () => 'https://api-kovan.etherscan.io/api',
 }
+
+export const sepolia: Chain = {
+  chainId: 11155111,
+  chainName: 'Sepolia',
+  getPublicRpc: () => 'https://gateway.tenderly.co/public/sepolia',
+  getInfuraRpc: (infuraApiKey) => `https://sepolia.infura.io/v3/${infuraApiKey}`,
+  getAlchemyRpc: (alchemyApiKey) => `https://eth-sepolia.alchemyapi.io/v2/${alchemyApiKey}`,
+  getBlockExplorerContractAddress: (contractAddress) => `https://sepolia.etherscan.io/address/${contractAddress}`,
+  getEtherscanVerifierApi: () => 'https://api-sepolia.etherscan.io/api',
+}
