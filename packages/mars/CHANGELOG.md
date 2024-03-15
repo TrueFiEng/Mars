@@ -1,5 +1,11 @@
 # ethereum-mars
 
+## 0.2.6
+
+### Patch Changes
+
+- b2424db: 🧉 Change assumption of default configuration of solc compiler
+
 ## 0.2.5
 
 ### Patch Changes
